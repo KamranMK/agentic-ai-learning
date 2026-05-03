@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI Engineer — 12-Month Learning Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0D0D0F;--surface:#141417;--surface2:#1C1C21;--border:#2A2A32;
+    --accent:#7B6EF6;--accent2:#4FD1A5;--accent3:#F4A14A;--accent4:#E05C7A;
+    --text:#E8E8F0;--muted:#7A7A8C;--muted2:#4A4A5C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;line-height:1.65;min-height:100vh}
+  .container{max-width:880px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(123,110,246,0.3);transition:border-color 0.15s}
+  a:hover{border-bottom-color:var(--accent)}
+
+  /* HEADER */
+  .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;line-height:1.1;color:var(--text);margin-bottom:.75rem}
+  h1 span{color:var(--accent)}
+  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:2.5rem}
+  .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+  /* NORTH STAR */
+  .north-star{background:linear-gradient(135deg,#1a1730 0%,#111520 100%);border:1px solid #3a3265;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
+  .north-star::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+  .ns-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+  .ns-text{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4}
+
+  /* PROTOCOL MAP */
+  .section-title{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+  .protocol-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin-bottom:1.5rem}
+  .protocol-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;position:relative;overflow:hidden}
+  .protocol-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+  .protocol-card.mcp::before{background:var(--accent)}
+  .protocol-card.a2a::before{background:var(--accent2)}
+  .protocol-card.agui::before{background:var(--accent3)}
+  .protocol-card.acp::before{background:var(--accent4)}
+  .pname{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;margin-bottom:3px}
+  .protocol-card.mcp .pname{color:var(--accent)}
+  .protocol-card.a2a .pname{color:var(--accent2)}
+  .protocol-card.agui .pname{color:var(--accent3)}
+  .protocol-card.acp .pname{color:var(--accent4)}
+  .player{font-size:10px;color:var(--muted);margin-bottom:4px}
+  .pdesc{font-size:11px;color:var(--muted);line-height:1.5}
+
+  /* MODE LEGEND */
+  .mode-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:1.8rem}
+  .res-type{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+  .type-watch{background:#211e0a;color:#d4b840;border:1px solid #3d380f}
+  .type-read {background:#0a1822;color:#40a8c8;border:1px solid #0f2d3d}
+  .type-follow{background:#1e0a18;color:#c840a8;border:1px solid #380f2d}
+  .type-course{background:#0e1e0a;color:#7ec840;border:1px solid #1c380f}
+  .mode-note{font-size:11px;color:var(--muted)}
+
+  /* MOBILE NOTE */
+  .mobile-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.8rem}
+  .mobile-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:.4rem}
+  .mobile-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+  /* PHASE */
+  .phase{margin-bottom:2.5rem}
+  .phase-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem}
+  .phase-number{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;color:var(--muted2);flex-shrink:0;margin-top:-4px}
+  .phase-badge{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:4px}
+  .phase-title{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:3px}
+  .phase-sub{font-size:11px;color:var(--muted)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
+  .block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem}
+  .block-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+  .bldot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+  /* RESOURCE ITEMS */
+  .res-item{margin-bottom:.9rem;padding-bottom:.9rem;border-bottom:1px solid var(--border)}
+  .res-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .res-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.35}
+  .res-title a{color:var(--text);border-bottom-color:rgba(232,232,240,0.25)}
+  .res-title a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .res-source{font-size:10px;color:var(--accent);margin-bottom:3px}
+  .res-desc{font-size:11px;color:var(--muted);line-height:1.55}
+  .res-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .res-tag{font-size:10px;padding:1px 7px;border-radius:10px}
+  .tag-free{background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30}
+  .tag-paid{background:#1a1e2e;color:#6ea4d1;border:1px solid #2a3050}
+  .tag-aws {background:#2e221a;color:#d18c4f;border:1px solid #503830}
+  .tag-anth{background:#1e1a30;color:#a097f6;border:1px solid #35306a}
+  .tag-mins{background:#1c1c1c;color:#777;border:1px solid #333}
+
+  /* BUILD */
+  .build-item{margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+  .build-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .build-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:3px}
+  .build-desc{font-size:11px;color:var(--muted);line-height:1.55}
+
+  /* CALLOUT BLOCKS */
+  .arch-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .arch-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+  .arch-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .signal-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent3);margin-bottom:.4rem}
+  .signal-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .milestone-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .milestone-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:.35rem;font-size:11px;color:var(--muted);line-height:1.5}
+  .milestone-item:last-child{margin-bottom:0}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+  /* CAPSTONE */
+  .capstone{background:linear-gradient(135deg,#16130a 0%,#0f1218 100%);border:1px solid #4a3820;border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+  .capstone::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent3),var(--accent2),transparent)}
+  .cap-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent3);margin-bottom:.6rem}
+  .cap-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
+  .cap-row{display:flex;gap:10px;margin-bottom:5px;font-size:11px;line-height:1.5}
+  .cap-key{color:var(--accent3);flex-shrink:0;min-width:95px}
+  .cap-val{color:var(--muted)}
+
+  /* CERTS */
+  .cert-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem}
+  .cert-table th{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);font-weight:400}
+  .cert-table td{font-size:11px;color:var(--muted);padding:.5rem .75rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+  .cert-table td:first-child{color:var(--text);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600}
+  .cert-table tr:last-child td{border-bottom:none}
+
+  /* FRAMEWORK DECISION */
+  .dec-row{display:flex;gap:12px;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.5}
+  .dec-row:last-child{border-bottom:none}
+  .dec-key{min-width:95px;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:600;font-size:.78rem}
+
+  .footer-note{font-size:10px;color:var(--muted2);line-height:1.7;border-top:1px solid var(--border);padding-top:1.5rem;margin-top:2rem}
+
+  /* CHECKLIST */
+  .checklist-wrap{margin-bottom:2rem}
+  .checklist-phase{margin-bottom:1.5rem}
+  .checklist-phase-header{display:flex;align-items:center;gap:10px;margin-bottom:.6rem;cursor:pointer;user-select:none}
+  .checklist-phase-header:hover .cph-title{color:var(--text)}
+  .cph-badge{font-size:9px;padding:2px 9px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0}
+  .cph-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:600;color:var(--muted);transition:color .15s}
+  .cph-progress{margin-left:auto;font-size:10px;color:var(--muted2);white-space:nowrap}
+  .progress-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-bottom:.75rem;overflow:hidden}
+  .progress-bar-fill{height:100%;border-radius:2px;transition:width .3s ease}
+  .checklist-items{display:grid;gap:5px}
+  .check-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;cursor:pointer;transition:border-color .15s,background .15s}
+  .check-item:hover{border-color:var(--muted2)}
+  .check-item.done{background:var(--surface2);border-color:var(--muted2)}
+  .check-item.done .check-label{color:var(--muted2);text-decoration:line-through;text-decoration-color:var(--muted2)}
+  .check-box{width:16px;height:16px;border:1.5px solid var(--muted2);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+  .check-item.done .check-box{background:var(--accent2);border-color:var(--accent2)}
+  .check-tick{display:none;width:9px;height:9px}
+  .check-item.done .check-tick{display:block}
+  .check-label{font-size:11px;color:var(--muted);line-height:1.5;transition:color .15s}
+  .check-phase-tag{font-size:9px;padding:1px 6px;border-radius:8px;margin-left:6px;flex-shrink:0;margin-top:2px}
+  .checklist-summary{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .summary-stat{text-align:center}
+  .summary-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text)}
+  .summary-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .reset-btn{margin-left:auto;font-size:10px;padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:border-color .15s,color .15s}
+  .reset-btn:hover{border-color:var(--muted);color:var(--text)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="eyebrow">Protocol-first · Build-first · AWS-native · DS/ML → AI Engineer</div>
+<h1>Agentic AI<br><span>Engineer</span> Roadmap</h1>
+<div class="header-meta">
+  <span class="meta-tag">12 months</span>
+  <span class="meta-tag">1–2 hrs/week</span>
+  <span class="meta-tag">Bedrock AgentCore</span>
+  <span class="meta-tag">MCP → A2A → AG-UI</span>
+  <span class="meta-tag">Watch · Read · Follow · Build</span>
+</div>
+
+<!-- NORTH STAR -->
+<div class="north-star">
+  <div class="ns-label">North star</div>
+  <div class="ns-text">Understand architectures and approaches to building agentic AI systems — not collect framework certifications. Every project answers a specific architectural question and touches a real protocol layer.</div>
+</div>
+
+<!-- PROTOCOL MAP -->
+<div class="section-title">The protocol stack you're building toward</div>
+<div class="protocol-grid">
+  <div class="protocol-card mcp">
+    <div class="pname">MCP</div><div class="player">Agent ↔ Tools layer</div>
+    <div class="pdesc">Anthropic / Linux Foundation. 97M downloads. De facto standard for tool access. You consume MCP servers — you don't build them.</div>
+  </div>
+  <div class="protocol-card a2a">
+    <div class="pname">A2A</div><div class="player">Agent ↔ Agent layer</div>
+    <div class="pdesc">Google / Linux Foundation. Cross-framework agent coordination via Agent Cards + JSON-RPC 2.0. Native in Bedrock AgentCore.</div>
+  </div>
+  <div class="protocol-card agui">
+    <div class="pname">AG-UI</div><div class="player">Agent ↔ UI layer</div>
+    <div class="pdesc">Open / CopilotKit. Event-based streaming of agent state to frontends in real-time. Native in Bedrock AgentCore since Mar 2026.</div>
+  </div>
+  <div class="protocol-card acp">
+    <div class="pname">ACP</div><div class="player">Agentic Commerce layer</div>
+    <div class="pdesc">OpenAI + Stripe. Commerce checkout protocol (live Sep 2025). Domain-specific — not a general agent comms protocol. Know it; don't build for it in year one.</div>
+  </div>
+</div>
+
+<!-- MODE LEGEND -->
+<div class="section-title">Learning mode key</div>
+<div class="mode-row">
+  <span class="res-type type-watch">▶ Watch</span><span class="mode-note">YouTube / conference talks — phone-friendly</span>
+  <span class="res-type type-read">◉ Read</span><span class="mode-note">Docs, blogs, specs — phone-friendly</span>
+  <span class="res-type type-follow">⬡ Follow</span><span class="mode-note">Tutorial with code — needs a desk</span>
+  <span class="res-type type-course">◈ Course</span><span class="mode-note">Multi-session structured course</span>
+</div>
+
+<div class="mobile-block">
+  <div class="mobile-label">📱 Mobile / low-bandwidth learning</div>
+  <div class="mobile-text">Watch and Read are fully phone-friendly — watch at 1.5x while commuting, read one doc page per session. Follow and Course need a desk. Build needs a desk. One Watch or Read per day across 12 months is ~365 micro-sessions of context that directly feeds your build work.</div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 1 ═══ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number">01</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#1e1a30;color:#a097f6;border:1px solid #352a50;">Months 1–3 · MCP layer</span>
+      <div class="phase-title">Tool integration & typed agents</div>
+      <div class="phase-sub">Architectural question: how do agents consume tools, validate outputs, and manage context at the code level?</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#a097f6"></span>Watch · Read · Follow</div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=PH9nvIFA2v4" target="_blank">Build Your First AI Agent with Strands (YouTube)</a></div>
+        <div class="res-source">AWS Developers channel — Mar 2026</div>
+        <div class="res-desc">Concise Strands SDK intro — model, prompt, tools in a few lines. Best first watch before touching the docs.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~12 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=28uCH7BcSA4" target="_blank">Strands SDK: From First Agent to Production-Ready (YouTube)</a></div>
+        <div class="res-source">AWS Community — Nov 2025</div>
+        <div class="res-desc">Full walkthrough: local dev → Bedrock AgentCore deployment. Multi-agent patterns, MCP wiring, OTel observability. Do after the intro above.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~40 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=pXktHVUpXUc" target="_blank">PydanticAI Crash Course: Agentic Framework For Production (YouTube)</a></div>
+        <div class="res-source">Feb 2026</div>
+        <div class="res-desc">Dependency injection, structured outputs, tool registration, Logfire observability. Production-focused, not beginner fluff.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~25 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://ai.pydantic.dev/" target="_blank">PydanticAI Official Docs — Quickstart → Tools → Dependency Injection</a></div>
+        <div class="res-source">ai.pydantic.dev</div>
+        <div class="res-desc">Start with the bank support agent example — 60 lines showing DI + tool use + structured output. One section per session on your phone.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://strandsagents.com/" target="_blank">Strands Agents SDK Docs + Blog</a></div>
+        <div class="res-source">strandsagents.com</div>
+        <div class="res-desc">Quickstart → Multi-Agent Patterns → Observability. The blog has production walkthroughs from AWS teams who built with it for Amazon Q Developer internally.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://anthropic.skilljar.com" target="_blank">Anthropic Academy — Building with the Claude API</a></div>
+        <div class="res-source">anthropic.skilljar.com</div>
+        <div class="res-desc">Official Anthropic course. Tool use, streaming, structured outputs, agent system architecture from Anthropic engineers. Free certificate. Run alongside your first Strands build.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free + cert</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://modelcontextprotocol.io" target="_blank">MCP Protocol Spec — Tools, Resources, Prompts primitives</a></div>
+        <div class="res-source">modelcontextprotocol.io</div>
+        <div class="res-desc">Read the 3-primitive spec architecturally before wiring agents to MCP servers. Short, dense, worth doing once properly on your phone.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://www.datacamp.com/tutorial/pydantic-ai-guide" target="_blank">DataCamp — PydanticAI Guide (structured output + data analysis examples)</a></div>
+        <div class="res-source">datacamp.com</div>
+        <div class="res-desc">Practical structured output examples directly relevant to DS work: sales analysis agents with validated Pydantic output types. Colab-compatible notebooks.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="build-item">
+        <div class="build-title">Project 1A — Typed research agent</div>
+        <div class="build-desc">PydanticAI + Claude API directly. 3 tools: web search, file read, structured summariser. Enforced Pydantic output schema. No AWS yet — understand primitives raw first.</div>
+      </div>
+      <div class="build-item">
+        <div class="build-title">Project 1B — Rebuild with Strands SDK</div>
+        <div class="build-desc">Rebuild 1A using Strands. Compare: what did the framework abstract? What control did you gain or lose? Write down your findings — this comparison IS the architecture learning.</div>
+      </div>
+      <div class="build-item">
+        <div class="build-title">Project 1C — Wire to MCP servers</div>
+        <div class="build-desc">Connect your Strands agent to 2–3 existing MCP servers (AWS docs MCP, filesystem MCP). Consume MCP; don't build a server. Inspect JSON-RPC messages with MCP Inspector.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">⬡ Architecture insight</div>
+    <div class="arch-text">PydanticAI's type system caught 23 bugs in a 90-day benchmark that would have hit production in LangChain. Strands cuts setup from ~40 lines to ~3 for the 80% case. One LangGraph practitioner described it as "a genuine surprise." The architectural question: what does each abstraction layer cost you in control, and when does that cost actually matter in production?</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#a097f6"></span>Phase 1 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Explain PydanticAI's dependency injection vs passing kwargs — architecturally, not just syntactically</div>
+    <div class="milestone-item"><span>◻</span>Connect a Strands agent to an MCP server and trace the JSON-RPC messages it sends in real-time</div>
+    <div class="milestone-item"><span>◻</span>Articulate when you'd use PydanticAI vs Strands with clear tradeoffs</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 2 ═══ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number">02</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30;">Months 4–6 · A2A layer</span>
+      <div class="phase-title">Cross-framework agent coordination</div>
+      <div class="phase-sub">Architectural question: how do agents from different frameworks communicate, discover each other, and delegate tasks at the protocol level?</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Watch · Read · Follow · Course</div>
+
+      <div class="res-item">
+        <div class="res-type type-course">◈ Course</div>
+        <div class="res-title"><a href="https://www.deeplearning.ai/short-courses/a2a-the-agent2agent-protocol/" target="_blank">A2A: The Agent2Agent Protocol — DeepLearning.AI</a></div>
+        <div class="res-source">deeplearning.ai — Built with Google Cloud + IBM Research</div>
+        <div class="res-desc">Wrap LangGraph / Google ADK / BeeAI agents as A2A servers. Build A2A clients, chain agents sequentially and hierarchically. Uses Claude Haiku 4.5 + Gemini. The definitive A2A course — do this before any A2A build work.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free to audit</span><span class="res-tag tag-mins">~4 hrs</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=VtrfpAVFKdE" target="_blank">re:Invent 2025 DEV326 — AML Multi-Agent Orchestration with Strands (YouTube)</a></div>
+        <div class="res-source">AWS Events — Dec 2025</div>
+        <div class="res-desc">Production talk: 8 specialized agents (Perception, Context, News, Reasoning, Risk, Action, Audit, Learning) on Strands + Claude on Bedrock. Real serverless AgentCore deployment. One of the most instructive architecture talks available.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~55 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=mOAd8grR1BU" target="_blank">re:Invent 2025 AIM233 — Observable AI Agents with Strands, AgentCore & Datadog (YouTube)</a></div>
+        <div class="res-source">AWS Events — Dec 2025</div>
+        <div class="res-desc">Observability-focused session: how to trace, measure, and improve agentic workflows in production using Strands + AgentCore + Datadog. Watch this alongside the AML talk.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-to-agent-protocol-support-in-amazon-bedrock-agentcore-runtime/" target="_blank">AWS Blog — A2A Support in Bedrock AgentCore Runtime</a></div>
+        <div class="res-source">aws.amazon.com/blogs/machine-learning</div>
+        <div class="res-desc">The incident response reference architecture: 3 agents (Strands + OpenAI SDK + Google ADK) via A2A on AgentCore. Covers Agent Cards, JSON-RPC, OAuth, CloudWatch. Read before writing any A2A code.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://dev.to/sreeni5018/building-your-first-ai-chatbot-with-a2a-protocol-and-langgraph-a-complete-guide-164f" target="_blank">DEV.to — Building Your First Chatbot with A2A + LangGraph</a></div>
+        <div class="res-source">dev.to/sreeni5018 — Feb 2026</div>
+        <div class="res-desc">Step-by-step A2A + LangGraph tutorial by an AI solution architect with 20+ years across AWS/Bedrock AgentCore. Concrete code. Good bridge between the DeepLearning.AI course and your Bedrock build.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~45 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://hidekazu-konishi.com/entry/amazon_bedrock_agentcore_implementation_guide_part4_multi_agent.html" target="_blank">hidekazu-konishi.com — AgentCore Part 4: Multi-Agent Orchestration</a></div>
+        <div class="res-source">hidekazu-konishi.com — Mar 2026</div>
+        <div class="res-desc">Five orchestration patterns with implementation code: A2A Protocol, Supervisor + Sub-agent, LangGraph stateful, Browser Use, Guardrails Shadow Mode. The most technically precise non-AWS resource on production AgentCore.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-course">◈ Course</div>
+        <div class="res-title"><a href="https://www.udemy.com/course/the-complete-agentic-ai-engineering-course/" target="_blank">Ed Donner — Complete Agentic AI Engineering (Udemy)</a></div>
+        <div class="res-source">udemy.com — 6 weeks · <a href="https://github.com/ed-donner/agents" target="_blank">GitHub repo</a></div>
+        <div class="res-desc">8 real projects across LangGraph, CrewAI, AutoGen, MCP. Community: "hands-on projects weren't toy examples." Architecture-forward. Known gap: no Anthropic/Claude — supplement with Anthropic Academy alongside.</div>
+        <div class="res-tags"><span class="res-tag tag-paid">~€15</span><span class="res-tag tag-mins">6 weeks</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://github.com/madhurprash/A2A-Multi-Agents-AgentCore" target="_blank">GitHub — A2A Multi-Agents on AgentCore (madhurprash)</a></div>
+        <div class="res-source">github.com/madhurprash</div>
+        <div class="res-desc">Reference implementation: OpenAI + LangGraph + ADK + Strands via A2A on AgentCore with full IaC, Cognito OAuth, CloudFormation VPC stack. Clone and run this as your Project 2B reference.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="build-item">
+        <div class="build-title">Project 2A — Two-agent A2A handoff</div>
+        <div class="build-desc">Agent 1 (Strands + Claude on Bedrock) discovers and delegates to Agent 2 (LangGraph + any model) via A2A. Both on AgentCore Runtime at port 9000. Understand Agent Cards and JSON-RPC handoff end to end before adding complexity.</div>
+      </div>
+      <div class="build-item">
+        <div class="build-title">Project 2B — Multi-agent incident response</div>
+        <div class="build-desc">Replicate the AWS reference arch: monitoring agent (Strands) + remediation agent (LangGraph) + orchestrator. Each on separate AgentCore runtimes via A2A. Add AgentCore Memory + Observability. Use the madhurprash GitHub repo as your build reference.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="signal-block">
+    <div class="signal-label">👥 Community signal</div>
+    <div class="signal-text">DeepLearning.AI's A2A course (Feb 2026) is the only structured course targeting the protocol directly at the right level for you. Ed Donner's course remains the best multi-framework survey but the community consistently flags "no Anthropic content" as its main gap — fill that with Anthropic Academy running alongside. The hidekazu-konishi AgentCore blog series is considered by practitioners the most technically accurate non-AWS resource on production AgentCore patterns.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#4fd1a5"></span>Phase 2 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Deploy two agents from different frameworks that communicate via A2A on Bedrock AgentCore</div>
+    <div class="milestone-item"><span>◻</span>Explain the Agent Card structure and how capability discovery works in a distributed agent system</div>
+    <div class="milestone-item"><span>◻</span>Choose between LangGraph and Strands for an orchestration problem and defend the decision with tradeoffs</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 3 ═══ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number">03</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#2e221a;color:#d18c4f;border:1px solid #503830;">Months 7–9 · AG-UI + production ops</span>
+      <div class="phase-title">User-facing agents & production ops</div>
+      <div class="phase-sub">Architectural question: how do you expose a multi-agent system to real users in real-time — and keep it observable, safe, and evaluable in production?</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Watch · Read · Follow</div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://www.datacamp.com/tutorial/ag-ui" target="_blank">DataCamp — AG-UI Protocol Overview</a> + <a href="https://docs.ag-ui.com/introduction" target="_blank">Official Spec</a></div>
+        <div class="res-source">datacamp.com + docs.ag-ui.com</div>
+        <div class="res-desc">DataCamp gives the best conceptual overview: 16 event types across 5 categories (Lifecycle, Text, Tool Calls, State, Special). Read DataCamp first, then the official spec. Both are phone-readable.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~20 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://aws.amazon.com/about-aws/whats-new/2026/03/amazon-bedrock-agentcore-runtime-ag-ui-protocol/" target="_blank">AWS — Bedrock AgentCore AG-UI Support Announcement (Mar 2026)</a></div>
+        <div class="res-source">aws.amazon.com</div>
+        <div class="res-desc">Short but essential: AgentCore handles auth, session isolation, and scaling for AG-UI workloads. See how AG-UI slots into the full MCP + A2A + AG-UI protocol stack.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://learn.microsoft.com/en-us/agent-framework/integrations/ag-ui/getting-started" target="_blank">Microsoft Learn — Getting Started with AG-UI (Python + .NET)</a></div>
+        <div class="res-source">learn.microsoft.com</div>
+        <div class="res-desc">Practical tutorial: build both AG-UI server and client in Python. Covers SSE streaming, session management, all 5 event categories. Most accessible hands-on AG-UI resource available.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~60 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://github.com/CopilotKit/generative-ui" target="_blank">GitHub — CopilotKit Generative UI (AG-UI + A2UI + MCP Apps)</a></div>
+        <div class="res-source">github.com/CopilotKit/generative-ui</div>
+        <div class="res-desc">Reference implementations for all 3 generative UI patterns: Controlled (AG-UI), Declarative (A2UI), Open-ended (MCP Apps). The README is architecturally excellent. Work through all three patterns.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://anthropic.skilljar.com" target="_blank">Anthropic Academy — MCP Advanced Topics</a></div>
+        <div class="res-source">anthropic.skilljar.com</div>
+        <div class="res-desc">The one Anthropic Academy course to complete in full this phase. Production MCP: sampling, bidirectional comms, Streamable HTTP transport. From the protocol's authors — non-substitutable depth.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free + cert</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/@BerkeleyRDI" target="_blank">UC Berkeley LLM Agents — Compound AI + Safety lectures (selected)</a></div>
+        <div class="res-source">youtube.com/@BerkeleyRDI · <a href="https://llmagents-learning.org/sp25" target="_blank">Full MOOC</a></div>
+        <div class="res-desc">Don't watch the full series. Watch: compound AI systems, SWE-agent, and the alignment/safety lecture. Speakers from Anthropic, DeepMind, NVIDIA. Research-depth thinking that complements what you've been building.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">3 × ~60 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">Bedrock AgentCore — Observability, Guardrails, Evaluations docs</a></div>
+        <div class="res-source">docs.aws.amazon.com/bedrock-agentcore</div>
+        <div class="res-desc">CloudWatch + OTel tracing. Guardrails shadow mode → ENFORCE mode progression. Bedrock Evaluations for quality scoring. Read the prescriptive guidance section — written for production engineers, not demo builders.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Build mode (desk)</div>
+      <div class="build-item">
+        <div class="build-title">Project 3A — AG-UI streaming interface</div>
+        <div class="build-desc">Add AG-UI to your Phase 2 multi-agent system. Stream reasoning steps, tool calls, and agent state to a frontend in real-time via Bedrock AgentCore. Wire TEXT_MESSAGE_* and TOOL_CALL_* events to a React component.</div>
+      </div>
+      <div class="build-item">
+        <div class="build-title">Project 3B — Production hardening</div>
+        <div class="build-desc">Add to 3A: OTel tracing → CloudWatch, Bedrock Guardrails in NotifyOnly mode (then graduate to ENFORCE), AgentCore Evaluations for output quality scoring, AgentCore Identity (Cognito OAuth 2.0). This is what production actually means.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">⬡ Architecture insight</div>
+    <div class="arch-text">The full stack: MCP connects agents to tools. A2A connects agents to each other. AG-UI connects agents to users. Most engineers know MCP. Engineers who can deploy a production system spanning all three layers in AgentCore — with proper observability and guardrails — are genuinely rare in 2026. That's your target position.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#f4a14a"></span>Phase 3 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Stream agent reasoning state to a UI in real-time via AG-UI on Bedrock AgentCore</div>
+    <div class="milestone-item"><span>◻</span>Explain the tradeoff between Guardrails in NOTIFY vs ENFORCE mode and when to use each</div>
+    <div class="milestone-item"><span>◻</span>Read an OpenTelemetry trace for a multi-agent workflow and identify where latency is introduced</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 4 ═══ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number">04</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#2e1a1f;color:#d16e7e;border:1px solid #50283a;">Months 10–12 · Capstone + cert</span>
+      <div class="phase-title">Flagship project & credential</div>
+      <div class="phase-sub">Architectural question: can you design, justify, and deploy a production agentic system spanning all three protocol layers from scratch?</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Watch · Read · Follow</div>
+
+      <div class="res-item">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://skillbuilder.aws" target="_blank">AWS Skill Builder — Generative AI Developer Professional Exam Prep</a></div>
+        <div class="res-source">skillbuilder.aws</div>
+        <div class="res-desc">Official exam prep, refreshed 2026 to include AgentCore, A2A, and agentic deployment patterns. Don't grind MCQs — read the domain descriptions and map them to what you've built. The capstone covers ~80% of exam domains.</div>
+        <div class="res-tags"><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">Self-paced</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=yxLzAKsAAjo" target="_blank">re:Invent 2025 DEV327 — Building Agentic AI: Nova Act + Strands in Practice (YouTube)</a></div>
+        <div class="res-source">AWS Events — Dec 2025</div>
+        <div class="res-desc">AWS Hong Kong team demonstrates Strands + Nova Act for physical AI agents. Shows the full low-agency → high-agency spectrum. Sequoia's "agent economy / one-person unicorn" framing — good for interview conversations.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-watch">▶ Watch</div>
+        <div class="res-title"><a href="https://www.youtube.com/watch?v=RQfW7eQsXqk" target="_blank">re:Invent 2025 AIM426 — Autonomous, Self-Improving Agents with Strands (YouTube)</a></div>
+        <div class="res-source">AWS Events — Dec 2025</div>
+        <div class="res-desc">Cutting edge: agents that evolve and learn continuously. Steering handlers, autonomous reasoning loops, self-correction patterns. Watch after building your capstone to understand what comes next.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://hidekazu-konishi.com/entry/amazon_bedrock_agentcore_implementation_guide_part4_multi_agent.html" target="_blank">hidekazu-konishi.com — AgentCore Implementation Guide Parts 1–4 (re-read)</a></div>
+        <div class="res-source">hidekazu-konishi.com — Parts: <a href="https://hidekazu-konishi.com" target="_blank">Index</a></div>
+        <div class="res-desc">Re-read all 4 parts now that you've built. Parts 1 (Runtime + Memory), 2 (Security + Identity), 3 (Gateway + Policy), 4 (Multi-Agent Orchestration). The patterns will click at a different depth post-build.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://aws.amazon.com/blogs/opensource/introducing-strands-labs-get-hands-on-today-with-state-of-the-art-experimental-approaches-to-agentic-development/" target="_blank">AWS — Strands Labs: Experimental Agentic AI Approaches</a></div>
+        <div class="res-source">aws.amazon.com/blogs/opensource — Feb 2026</div>
+        <div class="res-desc">Strands Labs introduces AI Functions (natural language specs), Robots (edge + physical AI), and Robots Sim. Not for immediate implementation — for horizon-scanning where the stack is heading 2026–2027.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~20 min</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Build mode (desk)</div>
+      <div class="build-item">
+        <div class="build-title">Capstone — Autonomous DS Pipeline Agent</div>
+        <div class="build-desc">Full system: planner decomposes task → specialists run experiments with typed outputs → critic evaluates with LangGraph checkpointing → reporter streams live results via AG-UI. Spans MCP + A2A + AG-UI. Deployed on AgentCore with Identity, Observability, Guardrails, Evaluations. This is your portfolio anchor.</div>
+      </div>
+      <div class="build-item">
+        <div class="build-title">AWS Certification — Generative AI Developer Professional</div>
+        <div class="build-desc">Build first, sit the exam after. Map capstone to exam domains via Skill Builder. Add AWS Agentic AI Demonstrated microcredential for practical evidence. Add Anthropic Academy certificates (Claude API + MCP Advanced) to LinkedIn alongside project links.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="capstone">
+    <div class="cap-label">🏗 Capstone — architecture spec</div>
+    <div class="cap-title">Autonomous Data Science Pipeline Agent</div>
+    <div class="cap-row"><span class="cap-key">What it does</span><span class="cap-val">Multi-agent: planner decomposes task → specialists run experiments with typed outputs → critic evaluates with checkpointing → reporter streams live results to dashboard. Human approval gates only.</span></div>
+    <div class="cap-row"><span class="cap-key">Why it works</span><span class="cap-val">Bridges your DS/ML expertise into agentic engineering. The system IS your portfolio proof — you understand both model behaviour and agent orchestration. Most candidates know only one.</span></div>
+    <div class="cap-row"><span class="cap-key">Protocol layers</span><span class="cap-val">MCP (data lake + tool access) → A2A (cross-framework delegation) → AG-UI (streaming live dashboard)</span></div>
+    <div class="cap-row"><span class="cap-key">Frameworks</span><span class="cap-val">Strands (planner + specialists) + LangGraph (critic loop + checkpointing) + PydanticAI (validated typed outputs at every handoff)</span></div>
+    <div class="cap-row"><span class="cap-key">AWS services</span><span class="cap-val">AgentCore Runtime · AgentCore Memory · AgentCore Observability (OTel + CloudWatch) · Bedrock Guardrails · AgentCore Identity (Cognito OAuth 2.0) · Bedrock Evaluations</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Credentials — earn after building, not before</div>
+  <table class="cert-table">
+    <thead><tr><th>Credential</th><th>When</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="https://aws.amazon.com/certification/certified-machine-learning-specialty/" target="_blank">AWS Certified Generative AI Developer – Professional</a></td>
+        <td>Month 11–12</td>
+        <td>Refreshed 2026 to include AgentCore, A2A, agentic patterns. Most employer-relevant AI credential on AWS now.</td>
+      </tr>
+      <tr>
+        <td>AWS Agentic AI Demonstrated microcredential</td>
+        <td>Month 10</td>
+        <td>Practical implementation evidence — shows you deploy agents, not just pass MCQs. Pairs with the Professional cert.</td>
+      </tr>
+      <tr>
+        <td><a href="https://anthropic.skilljar.com" target="_blank">Anthropic Academy — Claude API + MCP Advanced Topics</a></td>
+        <td>Months 2 + 8</td>
+        <td>Free, official, from the Claude team. Add certificates to LinkedIn alongside project links.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- INTERACTIVE CHECKLIST -->
+<div class="section-title">Progress checklist</div>
+
+<div class="checklist-summary">
+  <div class="summary-stat"><div class="summary-num" id="done-count">0</div><div class="summary-label">Done</div></div>
+  <div class="summary-stat"><div class="summary-num" id="total-count">0</div><div class="summary-label">Total</div></div>
+  <div class="summary-stat"><div class="summary-num" id="pct-count">0%</div><div class="summary-label">Complete</div></div>
+  <button class="reset-btn" onclick="resetAll()">Reset all</button>
+</div>
+
+<div class="checklist-wrap" id="checklist-wrap">
+
+  <!-- Phase 1 -->
+  <div class="checklist-phase" data-phase="p1">
+    <div class="checklist-phase-header">
+      <span class="cph-badge" style="background:#1e1a30;color:#a097f6;border:1px solid #352a50;">Phase 1 · Months 1–3</span>
+      <span class="cph-title">Tool integration & typed agents</span>
+      <span class="cph-progress" id="prog-p1">0 / 8</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="bar-p1" style="width:0%;background:var(--accent)"></div></div>
+    <div class="checklist-items">
+      <div class="check-item" data-id="p1-w1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=PH9nvIFA2v4" target="_blank" onclick="event.stopPropagation()">Build Your First AI Agent with Strands</a> (~12 min)</div></div>
+      <div class="check-item" data-id="p1-w2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=28uCH7BcSA4" target="_blank" onclick="event.stopPropagation()">Strands SDK: From First Agent to Production</a> (~40 min)</div></div>
+      <div class="check-item" data-id="p1-w3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=pXktHVUpXUc" target="_blank" onclick="event.stopPropagation()">PydanticAI Crash Course: Agentic Framework For Production</a> (~25 min)</div></div>
+      <div class="check-item" data-id="p1-r1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://ai.pydantic.dev/" target="_blank" onclick="event.stopPropagation()">PydanticAI docs</a>: Quickstart → Tools → Dependency Injection</div></div>
+      <div class="check-item" data-id="p1-r2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://strandsagents.com/" target="_blank" onclick="event.stopPropagation()">Strands Agents docs + blog</a>: Quickstart → Multi-Agent Patterns → Observability</div></div>
+      <div class="check-item" data-id="p1-r3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://modelcontextprotocol.io" target="_blank" onclick="event.stopPropagation()">MCP Protocol Spec</a>: Tools, Resources, Prompts primitives</div></div>
+      <div class="check-item" data-id="p1-f1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://anthropic.skilljar.com" target="_blank" onclick="event.stopPropagation()">Anthropic Academy: Building with the Claude API</a> (free certificate)</div></div>
+      <div class="check-item" data-id="p1-f2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://www.datacamp.com/tutorial/pydantic-ai-guide" target="_blank" onclick="event.stopPropagation()">DataCamp PydanticAI Guide</a>: structured output + data analysis examples</div></div>
+      <div class="check-item" data-id="p1-b1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 1A: typed research agent with PydanticAI + Claude API directly</div></div>
+      <div class="check-item" data-id="p1-b2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 1B: rebuild same agent with Strands SDK, document the differences</div></div>
+      <div class="check-item" data-id="p1-b3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 1C: wire Strands agent to 2–3 MCP servers, trace JSON-RPC in MCP Inspector</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="checklist-phase" data-phase="p2">
+    <div class="checklist-phase-header">
+      <span class="cph-badge" style="background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30;">Phase 2 · Months 4–6</span>
+      <span class="cph-title">Cross-framework agent coordination (A2A)</span>
+      <span class="cph-progress" id="prog-p2">0 / 8</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="bar-p2" style="width:0%;background:var(--accent2)"></div></div>
+    <div class="checklist-items">
+      <div class="check-item" data-id="p2-c1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◈ Course — <a href="https://www.deeplearning.ai/short-courses/a2a-the-agent2agent-protocol/" target="_blank" onclick="event.stopPropagation()">DeepLearning.AI: A2A The Agent2Agent Protocol</a> (free to audit, ~4 hrs)</div></div>
+      <div class="check-item" data-id="p2-w1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=VtrfpAVFKdE" target="_blank" onclick="event.stopPropagation()">re:Invent 2025 DEV326: AML Multi-Agent Orchestration with Strands</a> (~55 min)</div></div>
+      <div class="check-item" data-id="p2-w2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=mOAd8grR1BU" target="_blank" onclick="event.stopPropagation()">re:Invent 2025 AIM233: Observable Agents with Strands, AgentCore & Datadog</a> (~45 min)</div></div>
+      <div class="check-item" data-id="p2-r1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-to-agent-protocol-support-in-amazon-bedrock-agentcore-runtime/" target="_blank" onclick="event.stopPropagation()">AWS Blog: A2A Support in Bedrock AgentCore Runtime</a> (incident response reference architecture)</div></div>
+      <div class="check-item" data-id="p2-r2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://hidekazu-konishi.com/entry/amazon_bedrock_agentcore_implementation_guide_part4_multi_agent.html" target="_blank" onclick="event.stopPropagation()">hidekazu-konishi: AgentCore Part 4 Multi-Agent Orchestration</a> (5 patterns with code)</div></div>
+      <div class="check-item" data-id="p2-f1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://dev.to/sreeni5018/building-your-first-ai-chatbot-with-a2a-protocol-and-langgraph-a-complete-guide-164f" target="_blank" onclick="event.stopPropagation()">DEV.to: Building a Chatbot with A2A + LangGraph</a> step-by-step tutorial</div></div>
+      <div class="check-item" data-id="p2-f2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://github.com/madhurprash/A2A-Multi-Agents-AgentCore" target="_blank" onclick="event.stopPropagation()">GitHub: A2A Multi-Agents on AgentCore</a> (clone + run as Project 2B reference)</div></div>
+      <div class="check-item" data-id="p2-c2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◈ Course — <a href="https://www.udemy.com/course/the-complete-agentic-ai-engineering-course/" target="_blank" onclick="event.stopPropagation()">Ed Donner: Complete Agentic AI Engineering</a> (Udemy ~€15, 6 weeks, do in spare time)</div></div>
+      <div class="check-item" data-id="p2-b1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 2A: two-agent A2A handoff on Bedrock AgentCore (Strands + LangGraph)</div></div>
+      <div class="check-item" data-id="p2-b2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 2B: multi-agent incident response system with AgentCore Memory + Observability</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="checklist-phase" data-phase="p3">
+    <div class="checklist-phase-header">
+      <span class="cph-badge" style="background:#2e221a;color:#d18c4f;border:1px solid #503830;">Phase 3 · Months 7–9</span>
+      <span class="cph-title">User-facing agents & production ops (AG-UI)</span>
+      <span class="cph-progress" id="prog-p3">0 / 7</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="bar-p3" style="width:0%;background:var(--accent3)"></div></div>
+    <div class="checklist-items">
+      <div class="check-item" data-id="p3-r1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://www.datacamp.com/tutorial/ag-ui" target="_blank" onclick="event.stopPropagation()">DataCamp AG-UI tutorial</a> + <a href="https://docs.ag-ui.com/introduction" target="_blank" onclick="event.stopPropagation()">Official spec</a>: 16 event types across 5 categories</div></div>
+      <div class="check-item" data-id="p3-r2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://aws.amazon.com/about-aws/whats-new/2026/03/amazon-bedrock-agentcore-runtime-ag-ui-protocol/" target="_blank" onclick="event.stopPropagation()">AWS: Bedrock AgentCore AG-UI Support announcement</a> (Mar 2026)</div></div>
+      <div class="check-item" data-id="p3-r3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank" onclick="event.stopPropagation()">Bedrock AgentCore docs</a>: Observability, Guardrails, Evaluations sections</div></div>
+      <div class="check-item" data-id="p3-f1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://learn.microsoft.com/en-us/agent-framework/integrations/ag-ui/getting-started" target="_blank" onclick="event.stopPropagation()">Microsoft Learn: Getting Started with AG-UI</a> (Python server + client, ~60 min)</div></div>
+      <div class="check-item" data-id="p3-f2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://github.com/CopilotKit/generative-ui" target="_blank" onclick="event.stopPropagation()">CopilotKit Generative UI repo</a>: AG-UI + A2UI + MCP Apps patterns</div></div>
+      <div class="check-item" data-id="p3-f3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://anthropic.skilljar.com" target="_blank" onclick="event.stopPropagation()">Anthropic Academy: MCP Advanced Topics</a> (free + cert — do this one in full)</div></div>
+      <div class="check-item" data-id="p3-w1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/@BerkeleyRDI" target="_blank" onclick="event.stopPropagation()">UC Berkeley LLM Agents</a>: compound AI systems + safety lectures (3 selected talks)</div></div>
+      <div class="check-item" data-id="p3-b1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 3A: AG-UI streaming interface on top of Phase 2 multi-agent system</div></div>
+      <div class="check-item" data-id="p3-b2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Project 3B: production hardening — OTel tracing, Guardrails, Evaluations, Identity</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="checklist-phase" data-phase="p4">
+    <div class="checklist-phase-header">
+      <span class="cph-badge" style="background:#2e1a1f;color:#d16e7e;border:1px solid #50283a;">Phase 4 · Months 10–12</span>
+      <span class="cph-title">Capstone + certification</span>
+      <span class="cph-progress" id="prog-p4">0 / 7</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="bar-p4" style="width:0%;background:var(--accent4)"></div></div>
+    <div class="checklist-items">
+      <div class="check-item" data-id="p4-w1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=yxLzAKsAAjo" target="_blank" onclick="event.stopPropagation()">re:Invent 2025 DEV327: Nova Act + Strands Agents in Practice</a> (~45 min)</div></div>
+      <div class="check-item" data-id="p4-w2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">▶ Watch — <a href="https://www.youtube.com/watch?v=RQfW7eQsXqk" target="_blank" onclick="event.stopPropagation()">re:Invent 2025 AIM426: Autonomous Self-Improving Agents with Strands</a> (~45 min)</div></div>
+      <div class="check-item" data-id="p4-r1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://hidekazu-konishi.com" target="_blank" onclick="event.stopPropagation()">hidekazu-konishi AgentCore Guide</a>: re-read all 4 parts post-build (patterns will click differently)</div></div>
+      <div class="check-item" data-id="p4-r2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">◉ Read — <a href="https://aws.amazon.com/blogs/opensource/introducing-strands-labs-get-hands-on-today-with-state-of-the-art-experimental-approaches-to-agentic-development/" target="_blank" onclick="event.stopPropagation()">AWS: Strands Labs — Experimental Agentic AI</a> (horizon-scanning, ~20 min)</div></div>
+      <div class="check-item" data-id="p4-f1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">⬡ Follow — <a href="https://skillbuilder.aws" target="_blank" onclick="event.stopPropagation()">AWS Skill Builder</a>: Generative AI Developer Professional exam prep (map to your capstone)</div></div>
+      <div class="check-item" data-id="p4-b1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🔨 Build — Capstone: Autonomous DS Pipeline Agent spanning MCP + A2A + AG-UI on AgentCore</div></div>
+      <div class="check-item" data-id="p4-cert1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🎓 Earn — AWS Certified Generative AI Developer – Professional</div></div>
+      <div class="check-item" data-id="p4-cert2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">🎓 Earn — AWS Agentic AI Demonstrated microcredential + Anthropic Academy certificates</div></div>
+    </div>
+  </div>
+
+</div><!-- /checklist-wrap -->
+
+<script>
+const STORAGE_KEY = 'agentic-plan-checks';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function toggle(el) {
+  const state = loadState();
+  const id = el.dataset.id;
+  state[id] = !state[id];
+  saveState(state);
+  applyState(state);
+}
+
+function resetAll() {
+  saveState({});
+  applyState({});
+}
+
+function applyState(state) {
+  const items = document.querySelectorAll('.check-item');
+  items.forEach(el => {
+    el.classList.toggle('done', !!state[el.dataset.id]);
+  });
+  updateProgress(state);
+}
+
+function updateProgress(state) {
+  const phases = ['p1','p2','p3','p4'];
+  const colors = {'p1':'var(--accent)','p2':'var(--accent2)','p3':'var(--accent3)','p4':'var(--accent4)'};
+  let totalDone = 0, totalAll = 0;
+
+  phases.forEach(phase => {
+    const items = document.querySelectorAll(`[data-phase="${phase}"] .check-item`);
+    const done = Array.from(items).filter(el => !!state[el.dataset.id]).length;
+    const total = items.length;
+    totalDone += done; totalAll += total;
+    document.getElementById(`prog-${phase}`).textContent = `${done} / ${total}`;
+    const bar = document.getElementById(`bar-${phase}`);
+    bar.style.width = total > 0 ? `${Math.round(done/total*100)}%` : '0%';
+    bar.style.background = colors[phase];
+  });
+
+  document.getElementById('done-count').textContent = totalDone;
+  document.getElementById('total-count').textContent = totalAll;
+  document.getElementById('pct-count').textContent = totalAll > 0 ? `${Math.round(totalDone/totalAll*100)}%` : '0%';
+}
+
+// Init on load
+applyState(loadState());
+</script>
+
+<hr class="divider">
+
+<!-- FRAMEWORK DECISION -->
+<div class="section-title">When to reach for which framework</div>
+<div class="block" style="margin-bottom:2rem">
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent)">PydanticAI</span><span style="color:var(--muted);font-size:11px">Single agents or small typed graphs. Validated outputs critical. Multi-LLM provider setup. Code quality over ecosystem. Default choice for structured agent logic with Claude. <a href="https://ai.pydantic.dev/" target="_blank">Docs</a> · <a href="https://github.com/pydantic/pydantic-ai" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent2)">Strands</span><span style="color:var(--muted);font-size:11px">AWS-native deployment. Model-driven, no hardcoded workflows. Native A2A + MCP + multi-agent patterns. 14M+ downloads; used in Amazon Q Developer internally. Primary choice for Bedrock production. <a href="https://strandsagents.com/" target="_blank">Docs</a> · <a href="https://github.com/strands-agents/sdk-python" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent3)">LangGraph</span><span style="color:var(--muted);font-size:11px">Complex conditional branching. Stateful workflows with checkpointing. Human-in-the-loop at specific nodes. Long-term maintainable systems. Complements Strands. <a href="https://langchain-ai.github.io/langgraph/" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent4)">CrewAI</span><span style="color:var(--muted);font-size:11px">Rapid prototyping. Role-based agent teams. Speed to demo over control. Good for POCs — not for production systems requiring long-term security compliance. <a href="https://docs.crewai.com" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--muted)">AutoGen/AG2</span><span style="color:var(--muted);font-size:11px">Research and experimentation only. Near-zero security mechanisms. Any 2024 article recommending it for enterprise production predates the AG2 split — treat with caution. <a href="https://docs.ag2.ai" target="_blank">Docs</a></span></div>
+</div>
+
+<div class="footer-note">
+  <strong style="color:var(--muted)">Key protocol links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://a2a-protocol.org/latest/" target="_blank">A2A spec</a> · <a href="https://docs.ag-ui.com/introduction" target="_blank">AG-UI spec</a> · <a href="https://aws.amazon.com/bedrock/agentcore/" target="_blank">Bedrock AgentCore</a> · <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">AgentCore docs</a> · <a href="https://github.com/aws/bedrock-agentcore-sdk-python" target="_blank">AgentCore Python SDK</a> · <br><strong style="color:var(--muted)">ACP note</strong> — OpenAI + Stripe's <a href="https://www.agenticcommerce.dev/" target="_blank">Agentic Commerce Protocol</a> is a commerce checkout standard (live Sep 2025) — not a general agent communication protocol. Understand it conceptually; don't build for it in year one. · Plan reflects Bedrock AgentCore, Strands SDK, A2A, and AG-UI state as of May 2026.
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
