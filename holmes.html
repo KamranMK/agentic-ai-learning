@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founding AI Engineer — 8-Week Agentic QA Sprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0D0D0F;--surface:#141417;--surface2:#1C1C21;--border:#2A2A32;
+    --accent:#7B6EF6;--accent2:#4FD1A5;--accent3:#F4A14A;--accent4:#E05C7A;
+    --text:#E8E8F0;--muted:#7A7A8C;--muted2:#4A4A5C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;line-height:1.65;min-height:100vh}
+  .container{max-width:880px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(123,110,246,0.3);transition:border-color 0.15s}
+  a:hover{border-bottom-color:var(--accent)}
+
+  /* HEADER */
+  .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;line-height:1.1;color:var(--text);margin-bottom:.75rem}
+  h1 span{color:var(--accent)}
+  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:2.5rem}
+  .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+  /* NORTH STAR */
+  .north-star{background:linear-gradient(135deg,#1a1730 0%,#111520 100%);border:1px solid #3a3265;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
+  .north-star::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+  .ns-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+  .ns-text{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4}
+
+  /* STACK MAP */
+  .section-title{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+  .protocol-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin-bottom:1.5rem}
+  .protocol-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;position:relative;overflow:hidden}
+  .protocol-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+  .protocol-card.mcp::before{background:var(--accent)}
+  .protocol-card.a2a::before{background:var(--accent2)}
+  .protocol-card.agui::before{background:var(--accent3)}
+  .protocol-card.acp::before{background:var(--accent4)}
+  .pname{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;margin-bottom:3px}
+  .protocol-card.mcp .pname{color:var(--accent)}
+  .protocol-card.a2a .pname{color:var(--accent2)}
+  .protocol-card.agui .pname{color:var(--accent3)}
+  .protocol-card.acp .pname{color:var(--accent4)}
+  .player{font-size:10px;color:var(--muted);margin-bottom:4px}
+  .pdesc{font-size:11px;color:var(--muted);line-height:1.5}
+
+  /* MODE LEGEND */
+  .mode-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:1.8rem}
+  .res-type{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+  .type-watch{background:#211e0a;color:#d4b840;border:1px solid #3d380f}
+  .type-read {background:#0a1822;color:#40a8c8;border:1px solid #0f2d3d}
+  .type-follow{background:#1e0a18;color:#c840a8;border:1px solid #380f2d}
+  .type-course{background:#0e1e0a;color:#7ec840;border:1px solid #1c380f}
+  .mode-note{font-size:11px;color:var(--muted)}
+
+  /* MOBILE NOTE */
+  .mobile-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.8rem}
+  .mobile-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:.4rem}
+  .mobile-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+  /* PHASE */
+  .phase{margin-bottom:2.5rem}
+  .phase-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem}
+  .phase-number{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;color:var(--muted2);flex-shrink:0;margin-top:-4px}
+  .phase-badge{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:4px}
+  .phase-title{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:3px}
+  .phase-sub{font-size:11px;color:var(--muted)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
+  .block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem}
+  .block-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+  .bldot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+  /* RESOURCE ITEMS */
+  .res-item{margin-bottom:.9rem;padding-bottom:.9rem;border-bottom:1px solid var(--border)}
+  .res-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .res-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.35}
+  .res-title a{color:var(--text);border-bottom-color:rgba(232,232,240,0.25)}
+  .res-title a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .res-source{font-size:10px;color:var(--accent);margin-bottom:3px}
+  .res-desc{font-size:11px;color:var(--muted);line-height:1.55}
+  .res-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .res-tag{font-size:10px;padding:1px 7px;border-radius:10px}
+  .tag-free{background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30}
+  .tag-paid{background:#1a1e2e;color:#6ea4d1;border:1px solid #2a3050}
+  .tag-aws {background:#2e221a;color:#d18c4f;border:1px solid #503830}
+  .tag-anth{background:#1e1a30;color:#a097f6;border:1px solid #35306a}
+  .tag-mins{background:#1c1c1c;color:#777;border:1px solid #333}
+
+  /* BUILD */
+  .build-item{margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+  .build-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .build-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:3px}
+  .build-desc{font-size:11px;color:var(--muted);line-height:1.55}
+
+  /* CALLOUT BLOCKS */
+  .arch-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .arch-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+  .arch-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .signal-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent3);margin-bottom:.4rem}
+  .signal-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .milestone-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .milestone-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:.35rem;font-size:11px;color:var(--muted);line-height:1.5}
+  .milestone-item:last-child{margin-bottom:0}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+  /* CAPSTONE */
+  .capstone{background:linear-gradient(135deg,#16130a 0%,#0f1218 100%);border:1px solid #4a3820;border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+  .capstone::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent3),var(--accent2),transparent)}
+  .cap-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent3);margin-bottom:.6rem}
+  .cap-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
+  .cap-row{display:flex;gap:10px;margin-bottom:5px;font-size:11px;line-height:1.5}
+  .cap-key{color:var(--accent3);flex-shrink:0;min-width:95px}
+  .cap-val{color:var(--muted)}
+
+  /* PORTFOLIO TABLE */
+  .cert-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem}
+  .cert-table th{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);font-weight:400}
+  .cert-table td{font-size:11px;color:var(--muted);padding:.5rem .75rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+  .cert-table td:first-child{color:var(--text);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600}
+  .cert-table tr:last-child td{border-bottom:none}
+
+  /* FRAMEWORK DECISION */
+  .dec-row{display:flex;gap:12px;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.5}
+  .dec-row:last-child{border-bottom:none}
+  .dec-key{min-width:95px;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:600;font-size:.78rem}
+
+  .footer-note{font-size:10px;color:var(--muted2);line-height:1.7;border-top:1px solid var(--border);padding-top:1.5rem;margin-top:2rem}
+
+  /* CHECKLIST */
+  .checklist-wrap{margin-bottom:2rem}
+  .checklist-phase{margin-bottom:1.5rem}
+  .checklist-phase-header{display:flex;align-items:center;gap:10px;margin-bottom:.6rem;cursor:pointer;user-select:none}
+  .checklist-phase-header:hover .cph-title{color:var(--text)}
+  .cph-badge{font-size:9px;padding:2px 9px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0}
+  .cph-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:600;color:var(--muted);transition:color .15s}
+  .cph-progress{margin-left:auto;font-size:10px;color:var(--muted2);white-space:nowrap}
+  .progress-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-bottom:.75rem;overflow:hidden}
+  .progress-bar-fill{height:100%;border-radius:2px;transition:width .3s ease}
+  .checklist-items{display:grid;gap:5px}
+  .check-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;cursor:pointer;transition:border-color .15s,background .15s}
+  .check-item:hover{border-color:var(--muted2)}
+  .check-item.done{background:var(--surface2);border-color:var(--muted2)}
+  .check-item.done .check-label{color:var(--muted2);text-decoration:line-through;text-decoration-color:var(--muted2)}
+  .check-box{width:16px;height:16px;border:1.5px solid var(--muted2);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+  .check-item.done .check-box{background:var(--accent2);border-color:var(--accent2)}
+  .check-tick{display:none;width:9px;height:9px}
+  .check-item.done .check-tick{display:block}
+  .check-label{font-size:11px;color:var(--muted);line-height:1.5;transition:color .15s}
+  .check-phase-tag{font-size:9px;padding:1px 6px;border-radius:8px;margin-left:6px;flex-shrink:0;margin-top:2px}
+  .checklist-summary{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .summary-stat{text-align:center}
+  .summary-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text)}
+  .summary-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .reset-btn{margin-left:auto;font-size:10px;padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:border-color .15s,color .15s}
+  .reset-btn:hover{border-color:var(--muted);color:var(--text)}
+
+  /* INLINE TASK CHECKBOX (merged into resource/build cards) */
+  .res-item,.build-item{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .res-item-body,.build-item-body{flex:1;min-width:0}
+  .res-item .check-box,.build-item .check-box{margin-top:1px}
+  .res-item.done .check-box,.build-item.done .check-box{background:var(--accent2);border-color:var(--accent2)}
+  .res-item.done .check-tick,.build-item.done .check-tick{display:block}
+  .res-item.done .res-item-body,.build-item.done .build-item-body{opacity:.45}
+  .res-item.done .res-title,.res-item.done .res-title a{text-decoration:line-through;text-decoration-color:var(--muted2)}
+  .build-item.done .build-title{text-decoration:line-through;text-decoration-color:var(--muted2)}
+
+  /* PER-PHASE PROGRESS */
+  .phase-progress-row{display:flex;align-items:center;gap:10px;margin-top:.6rem}
+  .phase-progress-count{font-size:10px;color:var(--muted2);white-space:nowrap;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="eyebrow">Multi-LLM · Browser-agent · Eval-first · Founding-engineer pace</div>
+<h1>Founding AI<br><span>Engineer</span> Sprint</h1>
+<div class="header-meta">
+  <span class="meta-tag">8 weeks</span>
+  <span class="meta-tag">10–15 hrs/week</span>
+  <span class="meta-tag">Multi-LLM routing</span>
+  <span class="meta-tag">Browser-agent stack</span>
+  <span class="meta-tag">Evals-first</span>
+  <span class="meta-tag">Watch · Read · Follow · Build</span>
+</div>
+
+<!-- NORTH STAR -->
+<div class="north-star">
+  <div class="ns-label">North star</div>
+  <div class="ns-text">Tailored to founding/early AI-engineer roles building agentic QA — systems that reason about product intent, drive a real browser, and get measurably sharper every release (the Holmes job post is the reference brief). The job is multi-provider by design: every phase below treats Claude, GPT, Gemini, Qwen, GLM, Kimi, and Gemma as interchangeable parts you route between, not a single stack you commit to.</div>
+</div>
+
+<!-- STACK MAP -->
+<div class="section-title">The stack you're mastering</div>
+<div class="protocol-grid">
+  <div class="protocol-card mcp">
+    <div class="pname">Multi-Agent Architecture</div><div class="player">Reasoning ↔ Planning layer</div>
+    <div class="pdesc">Planner, executor, critic, reporter. The core skill: decomposing "does this product work as intended" into agents that reason about intent instead of running a fixed script.</div>
+  </div>
+  <div class="protocol-card a2a">
+    <div class="pname">Browser Automation</div><div class="player">Agent ↔ Browser layer</div>
+    <div class="pdesc">Stagehand, BrowserUse, Playwright MCP. Natural-language action over a real UI, resilient to the UI changing underneath it — no selectors to maintain by hand.</div>
+  </div>
+  <div class="protocol-card agui">
+    <div class="pname">Multi-LLM Routing</div><div class="player">Model ↔ Task layer</div>
+    <div class="pdesc">Claude, GPT, Gemini, Qwen, GLM, Kimi, Gemma. Pick per agent role on cost, latency, and quality — frontier models for ambiguous reasoning, cheap open-weight models for repetitive execution.</div>
+  </div>
+  <div class="protocol-card acp">
+    <div class="pname">Evals & Benchmarks</div><div class="player">Quality ↔ Feedback layer</div>
+    <div class="pdesc">Regression suites that prove the system got sharper, not just different, after every prompt or model change. Treated as a build artifact, not an afterthought.</div>
+  </div>
+</div>
+
+<!-- MODE LEGEND -->
+<div class="section-title">Learning mode key</div>
+<div class="mode-row">
+  <span class="res-type type-watch">▶ Watch</span><span class="mode-note">YouTube / conference talks — phone-friendly</span>
+  <span class="res-type type-read">◉ Read</span><span class="mode-note">Docs, blogs, specs — phone-friendly</span>
+  <span class="res-type type-follow">⬡ Follow</span><span class="mode-note">Tutorial with code — needs a desk</span>
+  <span class="res-type type-course">◈ Course</span><span class="mode-note">Multi-session structured course</span>
+</div>
+
+<div class="mobile-block">
+  <div class="mobile-label">📱 Mobile / low-bandwidth learning</div>
+  <div class="mobile-text">Watch and Read are phone-friendly — read one provider's docs or one benchmark README per commute. Follow and Build need a desk and a running browser. At 8 weeks and 10–15 hrs/week, a realistic split is ~3 phone sessions + 2 desk sessions per week.</div>
+</div>
+
+<div class="section-title">Your progress</div>
+<div class="checklist-summary">
+  <div class="summary-stat"><div class="summary-num" id="done-count">0</div><div class="summary-label">Done</div></div>
+  <div class="summary-stat"><div class="summary-num" id="total-count">0</div><div class="summary-label">Total</div></div>
+  <div class="summary-stat"><div class="summary-num" id="pct-count">0%</div><div class="summary-label">Complete</div></div>
+  <button class="reset-btn" onclick="resetAll()">Reset all</button>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 1 ═══ -->
+<div class="phase" data-phase="p1">
+  <div class="phase-header">
+    <div class="phase-number">01</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#1e1a30;color:#a097f6;border:1px solid #352a50;">Weeks 1–2 · LLM fundamentals</span>
+      <div class="phase-title">Tokenization, sampling, tool use & provider tradeoffs</div>
+      <div class="phase-sub">Architectural question: how do tokenization, context windows, sampling, and tool-use mechanics actually work — and how do Claude, GPT, Gemini, Qwen, GLM, Kimi, and Gemma trade off on cost, latency, and quality for agentic workloads?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p1" style="width:0%;background:var(--accent)"></div></div><span class="phase-progress-count" id="prog-p1">0/10</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#a097f6"></span>Watch · Read · Use</div>
+
+      <div class="res-item" data-id="p1-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://huggingface.co/docs/transformers/en/tokenizer_summary" target="_blank" onclick="event.stopPropagation()">Hugging Face — Tokenization Algorithms (BPE, Unigram, WordPiece)</a></div>
+        <div class="res-source">huggingface.co/docs/transformers</div>
+        <div class="res-desc">The subword mechanics every provider's tokenizer is built on. Read before comparing token costs across providers — "tokens" aren't the same size everywhere.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://platform.claude.com/docs/en/docs/build-with-claude/tool-use/overview" target="_blank" onclick="event.stopPropagation()">Anthropic — Claude Tool Use Docs</a></div>
+        <div class="res-source">platform.claude.com</div>
+        <div class="res-desc">Anthropic's mechanics for tool definitions, forced tool choice, and multi-turn tool results — the reference implementation most agent frameworks copy.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://developers.openai.com/api/docs/guides/function-calling" target="_blank" onclick="event.stopPropagation()">OpenAI — Function Calling Guide</a></div>
+        <div class="res-source">developers.openai.com</div>
+        <div class="res-desc">Same primitive, different shape: parallel tool calls, strict JSON schema mode. Compare line-by-line against the Claude docs above — the differences are exactly what you'll need to abstract over.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://ai.google.dev/gemini-api/docs/function-calling" target="_blank" onclick="event.stopPropagation()">Google — Gemini Function Calling Docs</a></div>
+        <div class="res-source">ai.google.dev</div>
+        <div class="res-desc">Adds compositional (chained) function calling and native MCP server support. Third data point on how "tool use" diverges across providers.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://huggingface.co/Qwen" target="_blank" onclick="event.stopPropagation()">Qwen</a> · <a href="https://huggingface.co/zai-org" target="_blank" onclick="event.stopPropagation()">GLM (Zhipu/Z.ai)</a> · <a href="https://huggingface.co/moonshotai" target="_blank" onclick="event.stopPropagation()">Kimi (Moonshot AI)</a></div>
+        <div class="res-source">huggingface.co</div>
+        <div class="res-desc">Survey the open-weight side: Qwen (Alibaba), GLM (Zhipu/Z.ai), Kimi (Moonshot AI) all ship agentic-tuned variants at a fraction of frontier-model cost. Skim sizes, licenses, and which are explicitly tuned for tool use.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://deepmind.google/models/gemma" target="_blank" onclick="event.stopPropagation()">Google DeepMind — Gemma</a></div>
+        <div class="res-source">deepmind.google</div>
+        <div class="res-desc">Google's open-weight family — relevant when you want a model you can self-host or run at near-zero marginal cost for high-volume agent steps.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://artificialanalysis.ai/" target="_blank" onclick="event.stopPropagation()">Artificial Analysis</a> + <a href="https://arena.ai/" target="_blank" onclick="event.stopPropagation()">Arena.ai</a></div>
+        <div class="res-source">artificialanalysis.ai · arena.ai</div>
+        <div class="res-desc">Independent cost/latency/quality leaderboards across providers, plus head-to-head qualitative comparisons. Build your first provider-comparison table here before building your own in Project 1A.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p1-8" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://pydantic.dev/docs/ai/overview/" target="_blank" onclick="event.stopPropagation()">PydanticAI Docs</a></div>
+        <div class="res-source">pydantic.dev</div>
+        <div class="res-desc">Provider-agnostic structured outputs — swap Claude for Qwen for GPT by changing one string, keep the validated schema. This is how you avoid rewriting agent logic every time you change models.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="build-item" data-id="p1-9" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 1A — Provider bake-off</div>
+        <div class="build-desc">Pick one structured QA-relevant task (e.g. extract a structured bug report from a transcript, or classify pass/fail from a log) and run it through Claude, GPT, Gemini, and at least one open-weight model (Qwen, GLM, or Kimi) via PydanticAI's model-agnostic interface. Log cost per call, latency, and a quality score for each. This table is the actual deliverable — it's the skill the job is hiring for.</div>
+      </div></div>
+      <div class="build-item" data-id="p1-10" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 1B — Tool-use & context-window stress test</div>
+        <div class="build-desc">One agent, 3–4 tools, a deliberately long multi-step tool chain and a large tool-result payload. Compare how each provider handles error retries, parallel tool calls, and context truncation as you approach its context-window limit.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">⬡ Architecture insight</div>
+    <div class="arch-text">There is no single "best" model in 2026 — there's a best model per role. Frontier closed models (Claude, GPT, Gemini) tend to win on ambiguous product-intent reasoning; open-weight models (Qwen, GLM, Kimi, Gemma) tend to win on cost and latency for repetitive, well-specified steps. The job explicitly asks you to balance this per agent — Project 1A's bake-off table is your evidence that you can.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#a097f6"></span>Phase 1 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Explain tokenization, context-window limits, and sampling parameters (temperature/top_p) well enough to debug a flaky agent without guessing</div>
+    <div class="milestone-item"><span>◻</span>Name a concrete cost/latency/quality tradeoff between at least 4 providers for a specific agent role</div>
+    <div class="milestone-item"><span>◻</span>Swap the underlying model for a running agent without rewriting its tool or output-schema code</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 2 ═══ -->
+<div class="phase" data-phase="p2">
+  <div class="phase-header">
+    <div class="phase-number">02</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30;">Weeks 3–4 · Browser-agent stack</span>
+      <div class="phase-title">Driving a real browser without scripts</div>
+      <div class="phase-sub">Architectural question: how do you get an LLM to reliably drive a real browser — and where does each tool draw the line between "AI decides" and "code executes"?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p2" style="width:0%;background:var(--accent2)"></div></div><span class="phase-progress-count" id="prog-p2">0/8</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Watch · Read · Follow</div>
+
+      <div class="res-item" data-id="p2-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://www.stagehand.dev/" target="_blank" onclick="event.stopPropagation()">Stagehand Docs</a></div>
+        <div class="res-source">stagehand.dev</div>
+        <div class="res-desc">Four primitives: act, extract, observe, agent. Start here — it's the most opinionated and the fastest way to see "AI-native" browser automation working end to end.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://github.com/browser-use/browser-use" target="_blank" onclick="event.stopPropagation()">BrowserUse — GitHub</a></div>
+        <div class="res-source">github.com/browser-use</div>
+        <div class="res-desc">Python-first agent loop that drives a full browser session from natural-language goals, with native multi-provider support (OpenAI, Google, Anthropic). 100k+ stars — read the README and a couple of example scripts.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://github.com/microsoft/playwright-mcp" target="_blank" onclick="event.stopPropagation()">Playwright MCP — GitHub</a></div>
+        <div class="res-source">github.com/microsoft</div>
+        <div class="res-desc">Browser control exposed as MCP tools over the accessibility tree — no screenshots, no vision model required. The right choice when your agent already speaks MCP.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://playwright.dev" target="_blank" onclick="event.stopPropagation()">Playwright Docs</a></div>
+        <div class="res-source">playwright.dev</div>
+        <div class="res-desc">All three tools above sit on top of Playwright. Skim selectors, auto-waiting, and the trace viewer — you'll need to read a Playwright trace when an agent's browser action fails.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://modelcontextprotocol.io" target="_blank" onclick="event.stopPropagation()">MCP Protocol Spec (re-read)</a></div>
+        <div class="res-source">modelcontextprotocol.io</div>
+        <div class="res-desc">Re-read the Tools primitive specifically through a browser-automation lens: how does an agent decide which accessibility node to click?</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://www.browserbase.com/" target="_blank" onclick="event.stopPropagation()">Browserbase</a></div>
+        <div class="res-source">browserbase.com</div>
+        <div class="res-desc">Production browser infrastructure: auth flows, CAPTCHAs, session scale. Read this once you're past localhost — it's the gap between a demo and something Holmes-shaped.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="build-item" data-id="p2-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 2A — Same flow, three tools</div>
+        <div class="build-desc">Implement one multi-step UI flow (sign-up + a 3-step task on a public demo site) three times: once in Stagehand, once in BrowserUse, once via an MCP agent wired to Playwright MCP. Document where each one breaks and where it falls back to raw Playwright.</div>
+      </div></div>
+      <div class="build-item" data-id="p2-8" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 2B — Resilience test</div>
+        <div class="build-desc">Change the UI underneath each implementation (rename a button, reorder a step, add a modal) and measure which one self-heals via natural-language re-grounding versus which one breaks like a brittle Selenium script. This is literally Holmes' pitch — "no scripts, no manual maintenance" — prove it to yourself first.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">⬡ Architecture insight</div>
+    <div class="arch-text">The real design decision isn't "which tool" — it's where you draw the line between letting the model decide each step (slow, expensive, most resilient) and giving it a typed action to execute (fast, cheap, brittle if the UI changes underneath it). Stagehand, BrowserUse, and Playwright MCP each draw that line in a different place; you'll need to draw it deliberately per agent, not by default.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#4fd1a5"></span>Phase 2 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Drive a real multi-step browser flow with each of Stagehand, BrowserUse, and Playwright MCP</div>
+    <div class="milestone-item"><span>◻</span>Explain how each framework grounds a natural-language instruction into an actual selector or accessibility node</div>
+    <div class="milestone-item"><span>◻</span>Demonstrate at least one case where an agent recovered from a UI change without code changes</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 3 ═══ -->
+<div class="phase" data-phase="p3">
+  <div class="phase-header">
+    <div class="phase-number">03</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#2e221a;color:#d18c4f;border:1px solid #503830;">Weeks 5–6 · Multi-agent + evals</span>
+      <div class="phase-title">Reasoning about intent, and proving it gets better</div>
+      <div class="phase-sub">Architectural question: how do you decompose "test that this product works as intended" into a multi-agent system — and how do you prove it's measurably improving release over release, not just changing?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p3" style="width:0%;background:var(--accent3)"></div></div><span class="phase-progress-count" id="prog-p3">0/8</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Watch · Read · Follow</div>
+
+      <div class="res-item" data-id="p3-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" onclick="event.stopPropagation()">Anthropic — Building Effective Agents</a></div>
+        <div class="res-source">anthropic.com/research</div>
+        <div class="res-desc">The workflows-vs-agents distinction and the planner/orchestrator/worker patterns most production multi-agent QA systems are built from. Read before designing Project 3A.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://hamel.dev/blog/posts/evals/" target="_blank" onclick="event.stopPropagation()">Hamel Husain — Your AI Product Needs Evals</a></div>
+        <div class="res-source">hamel.dev</div>
+        <div class="res-desc">Three-level eval framework: unit-test-style assertions → human/model-graded review → A/B testing. Maps directly onto "set up evaluations, benchmarks, and quality metrics" from the job post.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://github.com/openai/evals" target="_blank" onclick="event.stopPropagation()">OpenAI Evals — GitHub</a></div>
+        <div class="res-source">github.com/openai</div>
+        <div class="res-desc">A concrete, runnable framework for writing both deterministic and model-graded evals. Use its eval-template structure even if you don't use OpenAI models in production.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://github.com/web-arena-x/webarena" target="_blank" onclick="event.stopPropagation()">WebArena — GitHub</a></div>
+        <div class="res-source">github.com/web-arena-x</div>
+        <div class="res-desc">812 realistic web tasks with accessibility-tree + HTML observations and a scoring harness — the closest existing analogue to a "does the agent understand the product" benchmark. Skim the task format, not the full leaderboard.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://github.com/sierra-research/tau-bench" target="_blank" onclick="event.stopPropagation()">tau-bench — GitHub</a></div>
+        <div class="res-source">github.com/sierra-research</div>
+        <div class="res-desc">Agent-vs-simulated-user benchmark with domain policies and tools. The pass^k metric (does the agent succeed consistently across repeated attempts) is exactly the kind of reliability metric a QA agent needs.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Open Source</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://langchain-ai.github.io/langgraph/" target="_blank" onclick="event.stopPropagation()">LangGraph Docs</a></div>
+        <div class="res-source">langchain-ai.github.io</div>
+        <div class="res-desc">Stateful orchestration with checkpointing — the natural fit for a planner → executor → critic loop where the critic needs to see full history, not just the last message.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Build mode (desk)</div>
+      <div class="build-item" data-id="p3-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 3A — Multi-agent test generator</div>
+        <div class="build-desc">Given a plain-English feature description (no scripts), a planner agent proposes a test plan, your Phase 2 browser-agent executes it, and a critic agent judges pass/fail against the original intent — not against a hardcoded assertion. This is the core Holmes loop.</div>
+      </div></div>
+      <div class="build-item" data-id="p3-8" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Project 3B — Eval harness</div>
+        <div class="build-desc">Build 15–20 (feature description, app, known-correct outcome) triples. Score Project 3A's accuracy against them, run the whole harness across at least 2 LLM providers from Phase 1, and keep it as a regression suite you re-run on every prompt or model change.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">⬡ Architecture insight</div>
+    <div class="arch-text">"Reasons about product intent" means the critic agent has to judge against a spec, not a literal string match — which makes your eval set itself an agentic-design problem, not a testing afterthought. The benchmarks above (WebArena, tau-bench) solve this the same way you will: simulate the user/spec side and score outcomes, not steps.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#f4a14a"></span>Phase 3 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Run a planner → executor → critic loop where the critic judges against natural-language intent, not a fixed assertion</div>
+    <div class="milestone-item"><span>◻</span>Build a reusable eval set and explain its precision/recall tradeoffs for "did this feature work"</div>
+    <div class="milestone-item"><span>◻</span>Show a regression your eval suite caught when you swapped a model or changed a prompt</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PHASE 4 ═══ -->
+<div class="phase" data-phase="p4">
+  <div class="phase-header">
+    <div class="phase-number">04</div>
+    <div class="phase-info">
+      <span class="phase-badge" style="background:#2e1a1f;color:#d16e7e;border:1px solid #50283a;">Weeks 7–8 · Capstone + readiness</span>
+      <div class="phase-title">Ship the full loop, defend every choice</div>
+      <div class="phase-sub">Architectural question: can you design, build, and defend a multi-agent system that takes a product description, tests a real app autonomously, and explains its model and tool choices the way a founding engineer would in an interview?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p4" style="width:0%;background:var(--accent4)"></div></div><span class="phase-progress-count" id="prog-p4">0/5</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Read (re-read with fresh eyes)</div>
+
+      <div class="res-item" data-id="p4-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://artificialanalysis.ai/" target="_blank" onclick="event.stopPropagation()">Artificial Analysis (re-read)</a></div>
+        <div class="res-source">artificialanalysis.ai</div>
+        <div class="res-desc">Lock in current cost/latency/quality numbers for the providers you actually used in the capstone — this becomes the evidence behind your model-selection writeup.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p4-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" onclick="event.stopPropagation()">Anthropic — Building Effective Agents (re-read)</a></div>
+        <div class="res-source">anthropic.com/research</div>
+        <div class="res-desc">Re-read post-build. The workflow/agent distinction reads differently once you've actually hit the failure modes it warns about.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-anth">Anthropic</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p4-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-read">◉ Read</div>
+        <div class="res-title"><a href="https://www.browserbase.com/" target="_blank" onclick="event.stopPropagation()">Browserbase (re-read)</a></div>
+        <div class="res-source">browserbase.com</div>
+        <div class="res-desc">Re-read with a scaling lens: what would change about your capstone's browser layer if it had to run hundreds of sessions concurrently, the way Holmes' product would?</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+    </div>
+
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Build mode (desk)</div>
+      <div class="build-item" data-id="p4-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Capstone — Autonomous QA Agent</div>
+        <div class="build-desc">Planner (decomposes a feature/PRD into a test plan) → browser-executor (whichever of Stagehand/BrowserUse/Playwright MCP tested most resilient in Phase 2) → critic (judges against intent, using your Phase 3 rubric) → reporter (pass/fail summary with screenshots/trace). Justify every model choice per agent role with your Phase 1 bake-off data — e.g. a cheap open-weight model for the executor's repetitive clicks, a frontier model for the critic's intent reasoning.</div>
+      </div></div>
+      <div class="build-item" data-id="p4-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Interview readiness</div>
+        <div class="build-desc">Write a 1-page architecture doc you could hand a founder: what you built, why each model/tool choice, what's the first thing you'd change with a real budget and access to every major provider. Record a 3–5 min demo. Push the repo public.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="capstone">
+    <div class="cap-label">🏗 Capstone — architecture spec</div>
+    <div class="cap-title">Autonomous QA Agent</div>
+    <div class="cap-row"><span class="cap-key">What it does</span><span class="cap-val">Multi-agent pipeline — planner → browser-executor → critic → reporter — that tests a real UI flow from a plain-English feature description, no hardcoded scripts, and reports pass/fail against intent.</span></div>
+    <div class="cap-row"><span class="cap-key">Why it works</span><span class="cap-val">It's a working, smaller-scale version of the exact system the job post describes. The README and demo ARE your interview prep.</span></div>
+    <div class="cap-row"><span class="cap-key">Architecture</span><span class="cap-val">Planner/critic loop (LangGraph or PydanticAI) → browser-executor (Stagehand/BrowserUse/Playwright MCP) → eval harness (Phase 3) replaying every change.</span></div>
+    <div class="cap-row"><span class="cap-key">Models</span><span class="cap-val">At least 2 providers in production roles (e.g. Claude or GPT for planning/critique, Qwen/GLM/Kimi for repetitive execution), each justified by cost/latency/quality data.</span></div>
+    <div class="cap-row"><span class="cap-key">Evals</span><span class="cap-val">Phase 3's regression suite, re-run against the finished capstone, with at least one documented regression-and-fix.</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Portfolio artifacts — ship before applying</div>
+  <table class="cert-table">
+    <thead><tr><th>Artifact</th><th>When</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Public GitHub repo (capstone code)</td>
+        <td>End of week 8</td>
+        <td>Founding engineers show, they don't just tell.</td>
+      </tr>
+      <tr>
+        <td>1-page architecture README</td>
+        <td>End of week 8</td>
+        <td>Mirrors the model/tool-tradeoff conversation an interview will have.</td>
+      </tr>
+      <tr>
+        <td>Eval results + regression log</td>
+        <td>Weeks 6–8</td>
+        <td>Direct evidence for "set up evaluations, benchmarks, and quality metrics."</td>
+      </tr>
+      <tr>
+        <td>3–5 min demo recording</td>
+        <td>End of week 8</td>
+        <td>Lets you skip re-explaining the whole system live.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="milestone-block">
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#e05c7a"></span>Phase 4 exits when you can...</div>
+    <div class="milestone-item"><span>◻</span>Demo the full pipeline end to end on an app you don't control</div>
+    <div class="milestone-item"><span>◻</span>Defend every model and tool choice with cost/latency/quality data, not vibes</div>
+    <div class="milestone-item"><span>◻</span>Show one regression your eval suite caught and how you fixed it</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'holmes-plan-checks';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function toggle(el) {
+  const state = loadState();
+  const id = el.dataset.id;
+  state[id] = !state[id];
+  saveState(state);
+  applyState(state);
+}
+
+function resetAll() {
+  saveState({});
+  applyState({});
+}
+
+function applyState(state) {
+  document.querySelectorAll('[data-id]').forEach(el => {
+    el.classList.toggle('done', !!state[el.dataset.id]);
+  });
+  updateProgress(state);
+}
+
+function updateProgress(state) {
+  const phases = ['p1','p2','p3','p4'];
+  let totalDone = 0, totalAll = 0;
+
+  phases.forEach(phase => {
+    const items = document.querySelectorAll(`[data-phase="${phase}"] [data-id]`);
+    const done = Array.from(items).filter(el => !!state[el.dataset.id]).length;
+    const total = items.length;
+    totalDone += done; totalAll += total;
+    const progEl = document.getElementById(`prog-${phase}`);
+    if (progEl) progEl.textContent = `${done}/${total}`;
+    const bar = document.getElementById(`bar-${phase}`);
+    if (bar) bar.style.width = total > 0 ? `${Math.round(done/total*100)}%` : '0%';
+  });
+
+  document.getElementById('done-count').textContent = totalDone;
+  document.getElementById('total-count').textContent = totalAll;
+  document.getElementById('pct-count').textContent = totalAll > 0 ? `${Math.round(totalDone/totalAll*100)}%` : '0%';
+}
+
+// Init on load
+applyState(loadState());
+</script>
+
+<hr class="divider">
+
+<!-- FRAMEWORK DECISION -->
+<div class="section-title">When to reach for which tool</div>
+<div class="block" style="margin-bottom:2rem">
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent)">PydanticAI</span><span style="color:var(--muted);font-size:11px">Provider-agnostic structured outputs; validate every agent handoff with a Pydantic schema regardless of which model produced it. Default choice for typed agent logic when you're routing across providers. <a href="https://pydantic.dev/docs/ai/overview/" target="_blank">Docs</a> · <a href="https://github.com/pydantic/pydantic-ai" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent2)">Stagehand</span><span style="color:var(--muted);font-size:11px">Fastest path to resilient browser automation; act/extract/observe primitives, screenshots optional, self-heals when the page changes. Good default for new flows you haven't automated before. <a href="https://www.stagehand.dev/" target="_blank">Docs</a> · <a href="https://github.com/browserbase/stagehand" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent3)">BrowserUse</span><span style="color:var(--muted);font-size:11px">Python-first, fully agent-driven exploration when you want the LLM to own multi-step navigation with minimal scripted structure. Native multi-provider support out of the box. <a href="https://github.com/browser-use/browser-use" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent4)">Playwright MCP</span><span style="color:var(--muted);font-size:11px">When your agent already speaks MCP and you want browser control as just another tool; accessibility-tree based, no vision model needed. <a href="https://github.com/microsoft/playwright-mcp" target="_blank">GitHub</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--muted)">LangGraph</span><span style="color:var(--muted);font-size:11px">Stateful planner/critic loops with checkpointing; best fit once your multi-agent system needs to look at full history, not just the last turn. <a href="https://langchain-ai.github.io/langgraph/" target="_blank">Docs</a></span></div>
+</div>
+
+<div class="footer-note">
+  <strong style="color:var(--muted)">Key links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://artificialanalysis.ai/" target="_blank">Artificial Analysis</a> · <a href="https://arena.ai/" target="_blank">Arena.ai</a> · <a href="https://www.stagehand.dev/" target="_blank">Stagehand</a> · <a href="https://github.com/browser-use/browser-use" target="_blank">BrowserUse</a> · <a href="https://github.com/microsoft/playwright-mcp" target="_blank">Playwright MCP</a> · <br><strong style="color:var(--muted)">Companion plan</strong> — this is the 8-week, job-targeted sprint version. <a href="index.html">The original 12-month protocol-first (MCP/A2A/AG-UI, AWS Bedrock AgentCore) plan lives at index.html</a> if you want the longer, cloud-native track instead. Plan reflects the multi-LLM and browser-agent landscape as of June 2026.
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
