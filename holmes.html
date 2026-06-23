@@ -21,8 +21,14 @@
   .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
   h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;line-height:1.1;color:var(--text);margin-bottom:.75rem}
   h1 span{color:var(--accent)}
-  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:2.5rem}
+  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:1.2rem}
   .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+  /* PLAN SWITCHER */
+  .plan-switch{display:inline-flex;gap:3px;margin-bottom:2.5rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px}
+  .plan-tab{font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;border-radius:16px;color:var(--muted);border:none;border-bottom:none;transition:background .15s,color .15s;font-weight:500}
+  .plan-tab:hover{color:var(--text);border-bottom:none}
+  .plan-tab.active{background:var(--accent);color:#0D0D0F;font-weight:700}
 
   /* NORTH STAR */
   .north-star{background:linear-gradient(135deg,#1a1730 0%,#111520 100%);border:1px solid #3a3265;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
@@ -190,6 +196,11 @@
   <span class="meta-tag">Browser-agent stack</span>
   <span class="meta-tag">Evals-first</span>
   <span class="meta-tag">Watch · Read · Follow · Build</span>
+</div>
+
+<div class="plan-switch">
+  <a href="index.html" class="plan-tab">12-Month Plan</a>
+  <a href="holmes.html" class="plan-tab active">Holmes — 8-Week Sprint</a>
 </div>
 
 <!-- NORTH STAR -->
@@ -700,7 +711,7 @@ applyState(loadState());
 </div>
 
 <div class="footer-note">
-  <strong style="color:var(--muted)">Key links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://artificialanalysis.ai/" target="_blank">Artificial Analysis</a> · <a href="https://arena.ai/" target="_blank">Arena.ai</a> · <a href="https://www.stagehand.dev/" target="_blank">Stagehand</a> · <a href="https://github.com/browser-use/browser-use" target="_blank">BrowserUse</a> · <a href="https://github.com/microsoft/playwright-mcp" target="_blank">Playwright MCP</a> · <br><strong style="color:var(--muted)">Companion plan</strong> — this is the 8-week, job-targeted sprint version. <a href="index.html">The original 12-month protocol-first (MCP/A2A/AG-UI, AWS Bedrock AgentCore) plan lives at index.html</a> if you want the longer, cloud-native track instead. Plan reflects the multi-LLM and browser-agent landscape as of June 2026.
+  <strong style="color:var(--muted)">Key links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://artificialanalysis.ai/" target="_blank">Artificial Analysis</a> · <a href="https://arena.ai/" target="_blank">Arena.ai</a> · <a href="https://www.stagehand.dev/" target="_blank">Stagehand</a> · <a href="https://github.com/browser-use/browser-use" target="_blank">BrowserUse</a> · <a href="https://github.com/microsoft/playwright-mcp" target="_blank">Playwright MCP</a> · <br>Plan reflects the multi-LLM and browser-agent landscape as of June 2026.
 </div>
 
 </div><!-- /container -->

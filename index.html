@@ -21,8 +21,14 @@
   .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
   h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;line-height:1.1;color:var(--text);margin-bottom:.75rem}
   h1 span{color:var(--accent)}
-  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:2.5rem}
+  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:1.2rem}
   .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+  /* PLAN SWITCHER */
+  .plan-switch{display:inline-flex;gap:3px;margin-bottom:2.5rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px}
+  .plan-tab{font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;border-radius:16px;color:var(--muted);border:none;border-bottom:none;transition:background .15s,color .15s;font-weight:500}
+  .plan-tab:hover{color:var(--text);border-bottom:none}
+  .plan-tab.active{background:var(--accent);color:#0D0D0F;font-weight:700}
 
   /* NORTH STAR */
   .north-star{background:linear-gradient(135deg,#1a1730 0%,#111520 100%);border:1px solid #3a3265;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
@@ -189,6 +195,11 @@
   <span class="meta-tag">Bedrock AgentCore</span>
   <span class="meta-tag">MCP → A2A → AG-UI</span>
   <span class="meta-tag">Watch · Read · Follow · Build</span>
+</div>
+
+<div class="plan-switch">
+  <a href="index.html" class="plan-tab active">12-Month Plan</a>
+  <a href="holmes.html" class="plan-tab">Holmes — 8-Week Sprint</a>
 </div>
 
 <!-- NORTH STAR -->
@@ -731,7 +742,7 @@ applyState(loadState());
 </div>
 
 <div class="footer-note">
-  <strong style="color:var(--muted)">Key protocol links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://a2a-protocol.org/latest/" target="_blank">A2A spec</a> · <a href="https://docs.ag-ui.com/introduction" target="_blank">AG-UI spec</a> · <a href="https://aws.amazon.com/bedrock/agentcore/" target="_blank">Bedrock AgentCore</a> · <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">AgentCore docs</a> · <a href="https://github.com/aws/bedrock-agentcore-sdk-python" target="_blank">AgentCore Python SDK</a> · <br><strong style="color:var(--muted)">ACP note</strong> — OpenAI + Stripe's <a href="https://www.agenticcommerce.dev/" target="_blank">Agentic Commerce Protocol</a> is a commerce checkout standard (live Sep 2025) — not a general agent communication protocol. Understand it conceptually; don't build for it in year one. · Plan reflects Bedrock AgentCore, Strands SDK, A2A, and AG-UI state as of May 2026. · <br><strong style="color:var(--muted)">Companion plan</strong> — want a faster, job-targeted track instead (multi-LLM routing, browser-agent automation, evals-first)? See the <a href="holmes.html">8-week Founding AI Engineer sprint at holmes.html</a>.
+  <strong style="color:var(--muted)">Key protocol links</strong> — <a href="https://modelcontextprotocol.io" target="_blank">MCP spec</a> · <a href="https://a2a-protocol.org/latest/" target="_blank">A2A spec</a> · <a href="https://docs.ag-ui.com/introduction" target="_blank">AG-UI spec</a> · <a href="https://aws.amazon.com/bedrock/agentcore/" target="_blank">Bedrock AgentCore</a> · <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">AgentCore docs</a> · <a href="https://github.com/aws/bedrock-agentcore-sdk-python" target="_blank">AgentCore Python SDK</a> · <br><strong style="color:var(--muted)">ACP note</strong> — OpenAI + Stripe's <a href="https://www.agenticcommerce.dev/" target="_blank">Agentic Commerce Protocol</a> is a commerce checkout standard (live Sep 2025) — not a general agent communication protocol. Understand it conceptually; don't build for it in year one. · Plan reflects Bedrock AgentCore, Strands SDK, A2A, and AG-UI state as of May 2026.
 </div>
 
 </div><!-- /container -->
