@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: Autonomous Self-Improving Agents with Strands (re:Invent AIM426)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#FDECEF;color:#B52040;border:1px solid #F5B3C0}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+.step-row{display:flex;gap:.75rem;align-items:flex-start;margin:.4rem 0}
+.step-num{font-size:.75rem;font-weight:700;color:white;background:var(--accent2);padding:2px 8px;border-radius:3px;white-space:nowrap;margin-top:2px}
+.meta-tool-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.7rem .9rem;margin:.35rem 0}
+.meta-tool-name{font-weight:700;font-size:.9rem;margin-bottom:.2rem}
+.meta-tool-desc{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 4 · Months 10–12</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~45 min</span>
+  </div>
+
+  <h1>re:Invent 2025 AIM426 — Autonomous, Self-Improving Agents with Strands</h1>
+  <div class="source">AWS Events · Dec 2025 · <a href="https://www.youtube.com/watch?v=RQfW7eQsXqk" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>What This Session Builds</h2>
+    <p style="margin-bottom:.6rem">Six progressive commits building from a basic agent toward a fully self-evolving system. Each commit adds a new level of autonomy:</p>
+    <ul>
+      <li>Commit 1: basic agent with shell tool</li>
+      <li>Commit 2: self-extending agent (builds own tools at runtime)</li>
+      <li>Commit 3: self-modifying system prompt</li>
+      <li>Commit 4: memory via vector store (Bedrock Knowledge Base)</li>
+      <li>Commit 5: meta agents + dynamic sub-agent creation</li>
+      <li>Commit 6: deploy to AgentCore Runtime</li>
+    </ul>
+    <div class="callout"><strong>Repository:</strong> Code available on <code>strandsagents.com</code> GitHub org — each commit is standalone and runnable.</div>
+  </div>
+
+  <div class="section">
+    <h2>Level 1: Basic Agent with Shell Tool</h2>
+    <pre><code>from strands import Agent
+from strands_tools import shell
+
+agent = Agent(
+    system_prompt="You are a helpful coding assistant.",
+    tools=[shell]  # access to the environment it's running in
+)
+
+agent("What Python packages are installed?")</code></pre>
+    <ul>
+      <li>Shell tool = the agent can run any bash command in its environment</li>
+      <li>Foundation for self-extension: if it can write files, it can write tool definitions</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Level 2: Self-Extending Agent (Hot Tool Reloading)</h2>
+    <pre><code">from strands import Agent
+from strands_tools import shell
+
+agent = Agent(
+    system_prompt="""Create tools for yourself and start using them.
+    Store tools in the ./tools/ directory using the @tool decorator pattern.
+    Tools will be automatically loaded from that directory.""",
+    tools=[shell],
+    load_tools_from_directory="./tools",  # watches directory for new .py files
+)
+
+agent("Create useful tools and demonstrate them.")</code></pre>
+    <ul>
+      <li>Agent uses the shell to write Python files to <code>./tools/</code></li>
+      <li>Strands hot-reloads the new tool files <strong>without restarting</strong></li>
+      <li>Agent immediately starts using its newly created tools in the same run</li>
+      <li>In the demo: agent creates <code>calculator.py</code>, <code>text_analyzer.py</code>, <code>unit_converter.py</code>, etc., then uses them</li>
+    </ul>
+    <div class="callout"><strong>Why this matters:</strong> Agents can expand their own capabilities in response to what a task requires — no human needs to write new tool code.</div>
+  </div>
+
+  <div class="section">
+    <h2>Level 3: Self-Modifying System Prompt</h2>
+    <pre><code">import os
+from strands import Agent
+from strands_tools import shell, environment_tool
+
+# System prompt lives in an env var (or DynamoDB, S3 — any persistent store)
+def get_agent():
+    system_prompt = os.environ.get("AGENT_SYSTEM_PROMPT", "You are a helpful assistant.")
+    agent = Agent(
+        tools=[shell, environment_tool],  # environment_tool can read/write env vars
+    )
+    agent.system_prompt = system_prompt  # re-set every invocation
+    return agent
+
+while True:
+    user_input = input("You: ")
+    agent = get_agent()  # rebuilds with latest system prompt
+    agent.messages = []  # clear conversation history
+    agent(f"Update your system prompt if needed, then respond: {user_input}")</code></pre>
+
+    <p style="margin:.5rem 0 .4rem">Three required steps for a self-modifying system prompt:</p>
+    <div class="step-row">
+      <span class="step-num">1</span>
+      <span><strong>Dynamic construction:</strong> system prompt has a dynamic portion loaded from external storage (env var, DynamoDB, S3)</span>
+    </div>
+    <div class="step-row">
+      <span class="step-num">2</span>
+      <span><strong>Self-modification:</strong> agent is given a tool to update that storage (<code>environment_tool</code> writes to env; swap for DynamoDB write in production)</span>
+    </div>
+    <div class="step-row">
+      <span class="step-num">3</span>
+      <span><strong>Persistence:</strong> changes survive across invocations; sub-agents spawned later also read the updated prompt</span>
+    </div>
+
+    <div class="warn" style="margin-top:.6rem"><strong>Sub-agent gotcha:</strong> If you create sub-agents programmatically, they must also load from the same persistent store to see the updated system prompt. This is why persistence matters.</div>
+  </div>
+
+  <div class="section">
+    <h2>The Core 3-Step Loop</h2>
+    <pre><code">
+  ┌─────────────────────────────────────────────────────┐
+  │   1. RETRIEVE   →   2. MODIFY   →   3. PERSIST     │
+  │                                                     │
+  │  Load latest       Agent adapts    Save changes     │
+  │  system prompt,    behavior        to external      │
+  │  memories,         (new tools,     storage (S3,     │
+  │  knowledge         new prompt,     DynamoDB,        │
+  │                    new agents)     file system)     │
+  └─────────────────────────────────────────────────────┘
+       ↑                                     │
+       └─────────────── on next invocation ──┘
+</code></pre>
+    <ul>
+      <li>This loop is the foundation of all self-evolving agent patterns</li>
+      <li>Can be triggered by: human messages, scheduled events, other agents, even the agent itself</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Level 4: Memory via Vector Store</h2>
+    <pre><code">from strands import Agent
+from strands_tools import shell, retrieve_from_kb, store_in_kb
+
+agent = Agent(
+    system_prompt="You are a personal assistant. Remember everything about the user.",
+    tools=[shell, retrieve_from_kb, store_in_kb]
+)
+
+# Workflow per interaction:
+# 1. Pre-fill context: directly call retrieve to add memories to agent.messages
+agent.tool.retrieve_from_kb(query=user_input)  # fills agent's context
+
+# 2. Run agent (now has memory context in messages)
+result = agent(user_input)
+
+# 3. Store interaction for future sessions
+agent.tool.store_in_kb(
+    title="conversation_history",
+    content=f"User: {user_input}\nAssistant: {result}"
+)</code></pre>
+    <ul>
+      <li><code>retrieve_from_kb</code> tool called via <code>agent.tool.X()</code> = direct programmatic call, bypasses LLM decision</li>
+      <li>This pre-fills <code>agent.messages</code> (the context window) with relevant memories before the agent runs</li>
+      <li>Agent can also call <code>retrieve_from_kb</code> dynamically during a run if it decides it needs more memory</li>
+    </ul>
+    <div class="callout"><strong>Memory options:</strong> Bedrock Knowledge Base (semantic, distributed) · S3 Vectors · Mem0 · AgentCore Memory (managed, recommended for prod) · ChromaDB (local, fast, not distributed) · Markdown journal files (no dependency, no semantic search)</div>
+  </div>
+
+  <div class="section">
+    <h2>Level 5: Meta Agents — Dynamic Sub-Agent Creation</h2>
+    <ul>
+      <li>The orchestrator agent has a tool called <code>use_agent</code> that creates new sub-agents at runtime</li>
+      <li>The LLM decides when to spin up a sub-agent and what system prompt / tools / model to give it</li>
+      <li>No engineer pre-defines the sub-agent — the orchestrator defines it based on what the task needs</li>
+    </ul>
+    <pre><code">from strands import Agent, tool
+from strands_tools import shell, think, swarm, graph, journal
+
+@tool
+def use_agent(
+    system_prompt: str,
+    tools: list[str],
+    model_provider: str,
+    task: str
+) -> str:
+    """Create and invoke a new specialized sub-agent for a specific task."""
+    sub_agent = Agent(
+        system_prompt=system_prompt,
+        model=resolve_model(model_provider),
+        tools=resolve_tools(tools)
+    )
+    return str(sub_agent(task))
+
+# Meta-agent orchestrator
+meta_agent = Agent(
+    system_prompt="You are an orchestrator. Use use_agent to create specialized helpers.",
+    tools=[shell, use_agent, think, swarm, graph, journal]
+)
+
+meta_agent("Research and write a comprehensive report on quantum computing trends.")</code></pre>
+    <ul>
+      <li>Sub-agents each get their own fresh 1M-token context window — expands effective context dramatically</li>
+      <li>Fire-and-forget: orchestrator can spin up sub-agents in parallel without waiting for results</li>
+      <li>Results propagated back via journal (file), shared memory, or return value</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Meta-Agent Tool Primitives</h2>
+
+    <div class="meta-tool-card">
+      <div class="meta-tool-name"><code>use_agent</code></div>
+      <div class="meta-tool-desc">Create a new sub-agent with custom system prompt, tools, and model. Can run sync (wait for result) or async (fire and forget). Each sub-agent gets a fresh 1M-token context.</div>
+    </div>
+
+    <div class="meta-tool-card">
+      <div class="meta-tool-name"><code>think</code></div>
+      <div class="meta-tool-desc">Chain-of-thought tool: invokes the agent N times, each building on the previous response. Like "think deeper" — useful for research and code review. Each invocation refines understanding.</div>
+    </div>
+
+    <div class="meta-tool-card">
+      <div class="meta-tool-name"><code>swarm</code></div>
+      <div class="meta-tool-desc">Create a peer group of agents with a shared context object. Agents coordinate without a central boss. Each agent can update the shared context that others can read. Useful for multi-perspective analysis.</div>
+    </div>
+
+    <div class="meta-tool-card">
+      <div class="meta-tool-name"><code>graph</code></div>
+      <div class="meta-tool-desc">Create a directed graph of agents — define which agents communicate with which. Provides predictable, controlled information flow. Can include loops (agent can re-process until condition met).</div>
+    </div>
+
+    <div class="meta-tool-card">
+      <div class="meta-tool-name"><code>journal</code></div>
+      <div class="meta-tool-desc">File-system-based shared scratchpad. All sub-agents read/write to the same markdown files. No embedding/retrieval — just direct file I/O. Works offline, no vector store dependency. Low latency for coordination.</div>
+    </div>
+
+    <div class="callout" style="margin-top:.6rem"><strong>Composability:</strong> All primitives can be mixed. A <code>graph</code> node can use <code>use_agent</code>. A <code>swarm</code> member can use <code>think</code>. This is the key architectural freedom of meta-agents.</div>
+  </div>
+
+  <div class="section">
+    <h2>Context Expansion Pattern</h2>
+    <pre><code">
+Orchestrator (1M token context)
+├── use_agent → Sub-agent A (1M fresh context)
+│                └── use_agent → Sub-agent A1 (1M context)  ← fire & forget
+│                └── use_agent → Sub-agent A2 (1M context)  ← fire & forget
+├── use_agent → think(10x) → Sub-agent B (1M × 10 iterations of refinement)
+└── swarm([C, D, E]) → shared context between 3 peer agents
+</code></pre>
+    <ul>
+      <li>Worst case token budget: 4M tokens for the diagram above (4 independent sub-agents)</li>
+      <li>Sub-agent results returned to orchestrator via journal or direct return</li>
+      <li>Parallel execution: orchestrator spins up sub-agents in parallel, collects results asynchronously</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Level 6: Deploy to AgentCore Runtime</h2>
+    <pre><code">from bedrock_agentcore import BedrockAgentCoreApp
+from bedrock_agentcore.memory import MemoryClient
+from strands import Agent
+
+app = BedrockAgentCoreApp()
+memory = MemoryClient()  # AgentCore managed memory (provisions automatically)
+
+@app.entrypoint
+def handle(payload):
+    # Retrieve relevant memories
+    context = memory.retrieve(query=payload["message"])
+
+    agent = Agent(
+        system_prompt="You are an autonomous assistant.",
+        tools=[shell, use_agent, think, swarm, graph, journal]
+    )
+    agent.messages = context  # pre-fill with memories
+
+    result = agent(payload["message"])
+
+    # Store interaction
+    memory.store(content=f"User: {payload['message']}\nAgent: {result}")
+    return {"response": str(result)}
+
+if __name__ == "__main__":
+    app.run(port=8080)
+
+# Deploy (3 commands):
+# agentcore config     → generates Dockerfile
+# agentcore launch     → builds container, pushes to ECR, deploys to Runtime
+# agentcore invoke --payload '{"message": "What did I work on last week?"}'</code></pre>
+    <ul>
+      <li><code>agentcore dev</code>: run locally in a container that matches the production interface — like SAM CLI for agents</li>
+      <li>Supports CDK and Terraform for CI/CD pipeline integration</li>
+      <li>AgentCore provisions the Bedrock Knowledge Base for memory automatically on <code>agentcore launch</code></li>
+      <li>Tools written to <code>./tools/</code> are not persistent across container restarts — persist to S3 and re-download on startup</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Controlling Self-Evolving Agents (AgentCore Policies)</h2>
+    <ul>
+      <li>Self-evolving agents need bounds — "evolve, but stay within these constraints"</li>
+      <li>AgentCore Policies: write constraints in natural language → auto-generates a formal policy (like IAM)</li>
+      <li>Built on CEDAR (open-source policy language from AWS) — formally provable constraints</li>
+      <li>Policies are <strong>outside the agent container</strong> — even if the agent modifies its own code, policies can't be overridden</li>
+    </ul>
+    <div class="warn"><strong>Key principle:</strong> Policies define the sandbox. The agent can evolve freely within it, but can't break out of it. This is how you ship self-evolving agents responsibly to production.</div>
+  </div>
+
+  <div class="section">
+    <h2>Real-World Examples from the Speakers</h2>
+    <ul>
+      <li><strong>arXiv research agent:</strong> runs on GitHub Actions daily; searches arXiv using cross-reference tools it built itself; sends Slack summary of relevant papers; has been running autonomously for ~2 years</li>
+      <li><strong>Protocol tools builder:</strong> autonomous agent that builds TCP/WebSocket/protocol tools on its own so the engineer doesn't have to maintain them</li>
+      <li><strong>Kiro CLI / Q Developer:</strong> internal AWS coding assistant built on Strands with self-evolving tool building — if it doesn't have a tool, it builds one on demand</li>
+      <li><strong>TypeScript SDK:</strong> the Strands TypeScript SDK was built by the Python agent with human-in-the-loop review — saved significant engineering time</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Self-evolving agents follow a 3-step loop: <strong>Retrieve → Modify → Persist</strong>. Get this loop right and everything else follows.</li>
+      <li><code>load_tools_from_directory</code> + shell tool = agents that build their own capabilities with zero restarts</li>
+      <li>Store system prompts in external storage (DynamoDB, S3, env vars) — never hardcode them in agents that need to evolve</li>
+      <li>The <code>use_agent</code> tool is the key meta-primitive: orchestrators don't need pre-defined sub-agents — they create the right one for the task</li>
+      <li>Context expansion: each sub-agent gets a fresh 1M-token window — unlimited effective context for complex tasks</li>
+      <li>Use <strong>AgentCore Policies</strong> to define boundaries before shipping self-evolving agents to production</li>
+      <li>Human-in-the-loop is still valuable — review what the agent builds (especially new tools) before giving it broader access</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: PydanticAI Crash Course</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 1 · Months 1–3</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~25 min</span>
+  </div>
+
+  <h1>PydanticAI Crash Course: Agentic Framework For Production</h1>
+  <div class="source">Neural Nine · Feb 2026 · <a href="https://www.youtube.com/watch?v=pXktHVUpXUc" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>What is PydanticAI?</h2>
+    <ul>
+      <li>Agentic framework built on top of the <code>pydantic</code> validation library — same team</li>
+      <li>Focus: <strong>type safety, structured output, production-readiness</strong> — "the FastAPI of agent frameworks"</li>
+      <li>LangChain = generalist/opinionated (like Django). PydanticAI = minimal/typed (like FastAPI)</li>
+      <li>Model-agnostic: OpenAI, Anthropic, Gemini, Ollama, etc. — swap the model string</li>
+      <li>Used by LangChain and LlamaIndex internally — pydantic validation is already everywhere</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Setup</h2>
+    <pre><code>pip install pydantic-ai python-dotenv jupyterlab
+
+# .env file
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...</code></pre>
+    <pre><code>from dotenv import load_dotenv
+load_dotenv()  # loads .env into environment variables automatically</code></pre>
+    <ul>
+      <li>PydanticAI auto-detects <code>OPENAI_API_KEY</code> from environment when using OpenAI models</li>
+      <li>In Jupyter notebooks, use <code>await agent.run()</code> (async). In Python scripts, use <code>agent.run_sync()</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Basic Agent</h2>
+    <pre><code>from pydantic_ai import Agent
+
+agent = Agent(
+    "openai:gpt-4o",
+    system_prompt="You are a helpful assistant. Always answer in one concise sentence."
+)
+
+# In Jupyter (async context)
+response = await agent.run("What is Python?")
+print(response.output)  # Python is a high-level interpreted programming language...
+
+# In a .py script
+response = agent.run_sync("What is Python?")
+print(response.output)</code></pre>
+    <div class="warn"><strong>async vs sync:</strong> In Jupyter use <code>await agent.run()</code>. In a script use <code>agent.run_sync()</code>. Forgetting <code>await</code> returns a coroutine object, not the result.</div>
+  </div>
+
+  <div class="section">
+    <h2>Structured Output</h2>
+    <pre><code>from pydantic import BaseModel
+from pydantic_ai import Agent
+
+class Person(BaseModel):
+    name: str
+    age: int
+    job: str
+
+agent = Agent(
+    "openai:gpt-4o",
+    system_prompt="You always respond with structured output for people.",
+    output_type=Person  # enforces schema on the model's response
+)
+
+response = await agent.run("Mike is a 20-year-old plumber.")
+print(response.output)  # Person(name='Mike', age=20, job='plumber')
+print(type(response.output))  # <class '__main__.Person'></code></pre>
+    <ul>
+      <li>PydanticAI validates the LLM output against the schema — retries if validation fails</li>
+      <li>Key differentiator: type-safe structured output is a first-class feature, not a workaround</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Streaming</h2>
+    <pre><code># Stream text chunks as they're generated
+async with agent.run_stream("What is Python?") as run:
+    async for chunk in run.stream_text(delta=True):  # delta=True = incremental chunks
+        print(chunk, end="", flush=True)</code></pre>
+    <ul>
+      <li><code>delta=False</code> (default): each iteration gives the full accumulated text so far</li>
+      <li><code>delta=True</code>: each iteration gives only the new chunk — use this for streaming to users</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Conversation History</h2>
+    <pre><code>r1 = await agent.run("What is Python?")
+# ... some time later ...
+
+# Pass all_messages to include full conversation context
+r2 = await agent.run(
+    "When was it first released?",
+    message_history=r1.all_messages()  # agent now knows we talked about Python
+)
+
+# new_messages() = only the last exchange (agent starts forgetting earlier context)
+r3 = await agent.run("Tell me more.", message_history=r1.new_messages())</code></pre>
+    <ul>
+      <li><code>all_messages()</code>: full history — agent remembers everything from the session</li>
+      <li><code>new_messages()</code>: only the last response — agent forgets earlier turns</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>System Prompt vs Instructions</h2>
+    <div class="callout"><strong>Key distinction:</strong> <code>system_prompt</code> travels with the conversation history when passed to other agents. <code>instructions</code> does NOT — it stays scoped to the agent that defined it.</div>
+    <pre><code># Agent 1 uses instructions (NOT transferred via message_history)
+agent1 = Agent("openai:gpt-4o", instructions="If asked your fav color, say blue.")
+r1 = await agent1.run("What is your favorite color?")
+
+# Agent 2: passes agent1's history BUT gets its own instructions
+agent2 = Agent("openai:gpt-4o", instructions="If asked fav color, say red.")
+r2 = await agent2.run(
+    "What is your favorite color?",
+    message_history=r1.all_messages()
+)
+print(r2.output)  # "red" — agent2's instructions take precedence
+
+# Switch agent1 to system_prompt → now it DOES bleed through history
+agent1_sp = Agent("openai:gpt-4o", system_prompt="If asked fav color, say blue.")</code></pre>
+    <ul>
+      <li>Use <code>instructions</code> when you want clean agent isolation (sub-agent pattern)</li>
+      <li>Use <code>system_prompt</code> when you want the agent's personality to carry through handoffs</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Tool Registration (Two Ways)</h2>
+    <pre><code>from pydantic_ai import Agent
+
+agent = Agent("openai:gpt-4o", system_prompt="You are a helpful assistant.")
+
+# Method 1: pass as list in Agent() constructor
+def get_favorite_color(name: str) -> str:
+    """Returns the favorite color of a user based on their name."""
+    if name == "Florian": return "teal"
+    elif name == "Mike": return "orange"
+    return "no information found"
+
+agent_v1 = Agent("openai:gpt-4o", tools=[get_favorite_color])
+
+# Method 2: @agent.tool_plain decorator (no context needed)
+@agent.tool_plain
+def get_favorite_color_v2(name: str) -> str:
+    """Returns the favorite color of a user based on their name."""
+    if name == "Florian": return "teal"
+    return "unknown"
+
+response = await agent.run("What is Florian's favorite color?")</code></pre>
+    <ul>
+      <li><code>tool_plain</code>: no agent context needed in the function — simplest option</li>
+      <li><code>tool</code>: receives <code>RunContext</code> as first arg — use when you need to access dependencies</li>
+      <li>Type hints on parameters are required — PydanticAI uses them to generate the tool schema for the LLM</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Dependency Injection</h2>
+    <pre><code>from pydantic_ai import Agent, RunContext
+from dataclasses import dataclass
+import sqlite3
+
+@dataclass
+class MyDeps:
+    username: str
+    db_connection: sqlite3.Connection
+
+agent = Agent(
+    "openai:gpt-4o",
+    deps_type=MyDeps,
+    system_prompt="You are a helpful assistant. Always call the user by name."
+)
+
+# Dynamic system prompt enhancement using the dependency
+@agent.system_prompt
+def add_username(ctx: RunContext[MyDeps]) -> str:
+    return f"The user's name is {ctx.deps.username}."
+
+# Tool that uses the database connection from context
+@agent.tool
+async def list_employees(ctx: RunContext[MyDeps]) -> list[tuple]:
+    """List all employees from the database."""
+    cursor = ctx.deps.db_connection.cursor()
+    cursor.execute("SELECT name, age, job FROM person")
+    return cursor.fetchall()
+
+# Usage
+conn = sqlite3.connect("data/database.db", check_same_thread=False)
+deps = MyDeps(username="Florian", db_connection=conn)
+
+response = await agent.run("Who are the employees?", deps=deps)
+print(response.output)  # "Florian, here are the employees: Mike (20, plumber)..."</code></pre>
+    <ul>
+      <li><code>deps_type</code>: type of the dependencies object — can be a simple type (int, str) or a dataclass</li>
+      <li><code>@agent.system_prompt</code>: decorator to enhance the system prompt dynamically using context</li>
+      <li><code>ctx.deps</code>: access the injected dependencies inside tools</li>
+      <li>Use <code>check_same_thread=False</code> for SQLite connections in async context</li>
+    </ul>
+    <div class="callout"><strong>Pattern:</strong> DI lets you inject database connections, API clients, user context — anything that the agent or its tools need — without making them global state.</div>
+  </div>
+
+  <div class="section">
+    <h2>Tool Sets</h2>
+    <pre><code>from pydantic_ai.toolsets import FunctionToolset
+from datetime import datetime
+
+def get_current_date() -> str:
+    """Returns today's date."""
+    return datetime.now().strftime("%Y-%m-%d")
+
+def get_current_time() -> str:
+    """Returns the current time."""
+    return datetime.now().strftime("%H:%M")
+
+def get_current_weekday() -> str:
+    """Returns the current day of the week."""
+    return datetime.now().strftime("%A")
+
+datetime_tools = FunctionToolset([get_current_date, get_current_time, get_current_weekday])
+
+# Add toolset to agent
+agent = Agent("openai:gpt-4o", toolsets=[datetime_tools])
+
+# Or add per-run only
+response = await agent.run("What time is it?", toolsets=[datetime_tools])</code></pre>
+    <ul>
+      <li>Toolsets group related tools for organizational clarity</li>
+      <li>You can add toolsets per-run — useful for conditionally giving an agent access to certain tools</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Timeouts &amp; Retries</h2>
+    <pre><code>import asyncio
+from pydantic_ai import Agent
+
+agent = Agent(
+    "openai:gpt-4o",
+    tool_timeout=5.0,   # seconds before a tool call is cancelled
+    retries=3           # retry tool calls that timeout or fail
+)
+
+@agent.tool_plain
+async def slow_tool() -> str:
+    """A tool that takes 10 seconds."""
+    await asyncio.sleep(10)
+    return "blue"
+
+# With timeout=5, the tool will be cancelled and retried up to 3 times
+# After retries exhausted, agent reports it can't get the answer</code></pre>
+    <ul>
+      <li>Always set <code>tool_timeout</code> for tools that call external APIs — prevent infinite hangs</li>
+      <li><code>retries</code>: total retry budget across all tool calls in one agent run</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Built-in Tools</h2>
+    <pre><code>from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIResponsesModel
+
+# Web search (requires OpenAI Responses API)
+from pydantic_ai import WebSearchTool
+
+model = OpenAIResponsesModel("gpt-4o")
+agent = Agent(model=model, builtin_tools=[WebSearchTool()])
+
+response = await agent.run("What is the latest video from Neural Nine?")
+
+# Code execution
+from pydantic_ai import CodeExecutionTool
+agent_code = Agent(model=model, builtin_tools=[CodeExecutionTool()])
+response = await agent_code.run("What is the factorial of 24?")
+print(response.builtin_tool_calls)  # shows the code that was executed</code></pre>
+    <ul>
+      <li><code>WebSearchTool</code>: uses OpenAI's built-in web search — requires <code>OpenAIResponsesModel</code></li>
+      <li><code>CodeExecutionTool</code>: lets the agent write and run Python to answer questions</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Embedding Models</h2>
+    <pre><code>from pydantic_ai import Embedder
+
+embedder = Embedder("openai:text-embedding-3-small")
+embedding = await embedder.embed_query("I love Python")
+# Returns a vector (list of floats) — use with any vector store for RAG</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>MCP Server Integration</h2>
+    <pre><code">from pydantic_ai import Agent
+from pydantic_ai.mcp import MCPServerStreamableHTTP
+
+server = MCPServerStreamableHTTP("http://localhost:8000/mcp")
+
+agent = Agent(
+    "openai:gpt-4o",
+    toolsets=[server]  # agent discovers tools from MCP server automatically
+)
+
+result = await agent.run("What is my favorite color?")
+print(result.output)  # Uses tool from MCP server</code></pre>
+    <ul>
+      <li>The agent auto-discovers all tools exposed by the MCP server at run time</li>
+      <li>Supports both stdio and HTTP transports</li>
+      <li>The same MCP server can serve Claude Desktop, Cursor, Strands, and PydanticAI simultaneously</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>PydanticAI's big wins over LangChain: cleaner code, first-class type safety, dependency injection</li>
+      <li><strong>Structured output</strong> via <code>output_type=MyModel</code> is the framework's core strength — use it</li>
+      <li><strong>Dependency injection</strong> is how you pass database connections, API clients, and user context cleanly</li>
+      <li><strong>system_prompt vs instructions</strong>: use <code>instructions</code> for isolated sub-agents to prevent context bleed</li>
+      <li>Tool docstrings = what the LLM reads to decide when to call the tool — write them clearly</li>
+      <li>Always set <code>tool_timeout</code> and <code>retries</code> before going to production</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

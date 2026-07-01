@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: AML Multi-Agent Orchestration with Strands (re:Invent DEV326)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E0FAF3;color:#038F6D;border:1px solid #9AEBDA}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;margin:.4rem 0;display:flex;gap:.75rem;align-items:flex-start}
+.agent-num{font-size:.7rem;font-weight:700;color:white;background:var(--accent);padding:2px 6px;border-radius:3px;white-space:nowrap;margin-top:2px}
+.agent-body{flex:1}
+.agent-name{font-weight:700;font-size:.9rem;margin-bottom:.15rem}
+.agent-desc{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 2 · Months 4–6</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~55 min</span>
+  </div>
+
+  <h1>re:Invent 2025 DEV326 — AML Multi-Agent Orchestration with Strands</h1>
+  <div class="source">AWS Events · Dec 2025 · <a href="https://www.youtube.com/watch?v=VtrfpAVFKdE" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>Problem: Why AML Needs AI Agents</h2>
+    <ul>
+      <li>$3.1 trillion in illicit funds flowed globally in 2023 — drug/human trafficking, terrorism, fraud</li>
+      <li>Traditional rule-based systems produce <strong>up to 95% false positives</strong> — compliance staff spend most time on legitimate transactions</li>
+      <li>Diverse data: financial transactions, KYC profiles, news feeds, sanctions lists — hard to integrate</li>
+      <li>Agents solve this: context-aware reasoning across structured + unstructured data, with lower false alarm rates</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>When to Use Agentic Workflow vs. Traditional</h2>
+    <ul>
+      <li><strong>Use agentic:</strong> complex workflows, diverse/unstructured data, memory needed across turns, multi-step reasoning required</li>
+      <li><strong>Use traditional:</strong> mission-critical with 100% determinism required, ultra-low latency needed, fixed rule-based logic</li>
+    </ul>
+    <div class="callout"><strong>Key insight:</strong> The AML solution combines both — classical ML risk models run inside the agentic workflow as one of the tools. Don't throw out your existing models; extend them with agents.</div>
+  </div>
+
+  <div class="section">
+    <h2>Technology Stack</h2>
+    <ul>
+      <li><strong>Strands Agents SDK</strong> — builds and runs individual agents (a few lines of code per agent)</li>
+      <li><strong>Amazon Bedrock</strong> — model provider (Claude for reasoning, Nova for classification)</li>
+      <li><strong>AgentCore Runtime</strong> — serverless microVM for deploying agents; sessions up to 8 hours</li>
+      <li><strong>AgentCore Gateway</strong> — secure proxy connecting agents to Lambda functions, API Gateway, MCP tools</li>
+      <li><strong>AgentCore Memory</strong> — short-term (up to 365 days) + long-term with semantic extraction</li>
+      <li><strong>Amazon Kinesis</strong> — real-time transaction ingestion stream</li>
+      <li><strong>Amazon DynamoDB</strong> — historical transaction store (fast retrieval for last N days)</li>
+      <li><strong>Amazon Bedrock Knowledge Base</strong> — vector store for sanctions lists and regulatory documents</li>
+      <li><strong>OpenSearch Serverless</strong> — audit trail storage, full lineage searchable by compliance team</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>AgentCore Key Components</h2>
+    <ul>
+      <li><strong>Runtime:</strong> serverless microVM, deploys any framework (Strands, LangChain, etc.) via Docker or zip upload; ECR → ECS under the hood; provides an invocation endpoint</li>
+      <li><strong>Gateway:</strong> inbound auth stops here (Cognito by default); agent connects to Lambda/API Gateway/MCP tools without managing service auth directly</li>
+      <li><strong>Memory — short-term:</strong> message history + state per session; configurable retention (1–365 days)</li>
+      <li><strong>Memory — long-term:</strong> async extraction module pulls summaries/semantics/preferences from short-term store; agents retrieve via semantic search on demand</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Multi-Agent Architecture: 8 Specialized Agents</h2>
+
+    <div class="agent-card">
+      <span class="agent-num">1</span>
+      <div class="agent-body">
+        <div class="agent-name">Perception Agent</div>
+        <div class="agent-desc">Parses incoming transaction; retrieves KYC data for sender + receiver from enterprise systems via Gateway. Flags entity risk status. Calculates derived features (device used, amount deviation). Not LLM-powered — it's a Python agent using tools.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">2</span>
+      <div class="agent-body">
+        <div class="agent-name">Context Agent</div>
+        <div class="agent-desc">Enriches with 60-day transaction history from DynamoDB via Gateway tools (Lambda functions). Computes behavioral features: rolling averages, frequency patterns, flagged transactions. Stores context in AgentCore Memory for downstream agents.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">3</span>
+      <div class="agent-body">
+        <div class="agent-name">News Herald Agent</div>
+        <div class="agent-desc">Fetches real-time adverse media: sanctions lists (OFAC), geopolitical news, negative press about involved parties. Uses Bedrock embeddings to write findings to Knowledge Base for memory across sessions. LLM-powered with web browser tool.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">4</span>
+      <div class="agent-body">
+        <div class="agent-name">Reasoning Agent (core)</div>
+        <div class="agent-desc">Combines all context (KYC + history + news) and applies LLM reasoning. Outputs: hypothesis, indicators, detailed explanation, confidence score (0–1). Uses Claude on Bedrock with guardrails to prevent hallucination. All reasoning retrieved from AgentCore Memory.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">5</span>
+      <div class="agent-body">
+        <div class="agent-name">Risk Assessor Agent</div>
+        <div class="agent-desc">Connects to existing classical ML risk model via API. Not LLM-powered — Python agent that calls the org's internal classification/clustering model. Adds legacy ML score as additional context for the action agent. Key: preserves existing compliance models.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">6</span>
+      <div class="agent-body">
+        <div class="agent-name">Action Agent</div>
+        <div class="agent-desc">Executes decisions based on risk score: score &lt;30 → straight-through processing; 30–50 → notify + monitor; &gt;50 → freeze + generate SAR. Tools: notification service, transaction freeze API, S3 SAR report writer.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">7</span>
+      <div class="agent-body">
+        <div class="agent-name">Audit Agent</div>
+        <div class="agent-desc">Collects all agent outputs + decisions + lineage. Writes to OpenSearch Serverless. Provides explainability for compliance team: "why was this flagged?" is fully traceable through each agent's reasoning.</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="agent-num">8</span>
+      <div class="agent-body">
+        <div class="agent-name">Learning Agent</div>
+        <div class="agent-desc">Writes risk assessment results back to DynamoDB as feedback loop. Patterns that were evaluated feed into the context for future similar transactions. Makes the system progressively smarter without retraining.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Risk Score → Action Tiers</h2>
+    <ul>
+      <li><strong>Score &lt; 30</strong>: Low risk → straight-through processing (automated approval)</li>
+      <li><strong>Score 30–50</strong>: Medium risk → notify ops team, monitor closely</li>
+      <li><strong>Score 50–80</strong>: High risk → freeze transaction, generate SAR, escalate</li>
+      <li><strong>Repeated pattern flagged</strong>: mandatory SAR filing regardless of score</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Layered Build Approach</h2>
+    <ul>
+      <li><strong>Layer 1 (Transaction Monitoring):</strong> Perception → Context → Reasoning → Action → Audit. Core pipeline. Kinesis ingestion → DynamoDB history → Reasoning with guardrails → SAR to S3.</li>
+      <li><strong>Layer 2 (Adverse Media):</strong> Add News Herald Agent. Real-time news + sanctions from Knowledge Base fed into Context Agent. AgentCore Memory prevents re-fetching same data across sessions.</li>
+      <li><strong>Layer 3 (Proactive Risk):</strong> Add Risk Assessor (classical ML integration) + Learning Agent (feedback loop). Makes system reactive → proactive. DynamoDB updated with each decision.</li>
+    </ul>
+    <div class="callout"><strong>Pattern:</strong> Build iteratively. Each layer adds intelligence without breaking the previous one. This is the correct way to introduce agents to an existing compliance stack.</div>
+  </div>
+
+  <div class="section">
+    <h2>Reasoning Agent Code Pattern</h2>
+    <pre><code">from strands import Agent
+from strands_tools import use_aws
+
+reasoning_agent = Agent(
+    name="reasoning_agent",
+    model=bedrock_model,  # Claude on Bedrock
+    system_prompt="""You are a financial transaction analyst.
+    Analyze the provided transaction context and produce:
+    - hypothesis: what this transaction might be
+    - indicators: list of risk signals
+    - explanation: detailed reasoning
+    - confidence: float 0-1
+    - next_steps: recommended action
+    Always retrieve prior context from memory before reasoning.""",
+    tools=[use_aws]  # can query Bedrock KB for sanctions/memory
+)
+
+# AgentCore Memory context passed via message history
+result = reasoning_agent(
+    f"Analyze transaction: {transaction_context}",
+    session_context=session_memory.get_context()
+)</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>AgentCore Gateway Pattern</h2>
+    <pre><code"># Lambda function as a tool via Gateway
+@agent.tool_plain
+def get_historical_transactions(
+    account_id: str,
+    days_back: int = 60
+) -> dict:
+    """Get transaction history for an account from the last N days via DynamoDB."""
+    import httpx
+    # Gateway handles auth; agent just calls the tool URL
+    response = httpx.get(
+        f"{GATEWAY_URL}/tools/get-transactions",
+        params={"account_id": account_id, "days": days_back},
+        headers={"Authorization": cognito_token}
+    )
+    return response.json()</code></pre>
+    <ul>
+      <li>Gateway handles inbound Cognito auth — the agent just calls the tool endpoint</li>
+      <li>Adding a new data source = new Lambda function + new tool registration. No agent code changes.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways for Portfolio Projects</h2>
+    <ul>
+      <li>The agent architecture is fully modular — you can implement just the Transaction Monitoring layer (Agents 1, 2, 4, 6, 7) as a standalone portfolio project</li>
+      <li>Use AgentCore Memory to maintain context across a session — don't pass huge payloads between agents</li>
+      <li>Mix LLM-powered and Python-powered agents: not every agent needs an LLM. Rule engines and ML models can be agents too.</li>
+      <li>AgentCore observability gives you tool call tracing, timing, and lineage for free — no extra setup needed</li>
+      <li>Different models for different tasks: Claude for reasoning, Nova for classification/summarization</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: Build Your First AI Agent with Strands</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 1 · Months 1–3</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~12 min</span>
+  </div>
+
+  <h1>Build Your First AI Agent with Strands</h1>
+  <div class="source">AWS Developers channel · Mar 2026 · <a href="https://www.youtube.com/watch?v=PH9nvIFA2v4" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>Why LLMs Alone Fail</h2>
+    <ul>
+      <li><strong>No tool use</strong> — LLMs generate text; they can't call APIs, run calculations, or open files</li>
+      <li><strong>No workflow</strong> — Complex tasks need plan → execute → check → retry, not just one-shot generation</li>
+      <li><strong>No reliability</strong> — Without memory/tracking, the model hallucinates when it can't find an answer</li>
+      <li>Analogy: a chatbot is a <em>consultant</em> (gives advice), an agent is a <em>worker</em> (gets things done)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>What Is Agentic AI?</h2>
+    <ul>
+      <li>Goal-driven software that <strong>reasons → chooses actions → uses tools → adapts</strong> based on results</li>
+      <li>Still uses an LLM as the "brain" — tools are the "hands"</li>
+      <li>Key property: if a tool call fails, the agent adapts and finds another route (not just failing out)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Strands Agents SDK Overview</h2>
+    <ul>
+      <li>Open-source SDK from AWS — Python and TypeScript</li>
+      <li>Default model provider: Amazon Bedrock → <code>claude-sonnet</code> (requires AWS credentials)</li>
+      <li>Supports any model provider: OpenAI, Anthropic direct, Llama, custom endpoints</li>
+      <li>Built-in tool library: calculator, file ops, shell, web/HTTP, AWS services, Slack, browser, multimodal</li>
+      <li>Supports MCP servers (external tool discovery) and A2A (agent-to-agent communication)</li>
+    </ul>
+    <div class="callout"><strong>Key insight:</strong> Strands abstracts the orchestration loop — you define model + tools + prompt, and Strands handles the reason/act/observe cycle.</div>
+  </div>
+
+  <div class="section">
+    <h2>How the Agentic Loop Works</h2>
+    <ul>
+      <li>User sends a prompt → agent passes it to the LLM</li>
+      <li>LLM reasons: "what tool do I need?" → selects a tool from its available set</li>
+      <li>Tool executes → result returned to agent → LLM reasons again</li>
+      <li>Loop continues until the agent can produce a final answer</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Installation</h2>
+    <pre><code>pip install strands-agents strands-agents-tools</code></pre>
+    <ul>
+      <li>If using Bedrock (default): configure AWS credentials first (<code>aws configure</code> or env vars)</li>
+      <li><code>strands-agents-tools</code> contains the built-in tool library (calculator, shell, file, web, etc.)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Quick Start Pattern</h2>
+    <pre><code>from strands import Agent
+from strands.models import BedrockModel
+
+model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+
+agent = Agent(
+    model=model,
+    system_prompt="You are a helpful assistant."
+)
+
+agent("What is the weather today?")</code></pre>
+    <ul>
+      <li>Without tools, the agent is just a fancy LLM wrapper</li>
+      <li>The real power appears when you attach tools</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Adding Tools</h2>
+    <pre><code>from strands import Agent, tool
+from strands_tools import calculator, current_time
+
+# Built-in tools
+agent = Agent(
+    system_prompt="You are a helpful assistant. Use tools for math and time.",
+    tools=[calculator, current_time]
+)
+
+# Custom tool using @tool decorator
+@tool
+def get_weather(location: str) -> str:
+    """Get current weather for a location. Returns sunny/cloudy/rainy."""
+    return "sunny"  # replace with real API call
+
+agent_with_custom = Agent(
+    system_prompt="You are a weather assistant.",
+    tools=[get_weather]
+)</code></pre>
+    <div class="warn"><strong>Important:</strong> The docstring on a custom tool is passed to the LLM so it knows when to call the tool. Write it clearly — describe what the tool does and what it returns.</div>
+  </div>
+
+  <div class="section">
+    <h2>Built-in Tool Categories</h2>
+    <ul>
+      <li><strong>Computation:</strong> <code>calculator</code>, <code>current_time</code></li>
+      <li><strong>File system:</strong> file read/write/list</li>
+      <li><strong>Shell:</strong> run commands in the agent's environment</li>
+      <li><strong>Web:</strong> HTTP requests, DuckDuckGo search, browser control</li>
+      <li><strong>AWS:</strong> <code>use_aws</code> — wraps Bedrock, S3, DynamoDB, Lambda, and more</li>
+      <li><strong>Code:</strong> Python code interpreter</li>
+      <li><strong>Agents:</strong> MCP client, A2A communication, agent orchestration</li>
+      <li><strong>Multimodal:</strong> image/document understanding</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Direct Tool Invocation (for debugging)</h2>
+    <pre><code># Call a tool directly without going through the agent loop
+agent.tool.calculator(expression="sin(45) + cos(45)")</code></pre>
+    <ul>
+      <li>Useful when you want to verify a tool works before wiring it to an agent</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Model Providers</h2>
+    <ul>
+      <li>Default: <code>BedrockModel</code> with Claude Sonnet — requires AWS credentials</li>
+      <li>Swap the <code>model</code> parameter to use OpenAI, Anthropic API, Llama, Ollama, etc.</li>
+      <li>See <a href="https://strandsagents.com/latest/user-guide/concepts/model-providers/" target="_blank">Strands model providers docs ↗</a></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Logging</h2>
+    <pre><code>import logging
+logging.getLogger("strands").setLevel(logging.DEBUG)
+logging.basicConfig(format="%(levelname)s | %(name)s | %(message)s")</code></pre>
+    <ul>
+      <li>DEBUG level shows tool discovery, model calls, and tool results</li>
+      <li>INFO is enough for most development; WARNING for production</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Strands in 3 lines: import Agent → define tools → call agent with a prompt</li>
+      <li>LLM = reasoning engine; tools = capabilities; Strands = the loop that connects them</li>
+      <li>Start with built-in tools, then add custom tools as you hit their limits</li>
+      <li>Docstrings on tools matter — the LLM reads them to decide which tool to call</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

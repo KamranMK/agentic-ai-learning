@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: Nova Act + Strands — Four Multi-Agent Patterns (re:Invent DEV327)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#FDECEF;color:#B52040;border:1px solid #F5B3C0}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+.pattern-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:1rem}
+.pattern-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.pattern-num{font-size:.7rem;font-weight:700;color:white;background:var(--accent);padding:2px 7px;border-radius:3px}
+.pattern-name{font-weight:700;font-size:.95rem}
+.pattern-when{font-size:12px;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 4 · Months 10–12</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~45 min</span>
+  </div>
+
+  <h1>re:Invent 2025 DEV327 — Building Agentic AI: Nova Act + Strands in Practice</h1>
+  <div class="source">AWS Events · Dec 2025 · <a href="https://www.youtube.com/watch?v=yxLzAKsAAjo" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>Agentic AI Evolution &amp; Future Framing</h2>
+    <ul>
+      <li>Spectrum: low-agency (rule-based, human oversight) → high-agency (autonomous, self-directed decisions)</li>
+      <li>We are still in the early stages of high-agency AI — reaching it requires not just tech but governance + organizational readiness</li>
+      <li>Sequoia Capital prediction: by the 2030s, AI agents will form a "global neural network" — interconnected intelligent agents</li>
+      <li>"One-person unicorn": a single developer with AI agents performing all functional capabilities of a full startup</li>
+      <li>MCP and A2A protocols = TCP/IP for agents — just as TCP/IP enabled the internet, these protocols enable the agent economy</li>
+    </ul>
+    <div class="callout"><strong>Framing for interviews:</strong> This Sequoia framing (agent economy, one-person unicorn) is useful vocabulary for explaining why you're investing in agentic AI skills in 2025–2026.</div>
+  </div>
+
+  <div class="section">
+    <h2>Amazon Nova Act: Web Agent Capability</h2>
+    <ul>
+      <li>Nova Act = Amazon's browser-use model — can scrape web pages, navigate sites, extract data</li>
+      <li>Operates like a human web engineer: given a URL and instructions in natural language, it finds and extracts content</li>
+      <li>Exposed as an MCP tool so any MCP-compatible agent (Strands, Claude Desktop) can use it</li>
+    </ul>
+    <pre><code">from strands import Agent
+from strands.tools.mcp import MCPClient
+import threading
+
+# Start Nova Act as an MCP server in background thread
+def run_nova_act_server():
+    # Nova Act runs as stdio MCP server
+    subprocess.run(["nova-act", "--transport", "stdio"])
+
+thread = threading.Thread(target=run_nova_act_server, daemon=True)
+thread.start()
+
+# Connect Strands agent to Nova Act via MCP
+with MCPClient(["nova-act", "--transport", "stdio"]) as client:
+    agent = Agent(
+        system_prompt="You are a weather assistant for Hong Kong.",
+        tools=client.list_tools()  # discovers forecast_weather, etc.
+    )
+    agent("What is the current 9-day weather forecast in Hong Kong?")</code></pre>
+    <ul>
+      <li>Nova Act reads the HTML page, extracts the forecast data, saves a screenshot for verification</li>
+      <li>Practical for enterprise automation: crawl internal dashboards, extract reports, monitor changes</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Strands + Manim: Educational Video Agent (Demo)</h2>
+    <ul>
+      <li>Manim = Python library for mathematical animations (used by 3Blue1Brown)</li>
+      <li>Strands agent connects to a Manim MCP server → receives natural language math requests → generates animation videos</li>
+      <li>"Visualize the cubic function f(x) = x³ from x=-3 to x=3" → agent writes Manim code → renders MP4</li>
+      <li>When the agent encounters a dependency issue, it adapts and creates a simplified version — demonstrates adaptive problem solving</li>
+      <li>Entire implementation built in ~30 minutes with a few dozen lines of Python</li>
+    </ul>
+    <div class="callout"><strong>Pattern:</strong> Any Python library can become an agent capability by wrapping it as an MCP server. This unlocks code generation, data visualization, report generation as agentic workflows.</div>
+  </div>
+
+  <div class="section">
+    <h2>Why Multi-Agent Architecture?</h2>
+    <ul>
+      <li><strong>Specialization:</strong> each agent focuses on a domain → higher precision than a single jack-of-all-trades agent</li>
+      <li><strong>Scalability:</strong> add or remove sub-agents without touching the orchestrator</li>
+      <li><strong>Maintainability:</strong> debug 100 lines of a focused agent, not 10,000 lines of a monolithic one</li>
+      <li><strong>Cost optimization:</strong> match task complexity to model — use fast/cheap models for classification, powerful models for reasoning</li>
+      <li>Analogy: single agent = solo trader managing everything. Multi-agent = hedge fund team (analyst, quant, trader, risk manager, IT)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Four Multi-Agent Collaboration Patterns</h2>
+
+    <div class="pattern-block">
+      <div class="pattern-header">
+        <span class="pattern-num">1</span>
+        <span class="pattern-name">Agent Tools (Orchestrator + Sub-Agents)</span>
+      </div>
+      <div class="pattern-when">When to use: clear delegation of specialized tasks; you know in advance what each sub-agent does</div>
+      <ul style="margin-top:.5rem">
+        <li>Orchestrator receives user request → delegates to specialized sub-agents as tool calls</li>
+        <li>Sub-agent output becomes input to the next sub-agent (pipeline)</li>
+        <li>AgentCore Runtime hosts sub-agents; orchestrator calls them via AgentCore Gateway</li>
+        <li>Sub-agents deployed with <code>@app.entrypoint</code> and invoked via <code>agentcore_runtime.invoke()</code></li>
+      </ul>
+      <pre><code>from strands import Agent, tool
+from bedrock_agentcore import BedrockAgentCoreApp
+
+# Sub-agent: deploys to AgentCore Runtime
+app = BedrockAgentCoreApp()
+
+@app.entrypoint
+def strategy_generator(payload):
+    agent = Agent(
+        model="claude-sonnet",  # good for code generation
+        system_prompt="You are a trading strategy code generator. Use BackTrader framework."
+    )
+    return {"code": str(agent(payload["strategy_params"]))}
+
+# Orchestrator: calls sub-agent as a tool
+@tool
+def generate_trading_strategy(name: str, buy_condition: str, sell_condition: str) -> str:
+    """Generate a BackTrader strategy Python script from parameters."""
+    response = agentcore_runtime.invoke(
+        agent_id="strategy-generator",
+        payload={"strategy_params": {"name": name, "buy": buy_condition, "sell": sell_condition}}
+    )
+    return response["code"]</code></pre>
+      <div class="callout" style="margin-top:.5rem"><strong>Demo use case:</strong> Quant Research Agent — orchestrator calls: (1) strategy generator, (2) market data fetcher (via Gateway → DynamoDB), (3) back-test runner, (4) results summarizer. Each runs in AgentCore Runtime with its own model.</div>
+    </div>
+
+    <div class="pattern-block">
+      <div class="pattern-header">
+        <span class="pattern-num">2</span>
+        <span class="pattern-name">Swarm (Peer Collaboration, No Central Boss)</span>
+      </div>
+      <div class="pattern-when">When to use: multi-disciplinary problems where no single agent owns the solution; emergent behavior needed</div>
+      <ul style="margin-top:.5rem">
+        <li>Agents communicate directly with each other; shared context (not a central orchestrator)</li>
+        <li>Any agent can hand off to any other agent based on what it determines is needed</li>
+        <li>Uses <strong>handoff detection</strong> to prevent two agents ping-ponging endlessly</li>
+      </ul>
+      <pre><code>from strands import Agent
+from strands.multiagent import Swarm
+
+research_agent = Agent(system_prompt="You are a researcher. Find facts and data.")
+creative_agent = Agent(system_prompt="You are a writer. Create engaging content.")
+critic_agent   = Agent(system_prompt="You are a critic. Challenge and improve the content.")
+summary_agent  = Agent(system_prompt="You are a summarizer. Create final polished output.")
+
+swarm = Swarm(
+    agents=[research_agent, creative_agent, critic_agent, summary_agent],
+    max_handoffs=10,
+    repetitive_handoff_detection_window=8,  # last 8 handoffs must include ≥3 unique agents
+    repetitive_handoff_min_unique_agents=3
+)
+
+result = swarm.run("Create a blog post explaining Agentic AI with a social media summary.")</code></pre>
+      <div class="callout" style="margin-top:.5rem"><strong>Demo behavior:</strong> Research → Creative → Summary, but Summary says "I need more detail" and hands back to Creative → Creative fills content → Summary produces final post. 5 interactions total, emergent.</div>
+    </div>
+
+    <div class="pattern-block">
+      <div class="pattern-header">
+        <span class="pattern-num">3</span>
+        <span class="pattern-name">Graph (Controlled Information Flow)</span>
+      </div>
+      <div class="pattern-when">When to use: predictability required; specific agents must communicate only with specific others; compliance workflows</div>
+      <ul style="margin-top:.5rem">
+        <li>Nodes = agents. Edges = allowed communication paths. You define who can talk to whom.</li>
+        <li>Key advantage over swarm: <strong>deterministic information routing</strong> — no agent talks to an unauthorized agent</li>
+        <li>Works with LangGraph and other graph frameworks; Strands integrates with LangGraph natively</li>
+      </ul>
+      <pre><code">from strands import Agent
+from langgraph.graph import StateGraph
+
+financial_agent  = Agent(system_prompt="You are a financial analyst.")
+portfolio_agent  = Agent(system_prompt="You are a portfolio constructor.")
+risk_agent       = Agent(system_prompt="You are a risk manager.")
+
+# Define graph: financial → portfolio → risk (risk is terminal)
+workflow = StateGraph(state_schema=dict)
+workflow.add_node("financial",  lambda s: {"analysis": financial_agent(s["request"])})
+workflow.add_node("portfolio",  lambda s: {"portfolio": portfolio_agent(s["analysis"])})
+workflow.add_node("risk",       lambda s: {"verdict": risk_agent(s["portfolio"])})
+
+workflow.add_edge("financial", "portfolio")
+workflow.add_edge("portfolio", "risk")
+workflow.set_entry_point("financial")
+
+graph = workflow.compile()
+result = graph.invoke({"request": "Construct a portfolio for moderate risk tolerance"})</code></pre>
+      <div class="callout" style="margin-top:.5rem"><strong>Use case:</strong> Data validation pipeline — validator agent routes to either error-handling agent or success-processing agent based on validation result. Full control over which branch is taken.</div>
+    </div>
+
+    <div class="pattern-block">
+      <div class="pattern-header">
+        <span class="pattern-num">4</span>
+        <span class="pattern-name">Workflow (Sequential Steps with Dependencies)</span>
+      </div>
+      <div class="pattern-when">When to use: complex repeatable processes with known steps; data pipelines; ETL; report generation</div>
+      <ul style="margin-top:.5rem">
+        <li>Tasks have explicit dependencies — task B cannot start until task A completes</li>
+        <li>Priority setting enables parallel execution where tasks don't depend on each other</li>
+      </ul>
+      <pre><code">from strands_tools import workflow, WorkflowTask
+
+tasks = [
+    WorkflowTask(id="extract",   task="Extract data from S3 sources"),
+    WorkflowTask(id="transform", task="Clean and transform data", depends_on=["extract"]),
+    WorkflowTask(id="analyze",   task="Run trend analysis",        depends_on=["transform"]),
+    WorkflowTask(id="report",    task="Generate executive report", depends_on=["analyze"]),
+]
+
+from strands import Agent
+from strands_tools import workflow as workflow_tool
+
+agent = Agent(
+    system_prompt="You run data pipeline workflows.",
+    tools=[workflow_tool]
+)
+agent("Execute the quarterly analytics pipeline")</code></pre>
+      <div class="callout" style="margin-top:.5rem"><strong>Perfect for:</strong> Automated data engineering pipelines — the exact capstone project (Autonomous DS Pipeline Agent) this plan builds toward.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>AgentCore Gateway: Tools for Agents</h2>
+    <ul>
+      <li>Create a gateway → define tools as Lambda functions with clear input/output schemas</li>
+      <li>Gateway handles Cognito auth by default — agents call tools without managing credentials</li>
+      <li>Add new data sources = add new Lambda + register as new tool. No agent code changes.</li>
+    </ul>
+    <pre><code># CLI: create gateway
+agentcore gateway create-mcp-gateway --name quant-tools
+
+# Lambda tool: registered with the gateway
+# Input/output schema defined via function annotations
+def get_market_data(symbol: str, days: int = 365) -> dict:
+    """Retrieve historical OHLCV market data from S3 table."""
+    # ... fetch from DynamoDB/S3
+    return {"symbol": symbol, "data": [...]}  # ~200 data points</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Pattern Selection Guide</h2>
+    <ul>
+      <li><strong>Agent Tools:</strong> customer service routing, quant research pipeline, any orchestrator-delegates workflow</li>
+      <li><strong>Swarm:</strong> multi-disciplinary incident response (network → database → app agents), creative collaboration, situations where you want emergent coordination</li>
+      <li><strong>Graph:</strong> validation pipelines with error branches, compliance workflows where you need to prove what talked to what</li>
+      <li><strong>Workflow:</strong> data ETL, report generation, any complex repeatable process with known step dependencies</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>The four patterns (Agent Tools, Swarm, Graph, Workflow) cover nearly all multi-agent use cases — map your problem to one before building</li>
+      <li>Strands integrates with LangGraph, LangChain, and other frameworks — you don't have to choose one and commit forever</li>
+      <li>Use different models for different sub-agents: Claude Sonnet for code generation, Nova for summarization → cost efficiency</li>
+      <li>Nova Act = browser automation as an MCP tool — any web page becomes a data source for your agent</li>
+      <li>AgentCore Gateway separates auth concern from agent code — agents call tools, Gateway handles credentials</li>
+      <li>AgentCore Memory: pass context between agents without huge prompt payloads — store in short-term, retrieve semantically in long-term</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

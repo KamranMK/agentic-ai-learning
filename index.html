@@ -85,6 +85,9 @@
   .res-source{font-size:10px;color:var(--accent);margin-bottom:3px}
   .res-desc{font-size:11px;color:var(--muted);line-height:1.55}
   .res-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .res-notes{margin-top:5px}.res-notes a{font-size:10.5px;font-weight:500;color:var(--accent);background:#EEF4F9;border:1px solid #CFE0ED;border-radius:4px;padding:2px 7px;display:inline-block}.res-notes a:hover{background:#D9EAF5;border-color:var(--accent);text-decoration:none}
+  .notes-link{display:inline-block;margin-top:6px;font-size:11px;font-weight:500;color:var(--accent);background:#EEF4F9;border:1px solid #B8D0E8;border-radius:4px;padding:2px 8px;text-decoration:none}
+  .notes-link:hover{background:#D8EAF6;border-color:var(--accent);text-decoration:none}
   .res-tag{font-size:10px;padding:1px 7px;border-radius:10px}
   .tag-free{background:#E0FAF4;color:#027E5A;border:1px solid #9AE8D0}
   .tag-paid{background:#E3EFF8;color:#1A507C;border:1px solid #90C0E0}
@@ -263,6 +266,7 @@
         <div class="res-source">AWS Developers channel — Mar 2026</div>
         <div class="res-desc">Concise Strands SDK intro — model, prompt, tools in a few lines. Best first watch before touching the docs.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~12 min</span></div>
+        <a href="notes/p1-1.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p1-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -271,6 +275,7 @@
         <div class="res-source">AWS Community — Nov 2025</div>
         <div class="res-desc">Full walkthrough: local dev → Bedrock AgentCore deployment. Multi-agent patterns, MCP wiring, OTel observability. Do after the intro above.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~40 min</span></div>
+        <a href="notes/p1-2.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p1-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -279,6 +284,7 @@
         <div class="res-source">Feb 2026</div>
         <div class="res-desc">Dependency injection, structured outputs, tool registration, Logfire observability. Production-focused, not beginner fluff.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~25 min</span></div>
+        <a href="notes/p1-3.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p1-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -383,6 +389,7 @@
         <div class="res-source">AWS Events — Dec 2025</div>
         <div class="res-desc">Production talk: 8 specialized agents (Perception, Context, News, Reasoning, Risk, Action, Audit, Learning) on Strands + Claude on Bedrock. Real serverless AgentCore deployment. One of the most instructive architecture talks available.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~55 min</span></div>
+        <a href="notes/p2-2.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p2-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -391,6 +398,7 @@
         <div class="res-source">AWS Events — Dec 2025</div>
         <div class="res-desc">Observability-focused session: how to trace, measure, and improve agentic workflows in production using Strands + AgentCore + Datadog. Watch this alongside the AML talk.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+        <a href="notes/p2-3.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p2-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -608,6 +616,7 @@
         <div class="res-source">AWS Events — Dec 2025</div>
         <div class="res-desc">AWS Hong Kong team demonstrates Strands + Nova Act for physical AI agents. Shows the full low-agency → high-agency spectrum. Sequoia's "agent economy / one-person unicorn" framing — good for interview conversations.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+        <a href="notes/p4-2.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p4-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
@@ -616,6 +625,7 @@
         <div class="res-source">AWS Events — Dec 2025</div>
         <div class="res-desc">Cutting edge: agents that evolve and learn continuously. Steering handlers, autonomous reasoning loops, self-correction patterns. Watch after building your capstone to understand what comes next.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span><span class="res-tag tag-mins">~45 min</span></div>
+        <a href="notes/p4-3.html" class="notes-link" onclick="event.stopPropagation()">📝 Notes</a>
       </div></div>
 
       <div class="res-item" data-id="p4-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">

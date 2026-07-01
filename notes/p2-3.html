@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: Observable AI Agents with Strands, AgentCore & Datadog (re:Invent AIM233)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E0FAF3;color:#038F6D;border:1px solid #9AEBDA}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+.pillar-row{display:flex;gap:.75rem;margin:.4rem 0;align-items:flex-start}
+.pillar-tag{font-size:.7rem;font-weight:700;color:white;background:#5A7A94;padding:2px 6px;border-radius:3px;white-space:nowrap;margin-top:2px;min-width:80px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 2 · Months 4–6</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~45 min</span>
+  </div>
+
+  <h1>re:Invent 2025 AIM233 — Observable AI Agents with Strands, AgentCore &amp; Datadog</h1>
+  <div class="source">AWS Events · Dec 2025 · <a href="https://www.youtube.com/watch?v=mOAd8grR1BU" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>Why Observability Matters for Agents</h2>
+    <ul>
+      <li>Agents are <strong>compound systems</strong>: vector stores + models + evals + orchestration — many failure points</li>
+      <li>Agents are <strong>non-deterministic</strong>: same input ≠ same output; you can't predict failures in advance</li>
+      <li>Multiple accountability layers: model? framework? orchestration? tool call? Hard to debug without traces</li>
+      <li>Cost can spiral: every bad tool call loop consumes tokens; you need visibility to catch this</li>
+      <li><strong>Rule:</strong> Start with observability from the first prototype, not as an afterthought</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Four Production Challenges</h2>
+    <ul>
+      <li><strong>Reliability:</strong> hallucinations, wrong tool calls, goal drift — need evals to catch these</li>
+      <li><strong>Complexity:</strong> when something goes wrong in a multi-agent system, where exactly did it fail?</li>
+      <li><strong>Cost:</strong> token consumption per model call; bad loops can cost 10–100× what they should</li>
+      <li><strong>Security:</strong> prompt injection, PII exposure, jailbreak attempts — need input/output monitoring</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Newsletter Agent Architecture (Demo)</h2>
+    <ul>
+      <li>Orchestrator agent + 1 specialist "deep analysis" sub-agent (agent-as-a-tool pattern)</li>
+      <li>Tools: fetch current date, fetch latest news, extract article links, publish newsletter (email)</li>
+      <li>Two operation modes: <strong>browse mode</strong> (Q&amp;A with agent) and <strong>publish mode</strong> (triggers full newsletter workflow)</li>
+      <li>Agent manages its own EventBridge schedule — can schedule itself to run daily</li>
+      <li>Custom memory strategy: tracks URLs of previously sent articles to prevent duplicates across sessions</li>
+    </ul>
+    <div class="callout"><strong>Pattern:</strong> Give agents only the tools they need — not everything. It's cheaper, faster to reason, and easier to control. Agent specialization &gt; agent omniscience.</div>
+  </div>
+
+  <div class="section">
+    <h2>Strands + AgentCore Integration (2 lines to connect)</h2>
+    <pre><code>import os
+from strands import Agent
+from strands.models import BedrockModel
+
+# Point Strands telemetry at Datadog's OTel ingestion endpoint
+os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "https://ingest.datadoghq.com/v1/traces"
+os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"DD-API-KEY={os.environ['DD_API_KEY']}"
+
+agent = Agent(
+    model=BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0"),
+    system_prompt="You are a news curator assistant."
+)
+
+# All traces (model calls, tool calls, latency, tokens) now flow to Datadog automatically</code></pre>
+    <ul>
+      <li>Strands emits OTel traces by default — no SDK changes needed</li>
+      <li>Two environment variables is all it takes to connect to Datadog</li>
+      <li>Same pattern works for any OTel-compatible backend: Langfuse, Grafana, Honeycomb, Jaeger</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>AgentCore Runtime Deployment</h2>
+    <pre><code">from bedrock_agentcore import BedrockAgentCoreApp
+
+app = BedrockAgentCoreApp()
+
+@app.entrypoint  # one decorator = deployable to AgentCore
+def run_agent(payload):
+    result = agent(payload["query"])
+    return {"response": str(result)}
+
+if __name__ == "__main__":
+    app.run(port=8080)
+
+# Deploy:
+# agentcore config   (generates docker config)
+# agentcore launch   (builds container, pushes to ECR, deploys)
+# agentcore invoke --payload '{"query": "What is the AWS news today?"}'</code></pre>
+    <ul>
+      <li>AgentCore Runtime = serverless microVM; sessions up to 8 hours; scales automatically</li>
+      <li>Also supports CDK/Terraform for CI/CD pipeline integration</li>
+      <li>AgentCore Memory: short-term (per-session) + long-term (semantic extraction) available with a few extra lines</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>What Datadog Shows (LLM Observability Dashboard)</h2>
+    <ul>
+      <li><strong>Application overview:</strong> error rate, duration p50/p95, estimated token cost, LLM calls per hour</li>
+      <li><strong>Trace explorer:</strong> every agent invocation with full span tree — see exactly which tool was called and when</li>
+      <li><strong>Cost breakdown:</strong> total cost + per-model breakdown; spot which LLM calls are expensive</li>
+      <li><strong>Cluster view:</strong> topic clustering — what is your agent actually being asked? Spot unexpected topics</li>
+      <li><strong>Tool call view:</strong> how often each tool is called; spot over-indexing on specific tools</li>
+      <li><strong>Security panel:</strong> prompt injection attempts, PII exposure (auto-stripped), output toxicity</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Evaluations in Datadog</h2>
+    <ul>
+      <li>Out-of-box evals (LLM-as-judge): failure-to-answer, goal completeness, hallucination, input toxicity, output toxicity, prompt injection detection, tool argument correctness</li>
+      <li>Custom evals: define your own criteria (e.g., "agent must respond in brand voice") — LLM judge scores each trace</li>
+      <li>Choose your judge model; it classifies all incoming traces automatically in the background</li>
+    </ul>
+    <pre><code># Create an experiment to compare two approaches
+# 1. Add traces to a dataset (from real traffic)
+# 2. Define inputs: model variants, prompt variants
+# 3. Measure outputs: information accuracy, user satisfaction, duration, error rate, token cost
+# 4. Datadog shows side-by-side comparison — pick the best performing configuration</code></pre>
+    <div class="warn"><strong>Recommendation:</strong> Choose the most capable model first, establish a performance baseline, then experiment with cheaper models to find where you can save cost without hurting quality.</div>
+  </div>
+
+  <div class="section">
+    <h2>Well-Architected Framework: GenAI Lens (Key Points)</h2>
+    <ul>
+      <li><strong>Operational excellence:</strong> collect metrics/user feedback/performance data; implement guardrails to detect policy violations; monitor tool call success + latency; track cost per workflow/user/model</li>
+      <li><strong>Security:</strong> detect prompt injection, jailbreak attempts, PII exposure; Datadog strips PII before ingesting all traces</li>
+      <li><strong>Reliability:</strong> monitor answer quality (hallucination rate, goal completeness); alert on threshold breaches</li>
+      <li><strong>Cost optimization:</strong> measure inference efficiency; identify which model can be downsized for which task</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Trace View: Debugging a Bad Agent Run</h2>
+    <ul>
+      <li>Each agent run = a root span with child spans for every LLM call and tool call</li>
+      <li>Click any span to see: input, output, token count, cost, duration, errors</li>
+      <li>Playground view: test the sub-agent's prompt in isolation to iterate without running the full pipeline</li>
+      <li>Example caught from demo: user asked "drop these tables" → Datadog flagged prompt injection in the trace</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li><strong>Start with observability on day one.</strong> Retrofitting it is painful and you'll miss the debugging data from your earliest experiments.</li>
+      <li>Strands emits OTel automatically — connect to Datadog/Langfuse/Grafana with 2 env vars</li>
+      <li>Use LLM-as-judge evals for quality monitoring — especially for multi-agent pipelines where output quality is hard to measure manually</li>
+      <li>AgentCore Runtime + Memory makes going from prototype to production a 3-command process</li>
+      <li>Agents should be <strong>purpose-built</strong> with the minimum tool set for their task — reduces cost, improves reasoning quality, easier to debug</li>
+      <li>Agent scheduling: agents can manage their own EventBridge schedules — enables fully autonomous workflows</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

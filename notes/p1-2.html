@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes: Strands SDK — From First Agent to Production-Ready</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+.lab-header{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.5rem}
+.lab-num{font-size:.75rem;font-weight:700;color:white;background:var(--accent);padding:2px 7px;border-radius:4px}
+.lab-title{font-weight:600;font-size:.95rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+.lab-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 1 · Months 1–3</span>
+    <span class="badge badge-type">▶ Watch</span>
+    <span class="badge badge-dur">~40 min</span>
+  </div>
+
+  <h1>Strands SDK: From First Agent to Production-Ready</h1>
+  <div class="source">AWS Community · Nov 2025 · <a href="https://www.youtube.com/watch?v=28uCH7BcSA4" target="_blank">YouTube ↗</a></div>
+
+  <div class="section">
+    <h2>Overview</h2>
+    <p style="margin-bottom:.6rem">Six progressive labs taking Strands from a basic agent to a production-deployed multi-agent system with observability. Each lab builds on the previous one.</p>
+    <ul>
+      <li>Lab 1 → Basic agent setup</li>
+      <li>Lab 2 → Model provider switching</li>
+      <li>Lab 3 → AWS service access via <code>use_aws</code> tool</li>
+      <li>Lab 4 → MCP integration with FastMCP</li>
+      <li>Lab 5 → A2A multi-agent handoffs</li>
+      <li>Lab 6 → Observability with Langfuse + Ragas evaluation</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Lab 1 — Basic Agent Setup</h2>
+    <div class="lab-block">
+      <ul>
+        <li>Install <code>strands-agents</code> and <code>strands-agents-tools</code></li>
+        <li>Set up AWS credentials for Bedrock (default provider): <code>aws configure</code> or environment variables <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_DEFAULT_REGION</code></li>
+        <li>Create a minimal agent with a system prompt and call it</li>
+      </ul>
+      <pre><code>from strands import Agent
+
+agent = Agent(system_prompt="You are a helpful assistant.")
+agent("Hello!")</code></pre>
+      <ul>
+        <li>Default model: <code>claude-sonnet</code> on Bedrock (us-east-1 by default)</li>
+        <li>Streaming output is on by default — the response prints to terminal as it's generated</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lab 2 — Model Providers</h2>
+    <div class="lab-block">
+      <ul>
+        <li>Strands is model-agnostic — swap the <code>model</code> parameter to change providers</li>
+        <li>Bedrock supports multiple model families; you can also use Anthropic API, OpenAI, Ollama</li>
+      </ul>
+      <pre><code>from strands import Agent
+from strands.models import BedrockModel, AnthropicModel
+
+# Bedrock with specific model ID
+bedrock_agent = Agent(model=BedrockModel(
+    model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0"
+))
+
+# Anthropic API directly (requires ANTHROPIC_API_KEY)
+anthropic_agent = Agent(model=AnthropicModel(
+    model_id="claude-opus-4-8",
+    api_key="your-key"
+))</code></pre>
+      <ul>
+        <li>Use Bedrock for AWS-native deployments (IAM, VPC, no key management)</li>
+        <li>Use Anthropic/OpenAI direct for local dev when you don't have an AWS account configured</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lab 3 — AWS Services via <code>use_aws</code></h2>
+    <div class="lab-block">
+      <ul>
+        <li>The <code>use_aws</code> tool lets your agent call any AWS SDK operation using natural language</li>
+        <li>The LLM translates your intent into the correct boto3 API call</li>
+      </ul>
+      <pre><code>from strands import Agent
+from strands_tools import use_aws
+
+agent = Agent(
+    system_prompt="You are an AWS assistant. Use AWS tools to help the user.",
+    tools=[use_aws]
+)
+
+agent("List all S3 buckets in my account")
+agent("Get the last 5 CloudWatch log events from /aws/lambda/my-function")</code></pre>
+      <ul>
+        <li>Requires the agent's IAM role/user to have appropriate permissions</li>
+        <li>Works for Bedrock KB queries, DynamoDB reads/writes, Lambda invocations, and more</li>
+        <li>Key pattern for building internal tooling that operates on your own AWS resources</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lab 4 — MCP Integration with FastMCP</h2>
+    <div class="lab-block">
+      <ul>
+        <li>MCP (Model Context Protocol) lets your agent discover and use tools hosted on external servers</li>
+        <li>FastMCP is a Python library for building MCP servers quickly</li>
+      </ul>
+      <pre><code># Server side (run separately): server.py
+from fastmcp import FastMCP
+
+mcp = FastMCP("calculator")
+
+@mcp.tool()
+def add(a: float, b: float) -> float:
+    """Add two numbers together."""
+    return a + b
+
+mcp.run(transport="stdio")
+
+# Agent side: client.py
+from strands import Agent
+from strands.tools.mcp import MCPClient
+
+client = MCPClient(["python", "server.py"])
+
+with client:
+    agent = Agent(
+        system_prompt="You are a math assistant.",
+        tools=client.list_tools()  # discovers tools from MCP server
+    )
+    agent("What is 42 + 58?")</code></pre>
+      <ul>
+        <li>MCP separates tool implementation (server) from agent (client) — enables reuse across frameworks</li>
+        <li>The agent automatically discovers what tools are available and their schemas</li>
+        <li>Also supports HTTP transport for remote MCP servers</li>
+      </ul>
+      <div class="callout"><strong>Portfolio note:</strong> Any MCP server you build is reusable by Claude Desktop, Cursor, and any MCP-compatible agent — not just Strands.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lab 5 — A2A Multi-Agent Handoffs</h2>
+    <div class="lab-block">
+      <ul>
+        <li>A2A (Agent-to-Agent protocol) lets agents call other agents as if they were tools</li>
+        <li>Pattern: orchestrator agent delegates to specialist agents</li>
+      </ul>
+      <pre><code>from strands import Agent
+from strands_tools import agent_tool
+
+# Specialist: HR agent
+hr_agent = Agent(
+    system_prompt="You are an HR specialist. Answer only HR-related queries.",
+)
+
+# Make the HR agent callable as a tool
+@agent_tool
+def call_hr_agent(query: str) -> str:
+    """Route HR-related questions to the HR specialist agent."""
+    return hr_agent(query)
+
+# Orchestrator
+orchestrator = Agent(
+    system_prompt="You are a company assistant. Route questions to the right specialist.",
+    tools=[call_hr_agent]
+)
+
+orchestrator("What's the vacation policy?")</code></pre>
+      <ul>
+        <li>Each sub-agent has its own system prompt, model, and tool set — separation of concerns</li>
+        <li>The orchestrator's LLM decides when to delegate based on the tool docstrings</li>
+        <li>Agents can call other agents recursively — but watch for infinite loops</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lab 6 — Observability with Langfuse + Ragas</h2>
+    <div class="lab-block">
+      <ul>
+        <li>Strands emits OpenTelemetry (OTel) traces automatically — plug in any OTel-compatible backend</li>
+        <li>Langfuse: open-source LLM observability platform — traces, spans, cost tracking, latency</li>
+        <li>Ragas: evaluation framework for RAG and agent pipelines — measures faithfulness, relevance, etc.</li>
+      </ul>
+      <pre><code>import os
+from strands import Agent
+from langfuse.callback import CallbackHandler
+
+# Set LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST env vars
+langfuse_handler = CallbackHandler()
+
+agent = Agent(
+    system_prompt="You are a research assistant.",
+    callback_handler=langfuse_handler
+)
+
+response = agent("Summarize the key themes of transformer architecture.")
+# All tool calls, LLM calls, latency, tokens auto-tracked in Langfuse</code></pre>
+      <ul>
+        <li>Ragas evaluation metrics for agents: task completion, tool call correctness, answer relevance</li>
+        <li>In production, run Ragas evals on sampled traces to catch quality regressions</li>
+      </ul>
+      <div class="callout"><strong>Key insight:</strong> Observability is not optional for production agents. Without traces you cannot debug why an agent made a bad decision or called the wrong tool.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Labs 1–3 cover the foundation: get an agent running, switch models, access AWS</li>
+      <li>Lab 4 (MCP) is the key skill for Phase 1 — build MCP servers, connect them to agents</li>
+      <li>Lab 5 (A2A) previews Phase 2 — multi-agent delegation is the core architectural pattern</li>
+      <li>Lab 6 (observability) is non-negotiable for production — instrument from day one</li>
+      <li>The Strands progression is: <em>basic agent → tools → AWS → MCP → multi-agent → observability</em></li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
