@@ -405,7 +405,7 @@
         <div class="res-type type-read">◉ Read</div>
         <div class="res-title"><a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-to-agent-protocol-support-in-amazon-bedrock-agentcore-runtime/" target="_blank" onclick="event.stopPropagation()">AWS Blog — A2A Support in Bedrock AgentCore Runtime</a></div>
         <div class="res-source">aws.amazon.com/blogs/machine-learning</div>
-        <div class="res-desc">The incident response reference architecture: 3 agents (Strands + OpenAI SDK + Google ADK) via A2A on AgentCore. Covers Agent Cards, JSON-RPC, OAuth, CloudWatch. Read before writing any A2A code.</div>
+        <div class="res-desc">The incident response reference architecture: 3 agents (Strands + OpenAI SDK + Google ADK) via A2A on AgentCore. Covers Agent Cards, JSON-RPC, OAuth, CloudWatch. Read before writing any A2A code. <em>ADK context:</em> Google ADK reached 3.3M/mo downloads by mid-2026 with Go v1.0 in March 2026; production runtime is Vertex AI Agent Engine. If you encounter a GCP shop, ADK is the Strands equivalent — multi-language (Python, TypeScript, Go, Java, Kotlin). Knowing it exists and how it fits into A2A handoffs is enough for this plan.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-aws">AWS</span></div>
       </div></div>
 
@@ -447,6 +447,14 @@
         <div class="res-source">openai.com · <a href="https://openai.github.io/openai-agents-python/" target="_blank" onclick="event.stopPropagation()">openai-agents-python docs</a></div>
         <div class="res-desc">March 2025, updated April 2026. The handoff-based architectural pattern — agents delegate tasks via native handoffs, outputs validated through guardrails, code runs in isolated sandboxes (E2B, Modal, Cloudflare, Vercel, Runloop). Works with 100+ LLMs via Chat Completions API — not OpenAI-only. Study alongside LangGraph: these represent opposite ends of the explicit-vs-implicit orchestration spectrum. Knowing both is what architectural pattern fluency actually means.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p2-12" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://docs.smith.langchain.com/" target="_blank" onclick="event.stopPropagation()">LangSmith — Tracing &amp; Evals for LangGraph Agents</a></div>
+        <div class="res-source">docs.smith.langchain.com</div>
+        <div class="res-desc">De facto observability standard for LangGraph stacks — node-by-node state diffs, token spend per graph step, and zero measurable overhead. Free tier covers solo/small-team usage. Set up LangSmith tracing on your Phase 2 LangGraph build before wiring Datadog: it shows you exactly where latency and cost come from. An AI Engineer who uses LangGraph without LangSmith in a production context will get asked about it in every senior interview.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free tier</span><span class="res-tag tag-mins">~15 min setup</span></div>
       </div></div>
     </div>
 
@@ -555,6 +563,14 @@
         <div class="res-source">hamel.dev + kili-technology.com</div>
         <div class="res-desc">37% of benchmark performance doesn't survive contact with production. MMLU-style scores are functionally saturated at frontier level — don't cite them in production context. Hamel's guide is the practitioner standard for designing production-faithful evals. τ-bench (Sierra/Princeton, multi-turn + policy compliance) is what you should be measuring against. Know this before you design your Phase 3 eval strategy — it will change what you build and what you measure.</div>
         <div class="res-tags"><span class="res-tag tag-free">Free</span><span class="res-tag tag-mins">~30 min</span></div>
+      </div></div>
+
+      <div class="res-item" data-id="p3-11" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-type type-follow">⬡ Follow</div>
+        <div class="res-title"><a href="https://langfuse.com/docs" target="_blank" onclick="event.stopPropagation()">Langfuse — Open-Source LLM Observability</a></div>
+        <div class="res-source">langfuse.com/docs</div>
+        <div class="res-desc">Leading open-source agent observability platform — self-host on any Postgres instance with no usage limits and no data leaving your infra. Covers traces, evals, prompt versioning, and cost tracking across all major frameworks (Strands, LangGraph, OpenAI SDK). Use this when Datadog is overkill, when you need a self-hosted eval pipeline, or when a client has data residency requirements. More engineering-friendly than enterprise observability tools for iteration speed.</div>
+        <div class="res-tags"><span class="res-tag tag-free">Free (self-hosted)</span><span class="res-tag tag-mins">~30 min</span></div>
       </div></div>
     </div>
 
@@ -754,8 +770,8 @@ applyState(loadState());
   <div class="dec-row"><span class="dec-key" style="color:var(--accent2)">Strands</span><span style="color:var(--muted);font-size:11px">AWS-native deployment. Model-driven, no hardcoded workflows. Native A2A + MCP + multi-agent patterns. 14M+ downloads; used in Amazon Q Developer internally. Primary choice for Bedrock production. <a href="https://strandsagents.com/" target="_blank">Docs</a> · <a href="https://github.com/strands-agents/sdk-python" target="_blank">GitHub</a></span></div>
   <div class="dec-row"><span class="dec-key" style="color:#C27E00">LangGraph</span><span style="color:var(--muted);font-size:11px">Complex conditional branching. Stateful workflows with checkpointing. Human-in-the-loop at specific nodes (first-class since v1.0, Oct 2025). Long-term maintainable systems. Complements Strands. <a href="https://langchain-ai.github.io/langgraph/" target="_blank">Docs</a></span></div>
   <div class="dec-row"><span class="dec-key" style="color:#1A7AB5">OpenAI SDK</span><span style="color:var(--muted);font-size:11px">Handoff-based multi-agent: explicit task delegation between agents via handoffs, output validated through guardrails, code runs in sandboxes (E2B, Modal, Cloudflare, Vercel). Works with 100+ LLMs — not OpenAI-only. Good when you want clear delegation without graph complexity. Updated April 2026. <a href="https://openai.github.io/openai-agents-python/" target="_blank">Docs</a></span></div>
-  <div class="dec-row"><span class="dec-key" style="color:var(--accent4)">CrewAI</span><span style="color:var(--muted);font-size:11px">Rapid prototyping. Role-based agent teams. Speed to demo over control. Good for POCs — not for production systems requiring long-term security compliance. <a href="https://docs.crewai.com" target="_blank">Docs</a></span></div>
-  <div class="dec-row"><span class="dec-key" style="color:var(--muted)">AutoGen/AG2</span><span style="color:var(--muted);font-size:11px">Research and experimentation only. Near-zero security mechanisms. Any 2024 article recommending it for enterprise production predates the AG2 split — treat with caution. <a href="https://docs.ag2.ai" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--accent4)">CrewAI</span><span style="color:var(--muted);font-size:11px">Legitimate production framework — #2 by adoption (47.8k GitHub stars, 2B executions in 12 months, Fortune 500 majority as of 2026). Role-based mental model: define agents as personas with goals, organize into "crews." <em>Not in this plan</em> because Strands covers the same low-friction niche with deeper AWS integration. Spend a day reading the docs to speak credibly about the trade-offs. <a href="https://docs.crewai.com" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:var(--muted)">AutoGen → MS Agent Framework</span><span style="color:var(--muted);font-size:11px">AutoGen moved to maintenance mode (bug fixes only) in April 2026. Microsoft replaced it with <strong>Microsoft Agent Framework v1.0</strong> (GA April 2026), which unifies AutoGen + Semantic Kernel into a single production-grade SDK for .NET and Python. Not in this plan (AWS focus), but know it exists if you encounter a Microsoft-stack role. <a href="https://microsoft.github.io/agent-framework/" target="_blank">Docs</a></span></div>
 </div>
 
 <div class="footer-note">
