@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: Multi-Agent Incident Response</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E9F7F1;color:#027E5A;border:1px solid #9AEBDA}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 2 · Months 4–6</span>
+    <span class="badge badge-type">🛠 Build</span>
+    <span class="badge badge-dur">~8-10 hrs</span>
+  </div>
+
+  <h1>Build Guide: Multi-Agent Incident Response</h1>
+  <div class="source">Project 10 · Strands + LangGraph + A2A + AgentCore Memory/Observability/Identity · Reference: <a href="https://github.com/madhurprash/A2A-Multi-Agents-AgentCore" target="_blank">madhurprash/A2A-Multi-Agents-AgentCore ↗</a></div>
+
+  <div class="section">
+    <h2>What You'll Build</h2>
+    <p style="margin-bottom:.6rem">A simulated "website down" incident-response pipeline with three agents that mirrors a real on-call workflow: detect, diagnose, and remediate — with a human approval gate before anything destructive happens. This is the capstone-style project for Phase 2 because it exercises every AgentCore pillar (Runtime, Memory, Observability, Identity) plus A2A across a 3-hop chain.</p>
+    <ul>
+      <li><strong>Mock health-check service</strong> — a small FastAPI app with a <code>/health</code> endpoint and a toggle endpoint to force it to return 500s, simulating an outage.</li>
+      <li><strong>Monitoring Agent</strong> (Strands) — polls <code>/health</code> on an interval, detects failures, and emits a structured <code>IncidentReport</code> Pydantic model to the Orchestrator over A2A.</li>
+      <li><strong>Orchestrator Agent</strong> (Strands) — receives the incident, tracks the incident timeline in AgentCore Memory, and delegates root-cause diagnosis to the Remediation Agent over A2A.</li>
+      <li><strong>Remediation Agent</strong> (LangGraph) — runs mocked runbook tools (<code>check_logs()</code>, <code>check_recent_deploys()</code>, <code>restart_service()</code>), with a hard <strong>human-in-the-loop interrupt</strong> before <code>restart_service()</code> ever executes.</li>
+      <li>All three agents deployed to separate AgentCore Runtime instances, secured with Amazon Cognito OAuth per the reference architecture.</li>
+      <li>An OTel trace of the full incident (detection → diagnosis → human approval → remediation) visible in AgentCore Observability / CloudWatch GenAI Observability.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Architecture</h2>
+    <pre><code>┌───────────────┐   poll /health    ┌───────────────────────┐
+│  Mock Health   │◀──────────────────│   Monitoring Agent      │
+│  Check Service │   500 x3 in a row │   (Strands)              │
+│  FastAPI :8000 │──────────────────▶│   AgentCore Runtime      │
+│  GET /health   │  detects failure  │   :9000                 │
+│  POST /toggle  │                   └───────────┬─────────────┘
+└───────────────┘                                │ A2A: message/send
+                                                  │ IncidentReport (JSON)
+                                                  ▼
+                                    ┌───────────────────────────┐
+                                    │   Orchestrator Agent        │
+                                    │   (Strands)                  │
+                                    │   AgentCore Runtime           │
+                                    │   :9001                       │
+                                    │  - writes incident timeline   │
+                                    │    to AgentCore Memory        │
+                                    │  - delegates diagnosis        │
+                                    └───────────┬───────────────────┘
+                                                │ A2A: message/send
+                                                │ diagnose_and_remediate(incident)
+                                                ▼
+                                    ┌────────────────────────────────┐
+                                    │   Remediation Agent               │
+                                    │   (LangGraph)                      │
+                                    │   AgentCore Runtime                │
+                                    │   :9002                            │
+                                    │  check_logs() ─▶ check_recent_     │
+                                    │  deploys() ─▶ [INTERRUPT: human    │
+                                    │  approval required] ─▶            │
+                                    │  restart_service()                │
+                                    └────────────────────────────────┘
+
+  Cross-cutting: AgentCore Memory (incident timeline persisted across
+  the 3-agent conversation) + AgentCore Observability (OTel spans for
+  every A2A hop, tool call, and the interrupt/resume) + Cognito OAuth
+  (bearer tokens required on every AgentCore Runtime invocation).</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Prerequisites</h2>
+    <ul>
+      <li>Completed Project 9 (two-agent A2A handoff) — you should already be comfortable with Agent Cards, JSON-RPC message/send, and <code>agentcore launch</code>.</li>
+      <li>AWS account with Bedrock model access, AgentCore Runtime, AgentCore Memory, AgentCore Observability, and Amazon Cognito enabled in your target region.</li>
+      <li>Python 3.11+, Docker, and the AgentCore CLI: <code>pip install bedrock-agentcore bedrock-agentcore-starter-toolkit</code>.</li>
+      <li><code>pip install strands-agents strands-agents-tools langgraph langchain-core pydantic a2a-sdk fastapi uvicorn boto3</code></li>
+      <li>Clone the community reference for a working end-to-end skeleton: <code>git clone https://github.com/madhurprash/A2A-Multi-Agents-AgentCore.git</code> — use it to sanity-check your Cognito setup, AgentCore Memory wiring, and multi-agent A2A folder layout before diverging into this guide's incident-response scenario.</li>
+      <li>An AWS IAM role with <code>bedrock-agentcore:*</code>, <code>cognito-idp:*</code> (for setup), and CloudWatch permissions for the observability trace.</li>
+    </ul>
+    <div class="callout"><strong>Why fork the reference repo:</strong> Cognito OAuth setup for AgentCore (user pool, resource server, app client, scopes) is fiddly boilerplate that's easy to get wrong the first time. The reference repo has a working <code>setup_cognito.py</code>/CDK-style script — reuse its structure rather than reinventing it from the AWS docs cold.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — Stand up the mock health-check service</h2>
+    <pre><code># health_service/app.py
+from fastapi import FastAPI, Response
+import time
+
+app = FastAPI()
+_state = {"broken": False, "last_deploy": time.time() - 3600}
+
+@app.get("/health")
+def health():
+    if _state["broken"]:
+        return Response(status_code=500, content="internal server error")
+    return {"status": "ok"}
+
+@app.post("/toggle")
+def toggle(broken: bool):
+    _state["broken"] = broken
+    return {"broken": _state["broken"]}
+
+@app.get("/_meta/last_deploy")
+def last_deploy():
+    return {"last_deploy_epoch": _state["last_deploy"]}</code></pre>
+    <pre><code>uvicorn health_service.app:app --port 8000
+# In another terminal, simulate an outage:
+curl -X POST "http://localhost:8000/toggle?broken=true"</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Define the shared IncidentReport model</h2>
+    <pre><code># shared/models.py
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+class IncidentReport(BaseModel):
+    incident_id: str
+    service_name: str
+    detected_at: datetime
+    endpoint: str
+    consecutive_failures: int
+    last_status_code: int
+    severity: str  # "sev1" | "sev2" | "sev3"
+
+class DiagnosisResult(BaseModel):
+    incident_id: str
+    root_cause_hypothesis: str
+    recent_deploy_suspected: bool
+    recommended_action: str
+    logs_excerpt: str
+
+class RemediationOutcome(BaseModel):
+    incident_id: str
+    action_taken: str
+    approved_by_human: bool
+    success: bool
+    notes: str</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — Monitoring Agent (Strands)</h2>
+    <pre><code># monitoring_agent/tools.py
+from strands import tool
+import httpx, time
+
+_failure_streak = {"count": 0}
+
+@tool
+def poll_health(url: str = "http://localhost:8000/health") -> dict:
+    """Poll the health-check endpoint once. Returns status_code and whether
+    this extends a streak of consecutive failures (3+ triggers an incident)."""
+    try:
+        resp = httpx.get(url, timeout=3.0)
+        code = resp.status_code
+    except httpx.RequestError:
+        code = 599
+    if code >= 500:
+        _failure_streak["count"] += 1
+    else:
+        _failure_streak["count"] = 0
+    return {"status_code": code, "consecutive_failures": _failure_streak["count"]}</code></pre>
+    <pre><code># monitoring_agent/agent.py
+from strands import Agent
+from strands.models import BedrockModel
+from strands_tools.a2a_client import A2AClientToolProvider
+from monitoring_agent.tools import poll_health
+from shared.models import IncidentReport
+import time, uuid
+
+a2a_tools = A2AClientToolProvider(known_agent_urls=["http://localhost:9001/"])
+model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+
+monitor = Agent(
+    model=model,
+    system_prompt=(
+        "You are a monitoring agent. Call poll_health repeatedly (the caller "
+        "loop handles the interval). If consecutive_failures reaches 3, build "
+        "an IncidentReport JSON object and call the Orchestrator agent's "
+        "report_incident skill with it."
+    ),
+    tools=[poll_health] + a2a_tools.tools,
+)
+
+def run_loop(interval_s: int = 5):
+    while True:
+        result = monitor("Poll the health endpoint and report an incident if 3+ consecutive failures.")
+        print(result)
+        time.sleep(interval_s)
+
+if __name__ == "__main__":
+    run_loop()</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — Orchestrator Agent (Strands) with AgentCore Memory</h2>
+    <p style="margin-bottom:.6rem">The Orchestrator's Agent Card advertises a <code>report_incident</code> skill. On receiving a report, it writes the event to AgentCore Memory (so the timeline survives across the whole multi-agent conversation) and then hands diagnosis off to the Remediation Agent.</p>
+    <pre><code># orchestrator/memory.py
+from bedrock_agentcore.memory import MemoryClient
+
+memory_client = MemoryClient(region_name="us-east-1")
+MEMORY_ID = "incident-response-memory"  # created once via memory_client.create_memory(...)
+
+def record_event(session_id: str, actor_id: str, text: str):
+    memory_client.create_event(
+        memory_id=MEMORY_ID,
+        actor_id=actor_id,
+        session_id=session_id,
+        messages=[(text, "ASSISTANT")],
+    )
+
+def get_timeline(session_id: str, actor_id: str):
+    return memory_client.list_events(
+        memory_id=MEMORY_ID, actor_id=actor_id, session_id=session_id
+    )</code></pre>
+    <pre><code># orchestrator/agent.py
+from strands import Agent, tool
+from strands.models import BedrockModel
+from strands_tools.a2a_client import A2AClientToolProvider
+from orchestrator.memory import record_event
+from shared.models import IncidentReport
+
+a2a_tools = A2AClientToolProvider(known_agent_urls=["http://localhost:9002/"])  # Remediation Agent
+model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+
+@tool
+def log_incident(incident_json: str, session_id: str) -> str:
+    """Persist an incoming IncidentReport to the AgentCore Memory timeline."""
+    report = IncidentReport.model_validate_json(incident_json)
+    record_event(session_id, "monitoring-agent", f"Incident {report.incident_id} detected: "
+                 f"{report.consecutive_failures} consecutive {report.last_status_code} on {report.endpoint}")
+    return f"logged incident {report.incident_id}"
+
+orchestrator = Agent(
+    model=model,
+    system_prompt=(
+        "You are the incident orchestrator. When you receive an IncidentReport, "
+        "call log_incident to persist it, then call the Remediation Agent's "
+        "diagnose_and_remediate skill with the same incident JSON. Relay its "
+        "final RemediationOutcome back as your response."
+    ),
+    tools=[log_incident] + a2a_tools.tools,
+)</code></pre>
+    <p>Expose this as an A2A server the same way as Project 9 — an <code>AgentExecutor</code> plus an <code>AgentCard</code> with a <code>report_incident</code> skill, served on port 9001.</p>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — Remediation Agent (LangGraph) with a human-in-the-loop interrupt</h2>
+    <p style="margin-bottom:.6rem">This is the critical piece. Mock the three runbook tools, then use LangGraph's <code>interrupt()</code> to pause the graph before <code>restart_service()</code> fires. The graph must be compiled with a checkpointer so it can actually pause and resume — a plain in-memory graph without a checkpointer cannot survive an interrupt across process boundaries.</p>
+    <pre><code># remediation_agent/tools.py
+def check_logs(service_name: str) -> str:
+    """Mock: return a canned but realistic log excerpt."""
+    return (
+        f"[{service_name}] 03:14:02 ERROR OOMKilled: container exceeded memory limit\n"
+        f"[{service_name}] 03:14:01 WARN  heap usage at 98% for 4m\n"
+        f"[{service_name}] 03:12:55 INFO  request rate spike: 4200 req/min (baseline 800)"
+    )
+
+def check_recent_deploys(service_name: str) -> dict:
+    """Mock: return the most recent deploy metadata."""
+    return {
+        "service": service_name,
+        "last_deploy_minutes_ago": 18,
+        "commit": "a1b2c3d",
+        "author": "jsmith",
+        "changed_files": ["cache_config.py", "worker_pool.py"],
+    }
+
+def restart_service(service_name: str) -> dict:
+    """Mock: actually 'restarts' the service (flips the health toggle back)."""
+    import httpx
+    httpx.post("http://localhost:8000/toggle", params={"broken": False})
+    return {"service": service_name, "restarted": True}</code></pre>
+    <pre><code># remediation_agent/graph.py
+from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import interrupt, Command
+from remediation_agent.tools import check_logs, check_recent_deploys, restart_service
+from shared.models import DiagnosisResult, RemediationOutcome
+
+class RemediationState(TypedDict):
+    incident_id: str
+    service_name: str
+    logs_excerpt: str
+    deploy_info: dict
+    diagnosis: DiagnosisResult
+    human_decision: str
+    outcome: RemediationOutcome
+
+def gather_logs(state: RemediationState) -> dict:
+    return {"logs_excerpt": check_logs(state["service_name"])}
+
+def gather_deploys(state: RemediationState) -> dict:
+    return {"deploy_info": check_recent_deploys(state["service_name"])}
+
+def diagnose(state: RemediationState) -> dict:
+    deploy_recent = state["deploy_info"]["last_deploy_minutes_ago"] < 30
+    diagnosis = DiagnosisResult(
+        incident_id=state["incident_id"],
+        root_cause_hypothesis="Likely OOM caused by a memory regression in the recent deploy"
+        if deploy_recent else "Likely traffic spike unrelated to recent deploys",
+        recent_deploy_suspected=deploy_recent,
+        recommended_action="restart_service",
+        logs_excerpt=state["logs_excerpt"],
+    )
+    return {"diagnosis": diagnosis}
+
+def human_approval_gate(state: RemediationState) -> dict:
+    # Pauses graph execution here. The value passed to interrupt() is
+    # surfaced to whatever is resuming the graph (e.g. a CLI prompt).
+    decision = interrupt({
+        "question": f"Approve restart_service for '{state['service_name']}'? "
+                     f"Root cause: {state['diagnosis'].root_cause_hypothesis}",
+        "incident_id": state["incident_id"],
+    })
+    return {"human_decision": decision}
+
+def apply_remediation(state: RemediationState) -> dict:
+    if state["human_decision"] != "approve":
+        outcome = RemediationOutcome(
+            incident_id=state["incident_id"], action_taken="none",
+            approved_by_human=False, success=False,
+            notes="Human rejected the proposed restart.",
+        )
+        return {"outcome": outcome}
+    result = restart_service(state["service_name"])
+    outcome = RemediationOutcome(
+        incident_id=state["incident_id"], action_taken="restart_service",
+        approved_by_human=True, success=result["restarted"],
+        notes="Service restarted after human approval.",
+    )
+    return {"outcome": outcome}
+
+graph = StateGraph(RemediationState)
+graph.add_node("gather_logs", gather_logs)
+graph.add_node("gather_deploys", gather_deploys)
+graph.add_node("diagnose", diagnose)
+graph.add_node("human_approval_gate", human_approval_gate)
+graph.add_node("apply_remediation", apply_remediation)
+graph.add_edge(START, "gather_logs")
+graph.add_edge("gather_logs", "gather_deploys")
+graph.add_edge("gather_deploys", "diagnose")
+graph.add_edge("diagnose", "human_approval_gate")
+graph.add_edge("human_approval_gate", "apply_remediation")
+graph.add_edge("apply_remediation", END)
+
+checkpointer = MemorySaver()
+remediation_graph = graph.compile(checkpointer=checkpointer)</code></pre>
+    <p style="margin-bottom:.4rem">Driving the interrupt/resume cycle from the agent executor — this is where the terminal approval prompt lives:</p>
+    <pre><code># remediation_agent/agent_executor.py
+from a2a.server.agent_execution import AgentExecutor, RequestContext
+from a2a.server.events import EventQueue
+from a2a.utils import new_task, new_agent_text_message
+from remediation_agent.graph import remediation_graph
+from langgraph.types import Command
+import json
+
+class RemediationExecutor(AgentExecutor):
+    async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
+        task = context.current_task or new_task(context.message)
+        await event_queue.enqueue_event(task)
+
+        incident = json.loads(context.get_user_input())
+        thread_config = {"configurable": {"thread_id": incident["incident_id"]}}
+
+        result = remediation_graph.invoke(
+            {"incident_id": incident["incident_id"], "service_name": incident.get("service_name", "web-frontend")},
+            config=thread_config,
+        )
+
+        if "__interrupt__" in result:
+            interrupt_payload = result["__interrupt__"][0].value
+            print(f"\n[HUMAN APPROVAL REQUIRED] {interrupt_payload['question']}")
+            decision = input("Type 'approve' or 'deny': ").strip().lower()
+            result = remediation_graph.invoke(Command(resume=decision), config=thread_config)
+
+        outcome = result["outcome"]
+        await event_queue.enqueue_event(
+            new_agent_text_message(outcome.model_dump_json(), task.context_id, task.id)
+        )</code></pre>
+    <div class="warn"><strong>Why this matters:</strong> The interrupt is not a UI nicety — it's the load-bearing safety control of the whole project. <code>restart_service()</code> only executes on the branch reached after <code>Command(resume="approve")</code> re-enters the graph past <code>human_approval_gate</code>. If you skip the checkpointer, <code>interrupt()</code> has nothing to resume into and the graph will error or silently re-run from the start.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 6 — Secure all three runtimes with Cognito OAuth</h2>
+    <p style="margin-bottom:.6rem">Follow the reference architecture's pattern: one Cognito User Pool, one resource server per agent (or a shared resource server with per-agent scopes), and an app client used by callers (Monitoring → Orchestrator → Remediation) to obtain bearer tokens via client-credentials flow.</p>
+    <pre><code>\# Create user pool + resource server + app client (adapt from the reference repo's setup script)
+aws cognito-idp create-user-pool --pool-name incident-response-pool
+aws cognito-idp create-resource-server \
+  --user-pool-id <POOL_ID> \
+  --identifier incident-agents \
+  --name "Incident Response Agents" \
+  --scopes ScopeName=invoke,ScopeDescription="Invoke agent runtime"
+aws cognito-idp create-user-pool-client \
+  --user-pool-id <POOL_ID> \
+  --client-name agent-caller \
+  --generate-secret \
+  --allowed-o-auth-flows client_credentials \
+  --allowed-o-auth-scopes incident-agents/invoke \
+  --allowed-o-auth-flows-user-pool-client</code></pre>
+    <pre><code># agentcore configure --authorizer-config to require the Cognito JWT on invocation
+agentcore configure \
+  --entrypoint agent.py \
+  --name orchestrator \
+  --authorizer-config '{"customJWTAuthorizer": {"discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/<POOL_ID>/.well-known/openid-configuration", "allowedClients": ["<APP_CLIENT_ID>"]}}'</code></pre>
+    <p>Each agent's A2A client (Monitoring calling Orchestrator, Orchestrator calling Remediation) must first fetch a token from Cognito's token endpoint and attach it as <code>Authorization: Bearer &lt;token&gt;</code> on the outbound JSON-RPC POST.</p>
+    <pre><code>import httpx
+
+def get_cognito_token(client_id, client_secret, token_url, scope):
+    resp = httpx.post(token_url, data={
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": scope,
+    })
+    return resp.json()["access_token"]</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 7 — Deploy all three agents and wire Observability</h2>
+    <pre><code># health service isn't deployed to AgentCore — keep it as a plain reachable
+# endpoint (e.g. a small ECS/EC2 box, or ngrok during dev) that all agents can hit
+
+cd remediation_agent && agentcore configure --entrypoint agent_executor.py --name remediation-agent && agentcore launch
+cd ../orchestrator     && agentcore configure --entrypoint agent.py --name orchestrator && agentcore launch
+cd ../monitoring_agent  && agentcore configure --entrypoint agent.py --name monitoring-agent && agentcore launch</code></pre>
+    <p style="margin:.6rem 0">AgentCore Observability auto-instruments each Runtime with OTel and ships spans to CloudWatch GenAI Observability by default — no extra SDK code needed beyond enabling it at launch time:</p>
+    <pre><code>agentcore launch --enable-observability</code></pre>
+    <p>Each A2A hop (Monitoring → Orchestrator, Orchestrator → Remediation), each LangGraph node execution, and the interrupt/resume boundary should appear as distinct spans in the trace, correlated by a shared trace/session ID.</p>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li>Toggle the outage on: <code>curl -X POST "http://localhost:8000/toggle?broken=true"</code>, then run the Monitoring Agent loop and confirm it detects 3 consecutive failures and fires an A2A call to the Orchestrator within ~3 poll intervals.</li>
+      <li>Confirm the Orchestrator wrote the timeline entry: <code>memory_client.list_events(memory_id=MEMORY_ID, actor_id="monitoring-agent", session_id=&lt;id&gt;)</code> returns the logged incident text.</li>
+      <li>Confirm the Remediation Agent actually pauses: watch for <code>[HUMAN APPROVAL REQUIRED] ...</code> printed to the terminal before <code>restart_service()</code> ever runs — grep your logs to prove <code>restart_service</code> was NOT called until after you typed <code>approve</code>.</li>
+      <li>Type <code>deny</code> once in a separate run and confirm <code>RemediationOutcome.success == false</code> and the health endpoint remains broken (<code>curl http://localhost:8000/health</code> still 500).</li>
+      <li>Type <code>approve</code> and confirm <code>curl http://localhost:8000/health</code> now returns <code>{"status": "ok"}</code>.</li>
+      <li>Open CloudWatch GenAI Observability (or run <code>agentcore observability trace --session-id &lt;id&gt;</code> if using the CLI viewer) and confirm you can see a single trace spanning all three agents with the interrupt as a visible gap in the span timeline.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>Graph resumes from the start instead of after the interrupt:</strong> you're invoking without the same <code>thread_id</code> in <code>config</code>, or you swapped <code>MemorySaver()</code> for a fresh instance between the initial call and the resume call. The checkpointer instance and thread_id must persist across both invocations of <code>remediation_graph.invoke(...)</code>.</li>
+      <li><strong>Cognito 401s on inter-agent calls:</strong> the token's <code>scope</code> claim must match what the receiving AgentCore Runtime's <code>customJWTAuthorizer.allowedClients</code>/scope config expects — decode the JWT (<code>jwt.io</code> or <code>python -c "import jwt; print(jwt.decode(token, options={'verify_signature': False}))"</code>) and confirm <code>scope</code> and <code>client_id</code> match your resource server config exactly.</li>
+      <li><strong>Monitoring Agent never fires an incident:</strong> confirm the toggle actually persisted (state is process-local to the FastAPI app — restarting <code>uvicorn</code> resets it to healthy) and that <code>consecutive_failures</code> resets to 0 on any single 200 in between polls, which can happen if you're running against a load balancer with multiple healthy replicas behind it.</li>
+      <li><strong>AgentCore Runtime port conflicts locally:</strong> each agent needs a distinct local port when testing with <code>agentcore launch --local</code> before deploying — reuse the 9000/9001/9002 convention from this guide and double check nothing else on your machine is already bound to those ports (<code>lsof -i :9001</code>).</li>
+      <li><strong>Observability trace is missing the interrupt gap:</strong> confirm you launched with <code>--enable-observability</code> and that both the pre-interrupt and post-resume <code>invoke()</code> calls share the same session/trace correlation ID passed through the A2A message metadata — otherwise CloudWatch shows two disconnected traces instead of one.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Commit a repo with <code>health_service/</code>, <code>monitoring_agent/</code>, <code>orchestrator/</code>, <code>remediation_agent/</code>, and <code>shared/</code> — plus a top-level README with the architecture diagram from this guide.</li>
+      <li>Record a short terminal screen capture (asciinema or a GIF) showing: toggle outage on → Monitoring detects → Orchestrator logs to Memory → Remediation asks for approval → you type <code>approve</code> → service comes back healthy. This is the single artifact that best demonstrates the human-in-the-loop safety pattern to a reviewer.</li>
+      <li>Include a redacted CloudWatch Observability trace screenshot showing the full 3-agent span tree with the interrupt gap visible.</li>
+      <li>Document the Cognito setup steps and link back to <a href="https://github.com/madhurprash/A2A-Multi-Agents-AgentCore" target="_blank">the reference repo ↗</a> as the architecture this project extends, being explicit about what you changed (the incident-response domain, the LangGraph interrupt gate, the mock health service) versus what you reused (the Cognito/AgentCore wiring pattern).</li>
+      <li>Call out in the README that this project demonstrates all four AgentCore pillars together — Runtime, Memory, Observability, Identity — which is a strong signal for "production-readiness" thinking versus a toy demo.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

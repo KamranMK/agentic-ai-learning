@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: Production Hardening</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#FFF4E0;color:#8A5800;border:1px solid #FFD166}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+table{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:12.5px}
+th,td{border:1px solid var(--border);padding:.4rem .6rem;text-align:left}
+th{background:var(--surface2);color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 3 · Project 3B</span>
+    <span class="badge badge-type">🛠 Build Guide</span>
+    <span class="badge badge-dur">~2 weekends</span>
+  </div>
+
+  <h1>Build Guide: Production Hardening</h1>
+  <div class="source">Companion build guide — hardens Project 3A (the AG-UI incident-response demo) with 5 concrete production additions</div>
+
+  <div class="section">
+    <h2>1. What You'll Build</h2>
+    <ul>
+      <li>Five concrete hardening additions layered onto the Project 3A AG-UI incident-response system, each independently verifiable</li>
+      <li><strong>(1) Observability</strong> — OTel tracing across all 3 agents, visualized in a CloudWatch dashboard showing per-agent latency</li>
+      <li><strong>(2) Guardrails</strong> — Bedrock Guardrails run in NotifyOnly mode against test traffic first, then switched to ENFORCE</li>
+      <li><strong>(3) Evaluation</strong> — an AgentCore Batch Evaluation job scoring the Remediation Agent's root-cause accuracy against 10 labeled synthetic incidents</li>
+      <li><strong>(4) A/B testing</strong> — two Orchestrator Agent prompt versions compared via AgentCore Performance Optimization, with a winner chosen by eval score</li>
+      <li><strong>(5) Identity</strong> — AgentCore Identity (Cognito OAuth 2.0) protecting the AG-UI endpoint so the frontend must authenticate before streaming</li>
+      <li>Final deliverable: <code>/docs/production-hardening.md</code> documenting all 5 additions with config snippets and evidence (screenshots, logs, scores)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Architecture</h2>
+    <pre><code>                     ┌─────────────────────────────────────────────────────────┐
+                     │              Bedrock AgentCore Runtime                    │
+   Cognito OAuth 2.0 │  ┌────────────┐   ┌──────────────┐   ┌────────────────┐  │
+   (5) ───────────▶  │  │ Monitoring │──▶│ Orchestrator  │──▶│  Remediation   │  │
+   token required     │  │   Agent    │   │  Agent (A/B)  │   │     Agent      │  │
+   before /run        │  └─────┬──────┘   └──────┬───────┘   └───────┬────────┘  │
+                     │        │  OTel spans (1) │                   │           │
+                     │        ▼                  ▼                   ▼           │
+                     │   ┌─────────────────────────────────────────────────┐    │
+                     │   │      OTel Collector → CloudWatch (1)             │    │
+                     │   └─────────────────────────────────────────────────┘    │
+                     │   Bedrock Guardrails (2): every model call checked        │
+                     │   AgentCore Batch Evals (3): scores Remediation output    │
+                     │   AgentCore Perf Optimization (4): A/B on Orchestrator    │
+                     └─────────────────────────────────────────────────────────┘</code></pre>
+    <p style="margin-top:.6rem">Each numbered addition is independent — you can build and verify them in any order, but the sequence below (Observability → Guardrails → Evals → A/B → Identity) puts the lowest-risk, highest-signal additions first.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Prerequisites</h2>
+    <ul>
+      <li>Project 3A working end-to-end (AG-UI frontend + backend on AgentCore Runtime)</li>
+      <li>AWS CLI configured with permissions for CloudWatch, Bedrock Guardrails, Cognito, and AgentCore Batch Evaluations / Performance Optimization</li>
+      <li><code>pip install opentelemetry-sdk opentelemetry-exporter-otlp opentelemetry-instrumentation-botocore boto3 bedrock-agentcore</code></li>
+      <li>AWS CDK or the AgentCore CLI (<code>agentcore configure</code> / <code>agentcore launch</code>) for redeploying the hardened backend</li>
+      <li>~10 labeled synthetic incident examples (you'll construct these in Step 3)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — OTel tracing to a CloudWatch dashboard</h2>
+    <p style="margin-bottom:.6rem">Instrument each agent node so every LLM call and tool call produces a span, exported via OTLP to AWS Distro for OpenTelemetry (ADOT), which forwards to CloudWatch.</p>
+    <pre><code># backend/observability.py
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+
+resource = Resource.create({"service.name": "incident-response-agents"})
+provider = TracerProvider(resource=resource)
+provider.add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True))
+)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer("incident.agents")
+
+def traced_node(agent_name: str):
+    """Decorator: wraps a LangGraph node function in an OTel span."""
+    def decorator(fn):
+        def wrapper(state):
+            with tracer.start_as_current_span(f"{agent_name}.invoke") as span:
+                span.set_attribute("agent.name", agent_name)
+                span.set_attribute("incident.id", state.get("incident_id", "unknown"))
+                result = fn(state)
+                span.set_attribute("agent.output_tokens", len(str(result)))
+                return result
+        return wrapper
+    return decorator
+
+# Usage on each agent node:
+# @traced_node("monitoring_agent")
+# def monitoring_node(state): ...</code></pre>
+    <pre><code># ADOT collector config (otel-collector-config.yaml) — run as a sidecar or on AgentCore
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+exporters:
+  awsemf:
+    namespace: IncidentResponseAgents
+    log_group_name: /agentcore/incident-response/traces
+    metric_declarations:
+      - dimensions: [[agent.name]]
+        metric_name_selectors: ["agent.latency_ms"]
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [awsemf]</code></pre>
+    <p style="margin:.6rem 0 .4rem">Sample CloudWatch dashboard definition (per-agent latency, p50/p99):</p>
+    <pre><code>{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "title": "Per-Agent Latency (p50 / p99)",
+        "metrics": [
+          ["IncidentResponseAgents", "agent.latency_ms", "agent.name", "monitoring_agent", {"stat": "p50"}],
+          ["...", {"stat": "p99"}],
+          ["IncidentResponseAgents", "agent.latency_ms", "agent.name", "orchestrator_agent", {"stat": "p50"}],
+          ["IncidentResponseAgents", "agent.latency_ms", "agent.name", "remediation_agent", {"stat": "p50"}]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "view": "timeSeries"
+      }
+    }
+  ]
+}</code></pre>
+    <pre><code>aws cloudwatch put-dashboard \
+  --dashboard-name IncidentResponseAgentLatency \
+  --dashboard-body file://dashboard.json</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Bedrock Guardrails: NotifyOnly, then ENFORCE</h2>
+    <pre><code># guardrail_config.json
+{
+  "name": "incident-response-guardrail",
+  "blockedInputMessaging": "This request violates content policy.",
+  "blockedOutputsMessaging": "Response withheld by guardrail.",
+  "topicPolicyConfig": {
+    "topicsConfig": [
+      {"name": "OffTopic", "definition": "Requests unrelated to infrastructure incidents", "type": "DENY"}
+    ]
+  },
+  "sensitiveInformationPolicyConfig": {
+    "piiEntitiesConfig": [
+      {"type": "EMAIL", "action": "ANONYMIZE"},
+      {"type": "US_SOCIAL_SECURITY_NUMBER", "action": "BLOCK"}
+    ]
+  },
+  "contentPolicyConfig": {
+    "filtersConfig": [
+      {"type": "VIOLENCE", "inputStrength": "MEDIUM", "outputStrength": "MEDIUM"}
+    ]
+  }
+}</code></pre>
+    <pre><code># Create the guardrail, initially in NotifyOnly (create a version, apply via NotifyOnly mode)
+aws bedrock create-guardrail \
+  --cli-input-json file://guardrail_config.json \
+  --region us-east-1
+
+# Run a batch of test traffic (e.g. 50 real incident transcripts) against it
+# in "shadow"/NotifyOnly mode -- log violations without blocking:
+aws bedrock apply-guardrail \
+  --guardrail-identifier <guardrail-id> \
+  --guardrail-version DRAFT \
+  --source INPUT \
+  --content '[{"text": {"text": "<test message>"}}]'
+
+# Inspect the violations logged to CloudWatch Logs, tune thresholds, then
+# promote to ENFORCE by publishing a version and wiring it into the
+# Orchestrator's model invocation with guardrailConfig:
+aws bedrock create-guardrail-version --guardrail-identifier <guardrail-id></code></pre>
+    <pre><code># In the agent's Bedrock invocation, attach the guardrail once promoted to ENFORCE
+response = bedrock_runtime.converse(
+    modelId="us.anthropic.claude-sonnet-4-5-20251001-v1:0",
+    messages=messages,
+    guardrailConfig={
+        "guardrailIdentifier": "<guardrail-id>",
+        "guardrailVersion": "1",
+        "trace": "enabled",
+    },
+)</code></pre>
+    <div class="callout"><strong>Key insight:</strong> NotifyOnly first is not optional caution — it's how you calibrate thresholds against real traffic before you risk blocking a legitimate incident-response message during an actual outage.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — AgentCore Batch Evaluations on the Remediation Agent</h2>
+    <pre><code># eval_dataset.jsonl -- 10 labeled synthetic incidents
+{"incident_id": "inc-001", "input": "checkout-service returning 503s, CPU at 95%", "expected_root_cause": "cpu_saturation", "expected_action": "restart_service"}
+{"incident_id": "inc-002", "input": "auth-service latency p99 spiked to 8s, DB connections maxed", "expected_root_cause": "db_connection_pool_exhaustion", "expected_action": "scale_db_pool"}
+{"incident_id": "inc-003", "input": "payments-service OOMKilled repeatedly", "expected_root_cause": "memory_leak", "expected_action": "restart_service"}
+... (7 more, covering disk pressure, network partition, bad deploy, cert expiry,
+     downstream dependency timeout, rate-limit exhaustion, config drift)</code></pre>
+    <pre><code># Run a Batch Evaluation job scoring root-cause accuracy
+from bedrock_agentcore.evaluation import BatchEvaluationJob
+
+job = BatchEvaluationJob(
+    name="remediation-root-cause-eval-v1",
+    agent_endpoint="https://<runtime-id>.agentcore.us-east-1.amazonaws.com/run",
+    dataset_path="eval_dataset.jsonl",
+    metrics=["root_cause_accuracy", "action_match", "latency_ms"],
+    scorer="exact_match",  # compares expected_root_cause to agent's diagnosed_root_cause
+)
+result = job.run()
+print(result.summary())
+# {'root_cause_accuracy': 0.8, 'action_match': 0.9, 'mean_latency_ms': 2140}</code></pre>
+    <pre><code>agentcore evaluate batch --job-config eval_job.yaml --dataset eval_dataset.jsonl</code></pre>
+    <ul>
+      <li>Store results in <code>results/eval_scores.json</code> with a timestamp so you can track score deltas across prompt/model changes over time</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — A/B test two Orchestrator prompt versions</h2>
+    <pre><code># prompt_v1.txt — baseline orchestrator prompt
+"You are the Orchestrator. Given monitoring signals, decide which
+remediation action to recommend. Be concise."
+
+# prompt_v2.txt — candidate, adds explicit reasoning structure
+"You are the Orchestrator. Given monitoring signals: (1) identify the
+most likely root cause category, (2) map it to one of the known
+remediation actions, (3) state your confidence 0-1. Be concise."</code></pre>
+    <pre><code># ab_test_config.yaml
+experiment_name: orchestrator-prompt-ab-v1-vs-v2
+variants:
+  - name: baseline
+    prompt_path: prompt_v1.txt
+    traffic_pct: 50
+  - name: structured_reasoning
+    prompt_path: prompt_v2.txt
+    traffic_pct: 50
+evaluation:
+  dataset: eval_dataset.jsonl
+  metrics: [root_cause_accuracy, action_match]
+  winner_criteria: root_cause_accuracy</code></pre>
+    <pre><code>agentcore optimize ab-test --config ab_test_config.yaml --dataset eval_dataset.jsonl
+
+# Example output:
+# variant=baseline              root_cause_accuracy=0.70  action_match=0.80
+# variant=structured_reasoning  root_cause_accuracy=0.90  action_match=0.90
+# winner: structured_reasoning (root_cause_accuracy +0.20)</code></pre>
+    <ul>
+      <li>Promote the winning prompt into the Orchestrator's deployed system prompt and re-run the Step 3 batch eval to confirm the improvement holds outside the A/B harness</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — AgentCore Identity: Cognito OAuth 2.0 on the AG-UI endpoint</h2>
+    <pre><code># Create a Cognito User Pool + App Client
+aws cognito-idp create-user-pool --pool-name incident-response-users
+
+aws cognito-idp create-user-pool-client \
+  --user-pool-id <pool-id> \
+  --client-name agui-frontend \
+  --generate-secret \
+  --allowed-o-auth-flows code \
+  --allowed-o-auth-scopes openid profile \
+  --callback-urls "https://your-frontend.vercel.app/callback"</code></pre>
+    <pre><code># Wire AgentCore Identity in front of the AG-UI endpoint
+agentcore identity configure \
+  --runtime-name incident-agui-endpoint \
+  --provider cognito \
+  --user-pool-id <pool-id> \
+  --client-id <client-id></code></pre>
+    <pre><code>// Frontend: acquire a token before opening the SSE stream
+import { Auth } from "@aws-amplify/auth";
+
+async function fetchWithAuth(url: string, init: RequestInit) {
+  const session = await Auth.currentSession();
+  const idToken = session.getIdToken().getJwtToken();
+  return fetch(url, {
+    ...init,
+    headers: { ...init.headers, Authorization: `Bearer ${idToken}` },
+  });
+}
+// Use fetchWithAuth(...) in place of the plain fetch() calls in useAgUiStream.ts (p3-8 guide)</code></pre>
+    <div class="warn"><strong>Common gap:</strong> EventSource (native browser SSE) cannot set custom headers. Since our frontend does a POST + manual stream reader (as built in p3-8), attaching the Authorization header is straightforward — if you switch to native <code>EventSource</code>, you'll need a signed query-param token instead.</div>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li>CloudWatch dashboard shows non-zero, distinct p50/p99 latency lines for all 3 agent names after running a few incidents</li>
+      <li>NotifyOnly test batch produces violation log entries in CloudWatch Logs with zero requests blocked; after switching to ENFORCE, a deliberately bad-PII test message is blocked</li>
+      <li><code>agentcore evaluate batch</code> returns a JSON summary with <code>root_cause_accuracy</code> ≥ 0.7 on the 10-incident set</li>
+      <li>A/B test output clearly names a winner variant with a higher score than baseline</li>
+      <li>An unauthenticated <code>curl -X POST .../run</code> against the deployed endpoint returns 401; a request with a valid Cognito ID token succeeds</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>No spans showing up in CloudWatch:</strong> confirm the OTel collector's <code>awsemf</code> exporter has IAM permission for <code>logs:PutLogEvents</code> and that the collector is actually reachable from AgentCore Runtime (same VPC/security group).</li>
+      <li><strong>Guardrail blocks everything in ENFORCE mode:</strong> your NotifyOnly calibration pass logged violations against too broad a topic definition — narrow <code>topicsConfig</code> definitions and re-test with the same batch before re-promoting.</li>
+      <li><strong>Batch eval job hangs or times out:</strong> verify the agent endpoint used in <code>agent_endpoint</code> is reachable outside your local network (a localhost URL won't work from AgentCore's evaluation service) — deploy first, then point the eval job at the deployed URL.</li>
+      <li><strong>401s persist even with a valid token:</strong> check clock skew between your machine and Cognito (JWT `exp`/`iat` validation is strict) and confirm the App Client's allowed OAuth scopes match what the frontend requests.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Write <code>/docs/production-hardening.md</code> in the same repo as Project 3A, with one section per addition (1–5), each including: the config snippet used, a screenshot (CloudWatch dashboard, Guardrail violation log, eval summary JSON, A/B result table, Cognito pool), and a one-line "why this matters" note</li>
+      <li>Commit <code>results/eval_scores.json</code> and the A/B test output so reviewers can see before/after numbers, not just claims</li>
+      <li>This is the section of your portfolio that most differentiates you — most candidates ship working demos; almost none document guardrails, evals, and A/B methodology this concretely</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

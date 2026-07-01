@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: Capstone — Autonomous DS Pipeline Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#FDECEF;color:#B52040;border:1px solid #F5B3C0}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+table{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:12.5px}
+th,td{border:1px solid var(--border);padding:.4rem .6rem;text-align:left}
+th{background:var(--surface2);color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 4 · Capstone</span>
+    <span class="badge badge-type">🛠 Build Guide</span>
+    <span class="badge badge-dur">~3-4 weekends</span>
+  </div>
+
+  <h1>Build Guide: Capstone — Autonomous DS Pipeline Agent</h1>
+  <div class="source">Synthesis capstone — combines Strands/PydanticAI, LangGraph, MCP, A2A, AG-UI, and every AgentCore production pattern from Phase 3 into one portfolio-anchor project</div>
+
+  <div class="section">
+    <h2>1. What You'll Build</h2>
+    <ul>
+      <li>A 4-agent autonomous data-science pipeline that takes a <strong>CSV dataset + target column name</strong> and produces a complete, human-reviewed DS report — no manual notebook work</li>
+      <li>Test case: the <strong>Titanic</strong> dataset (survival, binary classification) from Kaggle/OpenML — small, fast to run, well-understood ground truth for sanity-checking agent output</li>
+      <li>The 4 agents:
+        <ul>
+          <li><strong>Planner</strong> (PydanticAI) — decomposes the task into a typed <code>ExperimentPlan</code> (e.g. try logistic regression, random forest, gradient boosting)</li>
+          <li><strong>Specialist agents</strong> (Strands, one per experiment) — each executes one experiment in a sandboxed Python tool, returning a typed <code>ExperimentResult</code></li>
+          <li><strong>Critic</strong> (LangGraph, checkpointed) — scores all results against a rubric, may loop back to the Planner once, gated by a human-in-the-loop approval step</li>
+          <li><strong>Reporter</strong> — streams the final markdown report + chart images live via AG-UI</li>
+        </ul>
+      </li>
+      <li>All three protocol layers wired end to end: <strong>MCP</strong> for tool access (dataset loading, sandboxed code execution), <strong>A2A</strong> for Planner→Specialist→Critic→Reporter handoffs, <strong>AG-UI</strong> for streaming the result to a human</li>
+      <li>Deployed on <strong>Bedrock AgentCore</strong> with Identity, Observability, Guardrails, and Batch Evaluations wired in (reusing the exact patterns from the <a href="p3-9.html">Production Hardening guide</a>)</li>
+      <li>Deliverables checklist:
+        <ul>
+          <li>Full repo with README architecture diagram</li>
+          <li>OTel trace screenshot across all 4 agents</li>
+          <li>Eval score log: baseline vs. after a prompt/model change (Pydantic Evals or AgentCore A/B)</li>
+          <li><code>results/</code> folder with the actual generated Titanic report (markdown + chart PNGs)</li>
+          <li>A 2-minute demo video walking through a live run</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Architecture</h2>
+    <pre><code>User ──(AG-UI chat: "analyze titanic.csv, target=Survived")──▶ Reporter/Gateway (AG-UI SSE)
+                                                                       │
+                                                                       │ A2A task
+                                                                       ▼
+                                                              ┌─────────────────┐
+                                                              │    PLANNER      │  PydanticAI
+                                                              │ (ExperimentPlan)│  output_type=ExperimentPlan
+                                                              └────────┬────────┘
+                                                        A2A fan-out (task per experiment)
+                                       ┌───────────────────────────┼───────────────────────────┐
+                                       ▼                            ▼                            ▼
+                              ┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+                              │  SPECIALIST #1  │         │  SPECIALIST #2  │         │  SPECIALIST #3  │   Strands agents
+                              │ logistic_regr.  │         │  random_forest  │         │ gradient_boost. │   + MCP python_repl
+                              │ → ExperimentResult        │ → ExperimentResult        │ → ExperimentResult
+                              └────────┬────────┘         └────────┬────────┘         └────────┬────────┘
+                                       └───────────── A2A results ─┴───────────────────────────┘
+                                                                    ▼
+                                                          ┌───────────────────┐
+                                                          │      CRITIC       │  LangGraph + checkpointer
+                                                          │  scores vs rubric  │  interrupt() before finalize
+                                                          │  loop back? (x1)   │  or before another round
+                                                          └─────────┬─────────┘
+                                                     A2A task ──────┤ (approved)
+                                                                    ▼
+                                                          ┌───────────────────┐
+                                                          │     REPORTER      │  streams markdown + charts
+                                                          │  AG-UI SSE stream │  via TEXT_MESSAGE_* events
+                                                          └─────────┬─────────┘
+                                                                    ▼
+                                                          results/titanic_report.md + charts/*.png
+
+MCP layer: a "ds-tools" MCP server exposes load_dataset() and run_sandboxed_python() to
+Planner + Specialists. All 4 agents run on Bedrock AgentCore Runtime with Identity
+(Cognito), Observability (OTel → CloudWatch), Guardrails, and Batch Evaluations attached
+— see the Production Hardening guide (p3-9) for the exact wiring of those four.</code></pre>
+    <div class="callout"><strong>Key insight:</strong> this capstone doesn't introduce new protocol concepts — it composes the ones you already built. MCP gives every agent safe tool access without hardcoding tool implementations into agent code; A2A lets the Planner hand off to Specialists it doesn't need to know the internals of; AG-UI is the only layer a human ever touches directly.</div>
+  </div>
+
+  <div class="section">
+    <h2>3. Prerequisites</h2>
+    <ul>
+      <li>Completed Phase 3 guides — <a href="p3-8.html">AG-UI Streaming Interface</a> and <a href="p3-9.html">Production Hardening</a> — you will reuse their code directly</li>
+      <li>Python ≥ 3.11: <code>pip install pydantic-ai strands-agents strands-agents-tools langgraph mcp a2a-sdk bedrock-agentcore pandas scikit-learn matplotlib pydantic-evals</code></li>
+      <li>AWS account with Bedrock model access, AgentCore Runtime, Guardrails, and Batch Evaluation permissions (same as p3-9)</li>
+      <li>The Titanic dataset CSV (<code>titanic.csv</code>, columns include <code>Survived</code>, <code>Pclass</code>, <code>Sex</code>, <code>Age</code>, <code>Fare</code>, …) downloaded from Kaggle or <code>openml.org</code> into <code>data/titanic.csv</code></li>
+      <li>Node.js ≥ 20 if you're reusing the p3-8 React frontend as the Reporter's UI</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — Define the typed contracts</h2>
+    <p style="margin-bottom:.6rem">Every handoff in this pipeline (Planner→Specialist, Specialist→Critic, Critic→Reporter) is a typed Pydantic model, not free text. This is what makes A2A handoffs and evals reliable.</p>
+    <pre><code># shared/schemas.py
+from typing import Literal, Optional
+from pydantic import BaseModel, Field
+
+class Experiment(BaseModel):
+    id: str
+    model_type: Literal["logistic_regression", "random_forest", "gradient_boosting"]
+    hyperparams: dict[str, float | int | str] = Field(default_factory=dict)
+    rationale: str = Field(description="Why this model/config was chosen")
+
+class ExperimentPlan(BaseModel):
+    dataset_path: str
+    target_column: str
+    dataset_summary: str = Field(description="Rows, columns, dtypes, class balance")
+    experiments: list[Experiment]
+    round: int = 1
+
+class FeatureImportance(BaseModel):
+    feature: str
+    importance: float
+
+class ExperimentResult(BaseModel):
+    experiment_id: str
+    model_type: str
+    accuracy: float
+    f1_score: float
+    roc_auc: Optional[float] = None
+    training_time_s: float
+    feature_importances: list[FeatureImportance]
+    error: Optional[str] = None
+
+class CriticVerdict(BaseModel):
+    best_experiment_id: str
+    best_metric_value: float
+    interpretability_rank: list[str]  # experiment_ids, most to least interpretable
+    needs_another_round: bool
+    critique: str = Field(description="Feedback for the Planner if another round is needed")
+
+class FinalReport(BaseModel):
+    title: str
+    summary_markdown: str
+    winning_experiment: ExperimentResult
+    chart_paths: list[str]</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Build the Planner agent (PydanticAI)</h2>
+    <pre><code># agents/planner.py
+from pydantic_ai import Agent, RunContext
+from shared.schemas import ExperimentPlan
+import pandas as pd
+
+planner_agent = Agent(
+    "bedrock:us.anthropic.claude-sonnet-4-5-20251001-v1:0",
+    output_type=ExperimentPlan,
+    system_prompt=(
+        "You are a senior data scientist planning agent. Given a dataset summary "
+        "and a target column, propose 3 experiments spanning different model families "
+        "(a linear baseline, a tree ensemble, and a boosting method). For each, give "
+        "concrete hyperparameters and a one-sentence rationale. If you are given prior "
+        "critique from a previous round, use it to propose materially different "
+        "experiments — do not repeat the same configs."
+    ),
+)
+
+@planner_agent.tool
+def profile_dataset(ctx: RunContext[None], dataset_path: str, target_column: str) -> str:
+    """Load the CSV and return a compact profile: shape, dtypes, target class balance,
+    missing-value counts. Used by the Planner to ground its plan in real data stats."""
+    df = pd.read_csv(dataset_path)
+    profile = {
+        "shape": df.shape,
+        "dtypes": df.dtypes.astype(str).to_dict(),
+        "target_balance": df[target_column].value_counts(normalize=True).to_dict(),
+        "missing": df.isna().sum().to_dict(),
+    }
+    return str(profile)
+
+async def plan_experiments(dataset_path: str, target_column: str, prior_critique: str | None = None) -> ExperimentPlan:
+    prompt = f"Dataset: {dataset_path}, target: {target_column}."
+    if prior_critique:
+        prompt += f" Prior round critique: {prior_critique}"
+    result = await planner_agent.run(prompt)
+    return result.output</code></pre>
+    <div class="warn"><strong>PydanticAI v2 note:</strong> the result field is <code>output_type</code> / <code>result.output</code> (renamed from the older <code>result_type</code>/<code>result.data</code>). Check your installed version's changelog if this differs.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — Stand up the MCP tool server (dataset + sandboxed execution)</h2>
+    <p style="margin-bottom:.6rem">Both the Planner (dataset profiling, shown inline above as a native tool) and the Specialists (sandboxed training code) need tool access. Exposing the sandboxed executor via MCP means any agent — regardless of framework — can call it identically.</p>
+    <pre><code># mcp_server/ds_tools.py
+from mcp.server.fastmcp import FastMCP
+import pandas as pd, subprocess, tempfile, json, textwrap
+
+mcp = FastMCP("ds-pipeline-tools")
+
+@mcp.tool()
+def load_dataset_schema(dataset_path: str) -> dict:
+    """Return column names, dtypes, and row count for a CSV dataset."""
+    df = pd.read_csv(dataset_path)
+    return {"columns": list(df.columns), "dtypes": df.dtypes.astype(str).to_dict(), "rows": len(df)}
+
+@mcp.tool()
+def run_sandboxed_python(code: str, timeout_s: int = 60) -> dict:
+    """Execute Python training code in an isolated subprocess with no network access.
+    The code must print a single JSON object with keys: accuracy, f1_score, roc_auc,
+    training_time_s, feature_importances. Returns {"stdout": ..., "stderr": ..., "ok": bool}."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+        f.write(code)
+        script_path = f.name
+    try:
+        proc = subprocess.run(
+            ["python", script_path],
+            capture_output=True, text=True, timeout=timeout_s,
+            env={"PATH": "/usr/bin:/bin"},  # minimal env, no AWS creds, no network libs
+        )
+        return {"stdout": proc.stdout, "stderr": proc.stderr, "ok": proc.returncode == 0}
+    except subprocess.TimeoutExpired:
+        return {"stdout": "", "stderr": "timeout", "ok": False}
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")</code></pre>
+    <div class="warn"><strong>Production note:</strong> a bare <code>subprocess</code> sandbox is fine for a portfolio demo but is not a real security boundary. For production, swap <code>run_sandboxed_python</code> for <code>strands_tools.python_repl</code> running inside an AgentCore Code Interpreter session, or an AWS Lambda with no outbound network access and a strict execution role.</div>
+    <pre><code># register the MCP server with a client (Strands example)
+from strands.tools.mcp import MCPClient
+from mcp.client.stdio import StdioServerParameters
+
+ds_tools_client = MCPClient(
+    StdioServerParameters(command="python", args=["mcp_server/ds_tools.py"])
+)</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — Build the Specialist agents (Strands + sandboxed execution)</h2>
+    <pre><code># agents/specialist.py
+from strands import Agent
+from shared.schemas import Experiment, ExperimentResult, FeatureImportance
+from mcp_server_client import ds_tools_client  # wraps the MCPClient from Step 3
+import json, time
+
+TRAIN_CODE_TEMPLATE = """
+import pandas as pd, json, time
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
+df = pd.read_csv("{dataset_path}")
+df = df.select_dtypes(include=["number"]).fillna(df.median(numeric_only=True))
+X = df.drop(columns=["{target_column}"])
+y = df["{target_column}"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = {model_ctor}
+start = time.time()
+model.fit(X_train, y_train)
+elapsed = time.time() - start
+preds = model.predict(X_test)
+proba = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+
+importances = getattr(model, "feature_importances_", None)
+if importances is None and hasattr(model, "coef_"):
+    importances = abs(model.coef_[0])
+fi = dict(zip(X.columns, importances)) if importances is not None else {{}}
+
+print(json.dumps({{
+    "accuracy": accuracy_score(y_test, preds),
+    "f1_score": f1_score(y_test, preds),
+    "roc_auc": roc_auc_score(y_test, proba) if proba is not None else None,
+    "training_time_s": elapsed,
+    "feature_importances": fi,
+}}))
+"""
+
+MODEL_CTORS = {
+    "logistic_regression": "LogisticRegression(max_iter=1000)",
+    "random_forest": "RandomForestClassifier(n_estimators=200, random_state=42)",
+    "gradient_boosting": "GradientBoostingClassifier(random_state=42)",
+}
+
+specialist_agent = Agent(
+    system_prompt="You are a specialist ML engineer. Run exactly one experiment and "
+                  "report back a structured result. Do not modify the training approach "
+                  "you were assigned.",
+    tools=[ds_tools_client.tool.run_sandboxed_python],
+)
+
+async def run_experiment(experiment: Experiment, dataset_path: str, target_column: str) -> ExperimentResult:
+    code = TRAIN_CODE_TEMPLATE.format(
+        dataset_path=dataset_path,
+        target_column=target_column,
+        model_ctor=MODEL_CTORS[experiment.model_type],
+    )
+    raw = specialist_agent.tool.run_sandboxed_python(code=code, timeout_s=90)
+    if not raw["ok"]:
+        return ExperimentResult(
+            experiment_id=experiment.id, model_type=experiment.model_type,
+            accuracy=0, f1_score=0, training_time_s=0, feature_importances=[],
+            error=raw["stderr"],
+        )
+    metrics = json.loads(raw["stdout"].strip().splitlines()[-1])
+    return ExperimentResult(
+        experiment_id=experiment.id,
+        model_type=experiment.model_type,
+        accuracy=metrics["accuracy"],
+        f1_score=metrics["f1_score"],
+        roc_auc=metrics.get("roc_auc"),
+        training_time_s=metrics["training_time_s"],
+        feature_importances=[
+            FeatureImportance(feature=k, importance=v)
+            for k, v in sorted(metrics["feature_importances"].items(), key=lambda kv: -kv[1])[:5]
+        ],
+    )</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — Wire A2A handoffs (Planner → Specialists → Critic → Reporter)</h2>
+    <p style="margin-bottom:.6rem">Each agent publishes an A2A Agent Card and exposes a task endpoint. The orchestration script (or the Planner itself) fans work out to Specialists and collects results — see the Phase 2 guides for full Agent Card setup; the pattern here is the same, applied 3 times.</p>
+    <pre><code>// agent_cards/specialist-random-forest.json
+{
+  "name": "specialist-random-forest",
+  "description": "Executes a single random_forest experiment and returns a typed ExperimentResult",
+  "url": "https://specialist-rf.internal.agentcore.aws/a2a",
+  "version": "1.0.0",
+  "capabilities": { "streaming": false },
+  "skills": [
+    { "id": "run-experiment", "name": "Run Experiment", "inputModes": ["application/json"], "outputModes": ["application/json"] }
+  ]
+}</code></pre>
+    <pre><code># orchestration/run_pipeline.py
+from a2a.client import A2AClient
+from shared.schemas import ExperimentPlan, ExperimentResult
+import asyncio
+
+SPECIALIST_CARDS = {
+    "logistic_regression": "agent_cards/specialist-logreg.json",
+    "random_forest": "agent_cards/specialist-random-forest.json",
+    "gradient_boosting": "agent_cards/specialist-gbm.json",
+}
+
+async def dispatch_to_specialists(plan: ExperimentPlan) -> list[ExperimentResult]:
+    async def send_one(exp):
+        client = A2AClient.from_card_path(SPECIALIST_CARDS[exp.model_type])
+        task = await client.send_task(
+            message={"role": "user", "parts": [{"type": "data", "data": exp.model_dump()}]}
+        )
+        result_payload = task.artifacts[0].parts[0].data
+        return ExperimentResult.model_validate(result_payload)
+
+    return await asyncio.gather(*(send_one(exp) for exp in plan.experiments))</code></pre>
+    <div class="callout"><strong>Why A2A here and not just function calls:</strong> each Specialist can be deployed as its own AgentCore Runtime with its own scaling, its own Guardrail config, and its own observability — exactly the kind of independent-lifecycle-per-agent scenario A2A is designed for, unlike MCP (tool access) or AG-UI (human-facing streaming).</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 6 — Build the Critic (LangGraph, checkpointed, HITL-gated loop)</h2>
+    <pre><code># agents/critic.py
+from typing import TypedDict, Optional
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import interrupt, Command
+from shared.schemas import ExperimentPlan, ExperimentResult, CriticVerdict
+from agents.planner import plan_experiments
+from orchestration.run_pipeline import dispatch_to_specialists
+
+class PipelineState(TypedDict):
+    plan: ExperimentPlan
+    results: list[ExperimentResult]
+    round: int
+    verdict: Optional[CriticVerdict]
+
+def plan_node(state: PipelineState) -> dict:
+    prior_critique = state["verdict"].critique if state.get("verdict") else None
+    plan = plan_experiments_sync(state["plan"].dataset_path, state["plan"].target_column, prior_critique)
+    plan.round = state.get("round", 0) + 1
+    return {"plan": plan, "round": plan.round}
+
+def run_experiments_node(state: PipelineState) -> dict:
+    results = dispatch_to_specialists_sync(state["plan"])
+    return {"results": results}
+
+def critic_node(state: PipelineState) -> dict:
+    results = state["results"]
+    ranked = sorted(results, key=lambda r: r.f1_score, reverse=True)
+    best = ranked[0]
+    # Rubric: best metric (f1), interpretability (linear > tree > boosting), training time
+    interpretability_order = {"logistic_regression": 0, "random_forest": 1, "gradient_boosting": 2}
+    interpretability_rank = sorted(
+        [r.experiment_id for r in results],
+        key=lambda eid: interpretability_order[next(r.model_type for r in results if r.experiment_id == eid)]
+    )
+    needs_another_round = best.f1_score < 0.75 and state["round"] < 2
+    verdict = CriticVerdict(
+        best_experiment_id=best.experiment_id,
+        best_metric_value=best.f1_score,
+        interpretability_rank=interpretability_rank,
+        needs_another_round=needs_another_round,
+        critique="F1 below 0.75 threshold; try regularization tuning and feature engineering on Age/Fare bins."
+        if needs_another_round else "",
+    )
+    return {"verdict": verdict}
+
+def human_gate_node(state: PipelineState) -> Command:
+    verdict = state["verdict"]
+    decision = interrupt({
+        "question": "Critic recommends another round" if verdict.needs_another_round else "Ready to finalize report",
+        "verdict": verdict.model_dump(),
+        "round": state["round"],
+    })
+    if verdict.needs_another_round and decision.get("approved"):
+        return Command(goto="plan")
+    return Command(goto="__end__")
+
+graph = StateGraph(PipelineState)
+graph.add_node("plan", plan_node)
+graph.add_node("run_experiments", run_experiments_node)
+graph.add_node("critic", critic_node)
+graph.add_node("human_gate", human_gate_node)
+graph.set_entry_point("plan")
+graph.add_edge("plan", "run_experiments")
+graph.add_edge("run_experiments", "critic")
+graph.add_edge("critic", "human_gate")
+
+critic_app = graph.compile(checkpointer=MemorySaver())</code></pre>
+    <div class="warn"><strong>HITL gate placement:</strong> the interrupt fires whether or not the Critic wants another round — a human must approve <em>either</em> "loop back" <em>or</em> "finalize now", which mirrors the spec's requirement that the loop-back is human-gated, not automatic.</div>
+    <ul>
+      <li><code>plan_experiments_sync</code> and <code>dispatch_to_specialists_sync</code> are thin sync wrappers around the async functions from Steps 2 and 5 (use <code>asyncio.run</code> or an async-aware LangGraph node if you're on LangGraph's native async node support)</li>
+      <li>Checkpointing means a crash or redeploy mid-pipeline resumes exactly where it left off — swap <code>MemorySaver</code> for <code>PostgresSaver</code> in production</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 7 — Build the Reporter (streams via AG-UI)</h2>
+    <p style="margin-bottom:.6rem">The Reporter reuses the exact AG-UI SSE server pattern from <a href="p3-8.html">the AG-UI guide</a> — swap the incident-response LangGraph app for this pipeline's <code>critic_app</code>, and add chart generation before streaming the final markdown.</p>
+    <pre><code># agents/reporter.py
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from shared.schemas import ExperimentResult, FinalReport
+
+def generate_charts(results: list[ExperimentResult], out_dir: str = "results/charts") -> list[str]:
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+    paths = []
+
+    fig, ax = plt.subplots()
+    ax.bar([r.model_type for r in results], [r.f1_score for r in results], color="#26547C")
+    ax.set_ylabel("F1 score")
+    ax.set_title("Experiment comparison")
+    path = f"{out_dir}/f1_comparison.png"
+    fig.savefig(path, dpi=120, bbox_inches="tight")
+    paths.append(path)
+
+    best = max(results, key=lambda r: r.f1_score)
+    fig2, ax2 = plt.subplots()
+    fi = sorted(best.feature_importances, key=lambda f: -f.importance)[:5]
+    ax2.barh([f.feature for f in fi], [f.importance for f in fi], color="#06D6A0")
+    ax2.set_title(f"Top features — {best.model_type}")
+    path2 = f"{out_dir}/feature_importance.png"
+    fig2.savefig(path2, dpi=120, bbox_inches="tight")
+    paths.append(path2)
+
+    return paths
+
+def render_markdown_report(results: list[ExperimentResult], chart_paths: list[str]) -> str:
+    best = max(results, key=lambda r: r.f1_score)
+    lines = [
+        "# Autonomous DS Pipeline Report — Titanic Survival",
+        "",
+        f"**Winning model:** {best.model_type} (F1={best.f1_score:.3f}, "
+        f"accuracy={best.accuracy:.3f}, ROC-AUC={best.roc_auc or float('nan'):.3f})",
+        "",
+        "## All experiments",
+        "| Model | Accuracy | F1 | ROC-AUC | Train time (s) |",
+        "|---|---|---|---|---|",
+    ]
+    for r in sorted(results, key=lambda r: -r.f1_score):
+        lines.append(f"| {r.model_type} | {r.accuracy:.3f} | {r.f1_score:.3f} | "
+                      f"{r.roc_auc or 0:.3f} | {r.training_time_s:.2f} |")
+    lines += ["", "## Charts", *[f"![chart]({p})" for p in chart_paths]]
+    return "\n".join(lines)</code></pre>
+    <pre><code># backend/reporter_agui_server.py — streams the report incrementally, same shape as p3-8's agui_server.py
+import uuid, json
+from agents.critic import critic_app
+from agents.reporter import generate_charts, render_markdown_report
+
+async def run_pipeline_stream(dataset_path: str, target_column: str, thread_id: str):
+    run_id = str(uuid.uuid4())
+    yield agui_event("RUN_STARTED", runId=run_id, threadId=thread_id)
+    config = {"configurable": {"thread_id": thread_id}}
+    input_state = {"plan": {"dataset_path": dataset_path, "target_column": target_column, "experiments": []}, "round": 0}
+
+    async for chunk in critic_app.astream(input_state, config=config, stream_mode="updates"):
+        for node_name, output in chunk.items():
+            yield agui_event("STEP_STARTED", stepName=node_name)
+            if node_name == "critic" and (verdict := output.get("verdict")):
+                yield agui_event("CUSTOM", name="hitl_interrupt", value={"threadId": thread_id, "details": verdict})
+            yield agui_event("STEP_FINISHED", stepName=node_name)
+
+    snapshot = critic_app.get_state(config)
+    if not snapshot.next:  # pipeline finalized
+        results = snapshot.values["results"]
+        chart_paths = generate_charts(results)
+        report_md = render_markdown_report(results, chart_paths)
+        msg_id = str(uuid.uuid4())
+        yield agui_event("TEXT_MESSAGE_START", messageId=msg_id, role="assistant")
+        for chunk_text in [report_md[i:i+200] for i in range(0, len(report_md), 200)]:
+            yield agui_event("TEXT_MESSAGE_CONTENT", messageId=msg_id, delta=chunk_text)
+        yield agui_event("TEXT_MESSAGE_END", messageId=msg_id)
+        with open("results/titanic_report.md", "w") as f:
+            f.write(report_md)
+        yield agui_event("RUN_FINISHED", runId=run_id, threadId=thread_id)</code></pre>
+    <p>Reuse the p3-8 React frontend unchanged — the same <code>EventTimeline</code> and <code>ApproveButton</code> components render this pipeline's steps and HITL gate with zero changes, because both speak the same AG-UI event vocabulary.</p>
+  </div>
+
+  <div class="section">
+    <h2>Step 8 — Deploy on AgentCore with Identity, Observability, Guardrails, Batch Evals</h2>
+    <p style="margin-bottom:.6rem">Apply the exact 5-part hardening pattern from <a href="p3-9.html">the Production Hardening guide</a> to this pipeline instead of repeating it here:</p>
+    <ul>
+      <li><strong>Observability:</strong> wrap each of Planner, Specialist ×3, Critic, Reporter with the same <code>traced_node</code> OTel decorator from p3-9 Step 1 — you'll get per-agent latency for all 6 agent instances on one CloudWatch dashboard</li>
+      <li><strong>Guardrails:</strong> attach the same NotifyOnly→ENFORCE Bedrock Guardrail from p3-9 Step 2 to the Planner and Reporter's model calls (the two agents that produce free-text output to a human)</li>
+      <li><strong>Batch Evaluations:</strong> build a 10-example eval set of <code>(dataset_path, target_column) → expected_best_model_type</code> pairs and run an AgentCore Batch Evaluation exactly as in p3-9 Step 3, scoring whether the Critic picks the same winning model family a human data scientist would</li>
+      <li><strong>A/B testing:</strong> compare two Planner system prompts (e.g. "propose 3 experiments" vs. "propose 3 experiments and justify each with a one-sentence data-driven rationale") using AgentCore Performance Optimization from p3-9 Step 4, or the Pydantic Evals harness below</li>
+      <li><strong>Identity:</strong> protect the Reporter's AG-UI endpoint with the same Cognito OAuth 2.0 setup from p3-9 Step 5</li>
+    </ul>
+    <pre><code>agentcore configure --entrypoint backend/reporter_agui_server.py --name ds-pipeline-endpoint
+agentcore launch</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 9 — Eval harness: baseline vs. after a prompt change (Pydantic Evals)</h2>
+    <pre><code># evals/planner_eval.py
+from pydantic_evals import Case, Dataset
+from agents.planner import plan_experiments
+
+cases = [
+    Case(
+        name="titanic-binary-classification",
+        inputs={"dataset_path": "data/titanic.csv", "target_column": "Survived"},
+        expected_output={"min_experiments": 3, "must_include_family": "gradient_boosting"},
+    ),
+    # ... add cases for Adult Income and a synthetic imbalanced dataset
+]
+
+async def plan_quality_scorer(case: Case, output) -> float:
+    families = {e.model_type for e in output.experiments}
+    has_min = len(output.experiments) >= case.expected_output["min_experiments"]
+    has_family = case.expected_output["must_include_family"] in families
+    return float(has_min and has_family)
+
+dataset = Dataset(cases=cases)
+
+async def run_eval(prompt_variant_label: str):
+    report = await dataset.evaluate(
+        task=lambda inputs: plan_experiments(**inputs),
+        scorers=[plan_quality_scorer],
+    )
+    report.print(include_input=True)
+    with open(f"results/eval_{prompt_variant_label}.json", "w") as f:
+        f.write(report.model_dump_json(indent=2))</code></pre>
+    <pre><code># run baseline, then edit planner_agent's system_prompt, then re-run
+python -c "import asyncio; from evals.planner_eval import run_eval; asyncio.run(run_eval('baseline'))"
+# ... edit agents/planner.py system_prompt to add explicit rationale requirement ...
+python -c "import asyncio; from evals.planner_eval import run_eval; asyncio.run(run_eval('v2_explicit_rationale'))"</code></pre>
+    <p>Diff <code>results/eval_baseline.json</code> against <code>results/eval_v2_explicit_rationale.json</code> — this before/after pair is your capstone's eval evidence, alongside (or instead of) the AgentCore A/B result from Step 8.</p>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li>End-to-end: <code>agentcore invoke ds-pipeline-endpoint --payload '{"dataset_path":"data/titanic.csv","target_column":"Survived"}'</code> completes and writes <code>results/titanic_report.md</code> with 3 experiment rows and a named winner</li>
+      <li>The generated report's winning model's F1 score is sane for Titanic (typically 0.75–0.82 for gradient boosting / random forest with minimal feature engineering) — a wildly off score signals a bug in the sandboxed training code, not the agents</li>
+      <li>Trigger a deliberately weak plan (e.g. force all 3 experiments to use default hyperparameters with no feature engineering) and confirm the Critic's <code>needs_another_round</code> flips true and the human gate fires a <code>CUSTOM hitl_interrupt</code> event</li>
+      <li>Approving the interrupt from the frontend visibly starts a second <code>plan</code> node execution in the OTel trace/CloudWatch dashboard, with <code>round=2</code></li>
+      <li><code>results/charts/f1_comparison.png</code> and <code>feature_importance.png</code> exist and are non-empty PNGs</li>
+      <li>Eval reports for baseline and v2 prompts both exist under <code>results/</code> with different scores</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>Sandboxed training script silently returns no output:</strong> the subprocess sandbox strips most environment variables — if scikit-learn or pandas aren't on a minimal <code>PATH</code>'s Python, point <code>run_sandboxed_python</code> at a specific venv interpreter path instead of bare <code>python</code>.</li>
+      <li><strong>Critic loops forever:</strong> double check the <code>state["round"] < 2</code> guard in both <code>critic_node</code> and <code>human_gate_node</code> — without a hard round cap, a stubborn low-F1 dataset (e.g. class imbalance) can loop indefinitely even with human approval each time.</li>
+      <li><strong>A2A task calls hang:</strong> confirm each Specialist's AgentCore Runtime is actually deployed and its Agent Card <code>url</code> matches the live endpoint — a stale localhost URL in the Agent Card JSON is the most common cause after redeploying.</li>
+      <li><strong>Feature importances come back empty for logistic regression:</strong> the template uses <code>model.coef_[0]</code>, which only exists post-fit and only for binary classification — verify the target column really is binary before debugging further upstream.</li>
+      <li><strong>Report streams instantly instead of incrementally:</strong> the 200-character chunking loop in Step 7 is a stand-in — if your SSE transport buffers small writes, flush explicitly or chunk larger to make the streaming visible in the UI demo.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Repo layout:
+        <pre><code>ds-pipeline-agent/
+  agents/            planner.py, specialist.py, critic.py, reporter.py
+  mcp_server/        ds_tools.py
+  agent_cards/        *.json (A2A cards for planner + 3 specialists + critic + reporter)
+  orchestration/      run_pipeline.py
+  backend/            reporter_agui_server.py
+  frontend/           (reused from p3-8, pointed at this pipeline's endpoint)
+  evals/              planner_eval.py, eval datasets
+  data/               titanic.csv
+  results/            titanic_report.md, charts/*.png, eval_*.json
+  docs/               architecture.png, production-hardening.md (linked from p3-9)
+  README.md</code></pre>
+      </li>
+      <li>README must include: the architecture ASCII/image diagram from this guide, a link to the live deployed AG-UI frontend, an OTel/CloudWatch trace screenshot spanning all 6 agent instances, and the eval score table (baseline vs. v2)</li>
+      <li>Record a 2-minute demo video: (1) submit the Titanic CSV + target column via the chat box, (2) narrate the live timeline as Planner → Specialists → Critic events stream in, (3) show the Approve click on the human-in-the-loop gate, (4) show the final rendered markdown report and charts</li>
+      <li>This capstone is your strongest interview artifact — it demonstrates typed multi-agent contracts, all 3 emerging agent protocols in one working system, and the exact production-hardening checklist (observability, guardrails, evals, identity) that separates a toy demo from something a hiring manager believes you could operate in production</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

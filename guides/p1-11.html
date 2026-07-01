@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: Wire to MCP Servers</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 1 · Months 1–3</span>
+    <span class="badge badge-type">🛠 Build Guide</span>
+    <span class="badge badge-dur">~2–3 hrs</span>
+  </div>
+
+  <h1>Build Guide: Wire to MCP Servers</h1>
+  <div class="source">Project 1C companion guide · Builds on Project 1B (Strands) · MCP v1.0 (Nov 2025)</div>
+
+  <div class="section">
+    <h2>What You'll Build</h2>
+    <ul>
+      <li>The Strands research agent from Project 1B, with <code>fetch_page</code> and <code>web_search</code> replaced by real MCP servers instead of your own tool code</li>
+      <li>A Strands <code>MCPClient</code> wired to two MCP servers over STDIO transport: the official Fetch MCP server (page retrieval) and the Filesystem MCP server (local read/write, standing in for the "AWS Docs" style reference server)</li>
+      <li>A captured JSON-RPC message trace from MCP Inspector, saved as <code>mcp_inspector_trace.json</code></li>
+      <li>A short section on the Nov 2025 MCP v1.0 browser-based OAuth flow for when a remote/hosted MCP server requires authentication</li>
+      <li>Exact deliverables:
+        <ul>
+          <li><code>mcp_version/research_agent.py</code> — Strands agent consuming MCP tools</li>
+          <li><code>mcp_version/mcp_inspector_trace.json</code> — captured JSON-RPC exchange</li>
+          <li><code>mcp_version/sample_output.json</code></li>
+          <li>README note on OAuth for remote servers</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Architecture</h2>
+    <pre><code>research_agent.py (Strands, unchanged orchestrator/system prompt)
+        │
+        │ tools=[ ...MCP-discovered tools..., summarize_source ]
+        │
+        ▼
+ ┌──────────────────────────────────────────────┐
+ │ Strands MCPClient (one per server)            │
+ │ transport: STDIO (subprocess pipes)           │
+ └───────────────┬────────────────┬──────────────┘
+                 │                │
+                 ▼                ▼
+     npx @modelcontextprotocol/  npx @modelcontextprotocol/
+     server-fetch                server-filesystem /path
+     (spawned subprocess)        (spawned subprocess)
+                 │                │
+        JSON-RPC 2.0 over stdin/stdout
+                 │                │
+     tools/list, tools/call       tools/list, tools/call
+     ("fetch")                    ("read_file", "list_directory", ...)
+
+ summarize_source stays a local Strands @tool
+ (nested LLM call) — MCP replaces only the two
+ "external world" tools, not the summarization step.
+
+ Inspection path (separate, manual step):
+ npx @modelcontextprotocol/inspector \
+     npx @modelcontextprotocol/server-fetch
+        │
+        ▼
+ browser UI at localhost:6274 → send tools/call →
+ copy the request/response JSON-RPC pairs →
+ mcp_inspector_trace.json</code></pre>
+    <ul>
+      <li>Strands' <code>MCPClient</code> spawns each MCP server as a child process and speaks JSON-RPC 2.0 over its stdin/stdout — this is the STDIO transport, the simplest and most common for local dev</li>
+      <li>Tools discovered from an MCP server (via the <code>tools/list</code> RPC call) are converted into Strands-compatible tool objects automatically — you don't write <code>@tool</code> wrappers for them yourself</li>
+      <li>You are <em>consuming</em> MCP servers here, not building one — that's a later-phase project</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Prerequisites</h2>
+    <ul>
+      <li>Completed Project 1B (<code>strands_version/research_agent.py</code> works against Bedrock)</li>
+      <li>Node.js 18+ and <code>npx</code> available on PATH (the official MCP reference servers are npm packages, run via <code>npx</code>)</li>
+      <li><code>pip install strands-agents strands-agents-tools mcp</code> (the <code>mcp</code> package provides the Python SDK types Strands' <code>MCPClient</code> builds on)</li>
+      <li>AWS credentials configured for Bedrock (same as 1B)</li>
+      <li>No install step needed for the MCP servers themselves — <code>npx</code> fetches and runs them on demand</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — Scaffold and sanity-check the MCP servers standalone</h2>
+    <pre><code>mkdir -p mcp_version
+cp strands_version/research_agent.py mcp_version/research_agent.py
+
+# Confirm the servers run before wiring anything to Strands
+npx -y @modelcontextprotocol/server-fetch --help
+npx -y @modelcontextprotocol/server-filesystem /tmp/mcp-sandbox --help
+
+mkdir -p /tmp/mcp-sandbox
+echo "scratch space for the filesystem MCP server" &gt; /tmp/mcp-sandbox/notes.txt</code></pre>
+    <div class="warn"><strong>Filesystem server needs an explicit allowed-directory argument.</strong> It refuses to serve paths outside whatever directories you pass on the command line — this is a deliberate sandboxing feature, not a bug. Never point it at your home directory for this exercise.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Connect Strands to the MCP servers via MCPClient</h2>
+    <pre><code># mcp_version/research_agent.py
+from mcp import StdioServerParameters, stdio_client
+from strands import Agent, tool
+from strands.models import BedrockModel
+from strands.tools.mcp import MCPClient
+
+fetch_mcp = MCPClient(
+    lambda: stdio_client(
+        StdioServerParameters(
+            command="npx",
+            args=["-y", "@modelcontextprotocol/server-fetch"],
+        )
+    )
+)
+
+filesystem_mcp = MCPClient(
+    lambda: stdio_client(
+        StdioServerParameters(
+            command="npx",
+            args=["-y", "@modelcontextprotocol/server-filesystem", "/tmp/mcp-sandbox"],
+        )
+    )
+)</code></pre>
+    <p style="margin:.8rem 0 .5rem">Each <code>MCPClient</code> lazily spawns its subprocess on first use inside a context manager. List and use the tools within that <code>with</code> block:</p>
+    <pre><code>with fetch_mcp, filesystem_mcp:
+    fetch_tools = fetch_mcp.list_tools_sync()
+    fs_tools = filesystem_mcp.list_tools_sync()
+
+    print("Fetch MCP tools:", [t.tool_name for t in fetch_tools])
+    print("Filesystem MCP tools:", [t.tool_name for t in fs_tools])</code></pre>
+    <p>Expect something like <code>Fetch MCP tools: ['fetch']</code> and <code>Filesystem MCP tools: ['read_file', 'write_file', 'list_directory', 'search_files', ...]</code>.</p>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — Replace web_search / fetch_page with MCP tools</h2>
+    <p style="margin-bottom:.5rem">The Fetch MCP server's <code>fetch</code> tool covers page retrieval (with built-in HTML-to-markdown extraction, replacing your <code>httpx</code>+<code>trafilatura</code> code entirely). It has no equivalent to a search-engine query tool, so keep your own <code>web_search</code> as a local Strands tool — MCP replaces what it has a real server for, nothing is forced:</p>
+    <pre><code>from duckduckgo_search import DDGS
+
+
+@tool
+def web_search(query: str, max_results: int = 5) -&gt; list[dict]:
+    """Search the web for a query. Returns a list of dicts with
+    'title', 'href', and 'body' keys, ranked by relevance."""
+    with DDGS() as ddgs:
+        return list(ddgs.text(query, max_results=max_results))
+
+
+_summarizer = Agent(
+    model=BedrockModel(model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+    system_prompt="Condense the given document into a factual 3-5 sentence summary.",
+)
+
+
+@tool
+def summarize_source(text: str) -&gt; str:
+    """Summarize a fetched document's text into a short factual digest."""
+    result = _summarizer(text[:12000])
+    return str(result)
+
+
+def build_agent(mcp_tools: list) -&gt; Agent:
+    model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+    return Agent(
+        model=model,
+        system_prompt=(
+            "You are a research assistant. Use web_search to find sources, "
+            "the MCP 'fetch' tool to retrieve page content for the top 3 "
+            "results, summarize_source on each, then synthesize a JSON "
+            "ResearchBrief with fields: summary, key_findings, sources, "
+            "confidence."
+        ),
+        tools=[web_search, summarize_source, *mcp_tools],
+    )
+
+
+def main() -&gt; None:
+    import sys
+
+    topic = sys.argv[1] if len(sys.argv) &gt; 1 else "quantum error correction 2026"
+
+    with fetch_mcp:
+        mcp_tools = fetch_mcp.list_tools_sync()
+        agent = build_agent(mcp_tools)
+        result = agent(topic)
+        print(result)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+    <div class="callout"><strong>What changed vs 1B:</strong> <code>fetch_page</code> (your ~15 lines of <code>httpx</code>/<code>trafilatura</code> code) is gone entirely — the Fetch MCP server's <code>fetch</code> tool is discovered at runtime via <code>list_tools_sync()</code> and dropped straight into the <code>tools=[...]</code> list alongside your local tools. Strands treats MCP-sourced and locally-defined tools identically once inside the agent loop.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — Wire in the filesystem server for saved research notes</h2>
+    <p style="margin-bottom:.5rem">Give the agent a place to persist intermediate findings — a realistic use for the filesystem MCP server in a research pipeline:</p>
+    <pre><code>with fetch_mcp, filesystem_mcp:
+    mcp_tools = fetch_mcp.list_tools_sync() + filesystem_mcp.list_tools_sync()
+    agent = build_agent(mcp_tools)
+    agent.tool_registry.register_tool(summarize_source)  # if not passed at init
+
+    result = agent(
+        f"{topic}\n\nAfter synthesizing your findings, write the final "
+        f"JSON ResearchBrief to a file named 'brief.json' using the "
+        f"filesystem write_file tool."
+    )
+    print(result)</code></pre>
+    <ul>
+      <li>Verify the write actually happened: <code>cat /tmp/mcp-sandbox/brief.json</code></li>
+      <li>This demonstrates composing <em>two independent MCP servers</em> in one agent — a pattern you'll reuse constantly once you're integrating third-party MCP servers you didn't write</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — Inspect the JSON-RPC exchange with MCP Inspector</h2>
+    <pre><code>npx @modelcontextprotocol/inspector npx @modelcontextprotocol/server-fetch</code></pre>
+    <ul>
+      <li>This opens a local web UI (default <code>http://localhost:6274</code>) that sits between you and the spawned server</li>
+      <li>In the UI: click <strong>Connect</strong>, then <strong>List Tools</strong> — you'll see the <code>tools/list</code> request/response pair rendered as JSON-RPC 2.0</li>
+      <li>Select the <code>fetch</code> tool, supply <code>{"url": "https://example.com"}</code> as arguments, and click <strong>Call Tool</strong> — this fires a <code>tools/call</code> request and shows the raw response</li>
+      <li>Inspector exposes a "History" or network-style panel showing every message; copy the full session as JSON (or use the browser DevTools Network tab on the Inspector's own backend calls if the UI doesn't export directly)</li>
+    </ul>
+    <p style="margin:.8rem 0 .5rem">Save the captured exchange in this shape:</p>
+    <pre><code>// mcp_version/mcp_inspector_trace.json
+{
+  "server": "@modelcontextprotocol/server-fetch",
+  "transport": "stdio",
+  "messages": [
+    {
+      "direction": "client-&gt;server",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "protocolVersion": "2025-06-18",
+          "capabilities": {},
+          "clientInfo": { "name": "mcp-inspector", "version": "1.0.0" }
+        }
+      }
+    },
+    {
+      "direction": "server-&gt;client",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "protocolVersion": "2025-06-18",
+          "capabilities": { "tools": {} },
+          "serverInfo": { "name": "fetch-server", "version": "0.1.0" }
+        }
+      }
+    },
+    {
+      "direction": "client-&gt;server",
+      "payload": { "jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {} }
+    },
+    {
+      "direction": "server-&gt;client",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "tools": [
+            {
+              "name": "fetch",
+              "description": "Fetches a URL and returns its content as markdown.",
+              "inputSchema": {
+                "type": "object",
+                "properties": { "url": { "type": "string" } },
+                "required": ["url"]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "direction": "client-&gt;server",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": { "name": "fetch", "arguments": { "url": "https://example.com" } }
+      }
+    },
+    {
+      "direction": "server-&gt;client",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "content": [{ "type": "text", "text": "# Example Domain\n\nThis domain is for use in..." }]
+        }
+      }
+    }
+  ]
+}</code></pre>
+    <div class="callout"><strong>Why capture this at all:</strong> it's the clearest possible artifact for proving you understand the MCP wire protocol, not just "I called a library function." <code>initialize</code> → capability negotiation → <code>tools/list</code> → <code>tools/call</code> is the same 4-step handshake every MCP client (including Strands' <code>MCPClient</code> internally) performs.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 6 — OAuth for remote/authenticated MCP servers (when you need it)</h2>
+    <ul>
+      <li>Everything above uses STDIO — a local subprocess you trust implicitly, so no auth layer is needed</li>
+      <li>The moment you connect to a <strong>remote, hosted</strong> MCP server (e.g. a SaaS product's MCP endpoint over HTTP/SSE) that guards access to private data, MCP v1.0 (Nov 2025) mandates the browser-based OAuth 2.1 flow: the client opens a browser window, the user authenticates and consents on the server's own login page, and a short-lived token is returned to the client — no credentials are ever typed into or stored by the MCP client itself</li>
+      <li>Strands' <code>MCPClient</code> supports this by pointing it at an HTTP/SSE transport instead of STDIO; the OAuth handshake is handled by the underlying <code>mcp</code> Python SDK's HTTP client, which will open a browser tab automatically on first connection to an auth-protected server</li>
+      <li>You do not need to implement this for the two local servers in this project — mention it in your README as the mechanism you'd reach for the moment you swap Fetch MCP for something like a hosted Brave Search MCP or a private company MCP server</li>
+      <li>Read the spec before you need it: <a href="https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization" target="_blank">MCP Authorization spec ↗</a></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li><code>python mcp_version/research_agent.py "topic"</code> runs to completion and prints a research synthesis pulling live page content through the Fetch MCP server</li>
+      <li><code>cat /tmp/mcp-sandbox/brief.json</code> shows a file written by the agent via the Filesystem MCP server's <code>write_file</code> tool</li>
+      <li><code>mcp_inspector_trace.json</code> exists, is valid JSON, and contains at minimum <code>initialize</code>, <code>tools/list</code>, and one <code>tools/call</code> request/response pair</li>
+      <li>Turn on Strands debug logging (<code>logging.getLogger("strands").setLevel(logging.DEBUG)</code>) and confirm you see the agent selecting the MCP-sourced <code>fetch</code> tool by name during a run, proving it's genuinely calling through MCP and not silently falling back to old code</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <div class="warn"><strong>MCPClient hangs on startup:</strong> almost always means the subprocess command failed silently (wrong package name, npx couldn't resolve it, or Node isn't on PATH inside the environment Python is running in). Run the exact <code>npx ...</code> command standalone in the same shell first to confirm it starts.</div>
+    <div class="warn"><strong>"Tool not found" errors from the agent:</strong> the MCP client's <code>with</code> block context manager must still be open (subprocess alive) at the moment the agent actually calls the tool — don't call <code>list_tools_sync()</code> outside the <code>with</code> block and then exit it before running the agent.</div>
+    <div class="warn"><strong>Filesystem server refuses to read/write a path:</strong> it only serves the directories passed as CLI args at startup. Double-check the path in your prompt matches exactly (including trailing slashes) what you passed to <code>server-filesystem</code>.</div>
+    <div class="warn"><strong>MCP Inspector shows a connection error:</strong> some npm-hosted MCP servers pin specific Node versions; run <code>node --version</code> (need 18+) and retry with <code>npx -y &lt;package&gt;@latest</code> to rule out a stale cached version.</div>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Repo layout: add <code>mcp_version/</code> alongside <code>pydantic_version/</code> and <code>strands_version/</code> from 1A/1B, so the repo now tells the full progression story: raw primitives → framework abstraction → protocol-standardized tools</li>
+      <li>Commit <code>mcp_inspector_trace.json</code> and reference it directly in the README with a short explanation of the <code>initialize</code> → <code>tools/list</code> → <code>tools/call</code> handshake</li>
+      <li>Add a screenshot of the MCP Inspector UI mid-session to the README — visual proof is worth more than prose here</li>
+      <li>In the README, explicitly note that you deliberately did not need OAuth (STDIO local servers only) but explain when you would, and link the MCP authorization spec — this signals you know the current standard without over-engineering the demo</li>
+      <li>Close the README with a one-paragraph reflection: what MCP bought you over hand-written tools (interchangeable, third-party-maintained servers) versus what it cost (subprocess management, an extra protocol layer to debug)</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

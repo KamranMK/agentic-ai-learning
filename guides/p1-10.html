@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: Rebuild with Strands SDK</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+table{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:12.5px}
+th,td{text-align:left;padding:.4rem .6rem;border:1px solid var(--border)}
+th{background:var(--surface2);color:var(--muted);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 1 · Months 1–3</span>
+    <span class="badge badge-type">🛠 Build Guide</span>
+    <span class="badge badge-dur">~2–3 hrs</span>
+  </div>
+
+  <h1>Build Guide: Rebuild with Strands SDK</h1>
+  <div class="source">Project 1B companion guide · Builds on Project 1A · Strands Agents SDK + AWS Bedrock</div>
+
+  <div class="section">
+    <h2>What You'll Build</h2>
+    <ul>
+      <li>The exact same <code>ResearchBrief</code> use case from Project 1A, reimplemented with Strands' <code>@tool</code> decorator and <code>Agent</code> class instead of PydanticAI</li>
+      <li>Both versions living side by side in one repo, so you can diff them directly</li>
+      <li>A manual output-validation pattern, since Strands doesn't ship PydanticAI's native validate-and-retry loop out of the box</li>
+      <li>A written comparison of the two frameworks based on what you actually experienced building both</li>
+      <li>Exact deliverables:
+        <ul>
+          <li><code>pydantic_version/</code> — copied unmodified from Project 1A</li>
+          <li><code>strands_version/research_agent.py</code> — the Strands rebuild</li>
+          <li><code>strands_version/tests/test_agent.py</code> — schema smoke test</li>
+          <li><code>strands_version/sample_output.json</code></li>
+          <li><code>COMPARISON.md</code> at the repo root</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Architecture</h2>
+    <pre><code>repo root
+ ├── pydantic_version/          (Project 1A, unchanged)
+ │    └── research_agent.py
+ ├── strands_version/           (this guide)
+ │    ├── research_agent.py
+ │    ├── sample_output.json
+ │    └── tests/test_agent.py
+ └── COMPARISON.md
+
+strands_version/research_agent.py flow:
+ topic string
+      │
+      ▼
+ ┌───────────────────────────────────────┐
+ │ Strands Agent (BedrockModel, Sonnet)   │
+ │ tools=[web_search, fetch_page,         │
+ │        summarize_source]               │
+ └───────────────┬─────────────────────────┘
+                 │ agentic loop: reason → act → observe
+     ┌───────────┼────────────────┐
+     ▼           ▼                ▼
+ web_search   fetch_page    summarize_source
+ (DuckDuckGo) (httpx +      (nested Strands
+              trafilatura)   Agent call)
+                 │
+                 ▼
+      agent emits free-form text response
+                 │
+                 ▼
+      manual parse + Pydantic validation
+      (retry loop you write yourself)
+                 ▼
+      validated ResearchBrief (JSON)</code></pre>
+    <ul>
+      <li>The key architectural difference from 1A: Strands' agent loop produces a conversational response, not a guaranteed-typed object. You bolt structured output validation on afterward.</li>
+      <li>Tool implementations (search/fetch/summarize logic) are nearly identical to 1A — only the decorator and the calling convention change</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Prerequisites</h2>
+    <ul>
+      <li>Completed Project 1A (<code>pydantic_version/</code> exists and works)</li>
+      <li>Python 3.11+</li>
+      <li>An AWS account with Bedrock model access enabled for Claude Sonnet 4.5 in your region (request access in the Bedrock console under "Model access" if you haven't already)</li>
+      <li>AWS credentials configured: <code>aws configure</code>, or env vars <code>AWS_ACCESS_KEY_ID</code> / <code>AWS_SECRET_ACCESS_KEY</code> / <code>AWS_REGION</code></li>
+      <li><code>pip install strands-agents strands-agents-tools duckduckgo-search trafilatura httpx pytest</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — Move Project 1A into a subfolder and scaffold the Strands version</h2>
+    <pre><code>mkdir -p pydantic_version strands_version/tests
+git mv research_agent.py pydantic_version/ 2&gt;/dev/null || mv research_agent.py pydantic_version/
+git mv tests/test_agent.py pydantic_version/tests/test_agent.py 2&gt;/dev/null || true
+git mv sample_output.json pydantic_version/ 2&gt;/dev/null || true
+
+pip install strands-agents strands-agents-tools
+
+aws configure
+# AWS Access Key ID: ...
+# AWS Secret Access Key: ...
+# Default region: us-east-1
+# Default output format: json</code></pre>
+    <div class="warn"><strong>Bedrock model access:</strong> unlike the Anthropic API in 1A, Bedrock requires you to explicitly request access to each model family in the console before your credentials can invoke it. Go to Bedrock → Model access → request Claude Sonnet 4.5 and Claude Haiku 4.5. Approval is usually instant for on-demand models but can take a few minutes.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Define the tools with @tool</h2>
+    <p style="margin-bottom:.5rem">Same logic as 1A's tools, but the docstring is now the <em>entire</em> tool-selection contract Strands hands the model — there's no separate Pydantic <code>Field(description=...)</code> layer:</p>
+    <pre><code># strands_version/research_agent.py
+import httpx
+import trafilatura
+from duckduckgo_search import DDGS
+from strands import Agent, tool
+from strands.models import BedrockModel
+
+
+@tool
+def web_search(query: str, max_results: int = 5) -&gt; list[dict]:
+    """Search the web for a query. Returns a list of dicts with
+    'title', 'href', and 'body' keys, ranked by relevance."""
+    with DDGS() as ddgs:
+        return list(ddgs.text(query, max_results=max_results))
+
+
+@tool
+def fetch_page(url: str) -&gt; str:
+    """Fetch a URL and extract its main readable text content,
+    discarding navigation, ads, and boilerplate. Returns plain text,
+    or an empty string if extraction fails."""
+    resp = httpx.get(
+        url, timeout=10.0, follow_redirects=True,
+        headers={"User-Agent": "research-agent/0.1 (+https://staycurious.me)"},
+    )
+    resp.raise_for_status()
+    text = trafilatura.extract(resp.text, include_comments=False, include_tables=False)
+    return text or ""
+
+
+_summarizer = Agent(
+    model=BedrockModel(model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+    system_prompt=(
+        "Condense the given document into a factual 3-5 sentence "
+        "summary. No opinions, no filler."
+    ),
+)
+
+
+@tool
+def summarize_source(text: str) -&gt; str:
+    """Summarize a single fetched document's raw text into a short
+    factual digest suitable for downstream synthesis."""
+    result = _summarizer(text[:12000])
+    return str(result)</code></pre>
+    <div class="callout"><strong>Ergonomics note:</strong> Strands' <code>@tool</code> needs nothing beyond a type-hinted function and a docstring — no separate schema class, no provider wiring inside the tool itself. That's less code than PydanticAI's tool registration, but you also get no structural validation of the tool's own inputs beyond what Python type hints imply (Strands does generate a JSON schema from the signature for the model, but it isn't Pydantic-validated at call time).</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — Build the orchestrator agent</h2>
+    <pre><code>model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+
+agent = Agent(
+    model=model,
+    system_prompt=(
+        "You are a research assistant. Given a topic:\n"
+        "1. Call web_search to find candidate sources.\n"
+        "2. Call fetch_page on the top 3 most relevant results.\n"
+        "3. Call summarize_source on each fetched page's text.\n"
+        "4. Synthesize the summaries into a final answer.\n\n"
+        "Respond with ONLY a JSON object matching this exact shape, "
+        "no markdown fences, no extra prose:\n"
+        '{\n'
+        '  "summary": "150-250 word synthesis",\n'
+        '  "key_findings": ["finding 1", "finding 2", "finding 3"],\n'
+        '  "sources": ["https://...", "https://..."],\n'
+        '  "confidence": "low" | "medium" | "high"\n'
+        "}"
+    ),
+    tools=[web_search, fetch_page, summarize_source],
+)</code></pre>
+    <div class="warn"><strong>This is the crux of the exercise:</strong> Strands has no <code>output_type</code> parameter. The JSON contract lives entirely in prose, inside the system prompt. The model can and will drift from it — which is exactly the gap you validate against manually in the next step.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — Validate the output manually (Strands has no native retry loop)</h2>
+    <p style="margin-bottom:.5rem">Reuse the <code>ResearchBrief</code> Pydantic model from 1A purely as a validator — you're not using PydanticAI's agent machinery, just its schema class:</p>
+    <pre><code>import json
+import re
+import sys
+
+sys.path.insert(0, "../pydantic_version")
+from research_agent import ResearchBrief  # reuse the schema, not the agent
+
+from pydantic import ValidationError
+
+
+def _extract_json(raw_text: str) -&gt; dict:
+    """Strands returns free-form text; strip markdown fences if present
+    and locate the first {...} block."""
+    cleaned = re.sub(r"^```(?:json)?|```$", "", raw_text.strip(), flags=re.MULTILINE)
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if not match:
+        raise ValueError(f"No JSON object found in model output:\n{raw_text}")
+    return json.loads(match.group(0))
+
+
+def run_with_validation(topic: str, max_attempts: int = 3) -&gt; ResearchBrief:
+    """Manual retry loop replicating PydanticAI's ModelRetry behavior:
+    on validation failure, feed the error back to the model and ask
+    it to correct its own output."""
+    feedback = ""
+    for attempt in range(1, max_attempts + 1):
+        prompt = topic if attempt == 1 else (
+            f"{topic}\n\nYour previous answer was invalid: {feedback}\n"
+            f"Fix it and return ONLY the corrected JSON object."
+        )
+        raw = str(agent(prompt))
+        try:
+            data = _extract_json(raw)
+            return ResearchBrief.model_validate(data)
+        except (ValueError, ValidationError, json.JSONDecodeError) as exc:
+            feedback = str(exc)
+            if attempt == max_attempts:
+                raise RuntimeError(
+                    f"Failed to get valid ResearchBrief after {max_attempts} attempts: {feedback}"
+                ) from exc
+    raise AssertionError("unreachable")</code></pre>
+    <div class="callout"><strong>This is the concrete answer to "how does Strands handle structured output differently":</strong> PydanticAI wires validation + retry into <code>agent.run()</code> itself. Strands treats the model output as plain text/tool-result data — you own parsing, validation, and the retry loop. More code, but full visibility into every retry decision.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — CLI entry point</h2>
+    <pre><code>import argparse
+
+
+def main() -&gt; None:
+    parser = argparse.ArgumentParser(description="Research agent (Strands rebuild)")
+    parser.add_argument("topic", help='e.g. "quantum error correction 2026"')
+    parser.add_argument("-o", "--output", help="Write JSON result to this file")
+    args = parser.parse_args()
+
+    brief = run_with_validation(args.topic)
+    brief_json = brief.model_dump_json(indent=2)
+    print(brief_json)
+
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write(brief_json)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 6 — Smoke test</h2>
+    <pre><code># strands_version/tests/test_agent.py
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from research_agent import run_with_validation, ResearchBrief
+
+
+def test_research_brief_schema_valid():
+    brief = run_with_validation("retrieval-augmented generation basics")
+
+    assert isinstance(brief, ResearchBrief)
+    word_count = len(brief.summary.split())
+    assert 150 &lt;= word_count &lt;= 250
+    assert 3 &lt;= len(brief.key_findings) &lt;= 5
+    assert len(brief.sources) &gt;= 2
+    assert brief.confidence in ("low", "medium", "high")
+
+
+def test_sample_output_file_matches_schema():
+    path = os.path.join(os.path.dirname(__file__), "..", "sample_output.json")
+    with open(path) as f:
+        data = json.load(f)
+    ResearchBrief.model_validate(data)</code></pre>
+    <pre><code>cd strands_version
+python research_agent.py "quantum error correction 2026" -o sample_output.json
+pytest tests/ -v</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 7 — Write COMPARISON.md</h2>
+    <p style="margin-bottom:.5rem">This file is the actual point of Project 1B — the build is a means to an informed comparison. Fill it in with numbers and observations from your <em>own</em> two implementations, not generic claims. Use this table as the skeleton:</p>
+    <pre><code># PydanticAI vs Strands SDK — Research Agent Comparison
+
+| Dimension                     | PydanticAI (1A)                          | Strands (1B)                              |
+|-------------------------------|-------------------------------------------|--------------------------------------------|
+| Lines of code (agent + tools) | ~XX (run `wc -l pydantic_version/research_agent.py`) | ~XX (run `wc -l strands_version/research_agent.py`) |
+| Output validation             | Native: `output_type=Model`, retries via `ModelRetry` | Manual: regex-extract JSON, `ResearchBrief.model_validate`, hand-rolled retry loop |
+| Retry mechanism                | Built into `agent.run()`, configurable `output_retries` | You write the loop; you control attempt count and feedback text |
+| Default model provider        | Explicit — you choose Anthropic/OpenAI/etc via `Provider` classes | Bedrock by default; swapping providers means swapping the `Model` class |
+| Tool definition ergonomics    | `@agent.tool` / `tool_plain`, needs `RunContext` for stateful tools | `@tool` decorator, no separate context object needed for stateless tools |
+| Time to first working version | (your timing)                              | (your timing)                              |
+| Failure mode when validation fails | Raises `UnexpectedModelBehavior` after retries exhausted, typed exception | Raises whatever exception your manual loop raises — you define the contract |
+
+## Takeaways
+- (Write 3-5 sentences: which framework felt faster to build in, which gave more
+  confidence in production, and what you'd choose for a team vs a solo project.)
+- (Note: Strands' AWS-native tool library and Bedrock defaults make sense if you're
+  already deep in AWS infra; PydanticAI's explicit provider model and native
+  validation loop make sense when type safety is the primary requirement.)</code></pre>
+    <pre><code>wc -l pydantic_version/research_agent.py strands_version/research_agent.py</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li><code>python strands_version/research_agent.py "topic"</code> prints a valid <code>ResearchBrief</code> JSON object, same shape as 1A's output</li>
+      <li><code>pytest strands_version/tests/ -v</code> passes</li>
+      <li>Confirm Bedrock is actually being hit (not silently falling back): check the AWS Console → Bedrock → CloudWatch metrics for the invocation, or add <code>logging.getLogger("strands").setLevel(logging.DEBUG)</code> and look for the Bedrock request/response log lines</li>
+      <li>Run both versions on the same topic and diff the two JSON outputs side by side — they won't match exactly (different models, different prompts) but both must satisfy the same Pydantic schema</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <div class="warn"><strong>AccessDeniedException from Bedrock:</strong> you haven't been granted access to the specific model ID in your region. Fix in Bedrock console → Model access, and double check the model ID string matches exactly (region prefix like <code>us.</code> matters for cross-region inference profiles).</div>
+    <div class="warn"><strong>Model output isn't valid JSON even after retries:</strong> Sonnet sometimes wraps JSON in markdown fences or adds a leading sentence despite instructions. Strengthen the regex in <code>_extract_json</code>, or add "Do not include any text before or after the JSON object" more forcefully in the system prompt, or lower temperature via <code>BedrockModel(model_id=..., temperature=0.2)</code>.</div>
+    <div class="warn"><strong>ExpiredTokenException / credentials error:</strong> if using temporary AWS SSO credentials, they expire — rerun <code>aws sso login</code> and re-export session env vars before retrying.</div>
+    <div class="warn"><strong>Nested summarizer agent is slow:</strong> each <code>summarize_source</code> call is itself a full Bedrock round trip. For 3 sources this can add 10-20s. Consider <code>asyncio.gather</code> if you refactor to Strands' async invocation, or just budget for it in a synchronous CLI tool.</div>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Final repo structure: <code>pydantic_version/</code>, <code>strands_version/</code>, <code>COMPARISON.md</code>, top-level <code>README.md</code> linking to both</li>
+      <li>Put the comparison table from <code>COMPARISON.md</code> directly in the top-level README — this is the artifact interviewers actually read and ask follow-up questions about</li>
+      <li>Commit both <code>sample_output.json</code> files so a reviewer can diff real outputs without running anything</li>
+      <li>In the README, state explicitly which framework you'd pick for a hypothetical production system and why — a reasoned opinion backed by two real implementations is worth more than "it depends"</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Guide: AG-UI Streaming Interface</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;--accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;--text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:1.4rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.back:hover{color:var(--accent);border-color:var(--accent2);text-decoration:none}
+.meta-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.badge-phase{background:#FFF4E0;color:#8A5800;border:1px solid #FFD166}
+.badge-type{background:#FFF8E1;color:#8A6800;border:1px solid #FFE59A}
+.badge-dur{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
+h1{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:.3rem;line-height:1.3}
+.source{font-size:12px;color:var(--muted);margin-bottom:1.6rem}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.7rem}
+ul{padding-left:1.2rem}
+li{margin-bottom:.35rem}
+li strong{color:var(--text)}
+code{font-family:monospace;font-size:12.5px;background:#EEF4F9;padding:1px 5px;border-radius:3px;color:#1A5080}
+pre{background:#EEF4F9;border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;margin:.6rem 0 .3rem;font-size:12.5px;line-height:1.55}
+pre code{background:none;padding:0;border-radius:0}
+.callout{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.callout strong{color:#027E5A}
+.warn{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:6px;padding:.7rem .9rem;margin:.6rem 0;font-size:13px}
+.warn strong{color:#8A6800}
+table{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:12.5px}
+th,td{border:1px solid var(--border);padding:.4rem .6rem;text-align:left}
+th{background:var(--surface2);color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+h2 code{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to Learning Plan</a>
+
+  <div class="meta-bar">
+    <span class="badge badge-phase">Phase 3 · Project 3A</span>
+    <span class="badge badge-type">🛠 Build Guide</span>
+    <span class="badge badge-dur">~2 weekends</span>
+  </div>
+
+  <h1>Build Guide: AG-UI Streaming Interface</h1>
+  <div class="source">Companion build guide — pairs with the Phase 2B incident-response system (Monitoring / Orchestrator / Remediation agents on AgentCore)</div>
+
+  <div class="section">
+    <h2>1. What You'll Build</h2>
+    <ul>
+      <li>A React (Vite) frontend that connects to your Phase 2B multi-agent incident-response backend over an <strong>AG-UI-compliant Server-Sent Events (SSE)</strong> stream</li>
+      <li>A live, auto-scrolling <strong>timeline/chat view</strong> that renders <code>TEXT_MESSAGE_*</code> events (agent reasoning/response text) and <code>TOOL_CALL_*</code> events (e.g. <code>check_service_health</code>, <code>restart_service</code>) as they happen, agent-by-agent</li>
+      <li>A <strong>chat input box</strong> that lets the user manually trigger a new incident by sending a natural-language message ("simulate a checkout-service outage") which becomes a new AG-UI run</li>
+      <li>An <strong>Approve / Reject button pair</strong> that stays disabled until a human-in-the-loop interrupt event arrives from the LangGraph backend, then unlocks so the user can approve the pending <code>restart_service</code> remediation action directly from the browser instead of the terminal</li>
+      <li>Deliverables checklist:
+        <ul>
+          <li><code>frontend/</code> — Vite + React + TypeScript app using <code>@ag-ui/client</code> (or CopilotKit) for SSE consumption</li>
+          <li><code>backend/agui_server.py</code> — FastAPI/Bedrock AgentCore Runtime endpoint that translates Strands/LangGraph execution into AG-UI events</li>
+          <li>A deployed, public URL (Vercel or Cloudflare Pages) you can link from your portfolio</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Architecture</h2>
+    <pre><code>┌─────────────────────────────┐        SSE (text/event-stream)        ┌──────────────────────────────────────┐
+│   React Frontend (Vite)     │ ─────────────────────────────────────▶│  AG-UI Endpoint (FastAPI on           │
+│                              │◀──────────────────────────────────────│  Bedrock AgentCore Runtime)           │
+│  ChatInput → POST /run       │        AG-UI event stream             │                                        │
+│  EventTimeline (renders      │                                       │  agui_server.py                       │
+│    TEXT_MESSAGE_*,           │                                       │   ├─ receives RunAgentInput            │
+│    TOOL_CALL_*)              │                                       │   ├─ invokes LangGraph app.stream()    │
+│  ApproveButton (enabled on   │                                       │   │    Monitoring → Orchestrator →     │
+│    HITL interrupt event)     │                                       │   │    Remediation (interrupt before   │
+│                              │                                       │   │    restart_service)                │
+└─────────────────────────────┘                                       │   └─ maps LangGraph events → AG-UI     │
+                                                                        │        Event objects, yields as SSE   │
+                                                                        └──────────────────────────────────────┘
+</code></pre>
+    <ul>
+      <li>The frontend never talks to Strands/LangGraph directly — it only ever speaks the <strong>AG-UI protocol</strong> (a small set of typed JSON events over SSE). This is the same decoupling principle as MCP for tools and A2A for agent-to-agent.</li>
+      <li>The backend is the "AG-UI server" — it owns the agent loop and emits events as the loop progresses. It is a thin translation layer around the Phase 2B system you already built.</li>
+      <li>The Approve button works by having the frontend hold local React state that flips true only when a <code>CUSTOM</code> or <code>STATE_DELTA</code> event announces an <code>interrupt</code> payload; clicking it POSTs a follow-up run that resumes the LangGraph checkpoint.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. Prerequisites</h2>
+    <ul>
+      <li>Phase 2B incident-response backend already working locally (Monitoring, Orchestrator, Remediation agents; LangGraph graph with an <code>interrupt()</code> before <code>restart_service</code>)</li>
+      <li>Node.js ≥ 20, npm or pnpm</li>
+      <li>Python ≥ 3.11, <code>pip install fastapi uvicorn sse-starlette langgraph strands-agents ag-ui-protocol</code></li>
+      <li>An AWS account with Bedrock AgentCore Runtime access (or run the FastAPI server locally behind ngrok while developing)</li>
+      <li>A Vercel or Cloudflare Pages account for deployment</li>
+      <li><code>npm create vite@latest</code> familiarity; basic React hooks (<code>useState</code>, <code>useEffect</code>, <code>useRef</code>)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>The AG-UI Event Schema</h2>
+    <p style="margin-bottom:.6rem">AG-UI defines 16 event types across 5 categories. Every event is a JSON object with a <code>type</code> discriminator; the backend streams a sequence of these over SSE and the frontend reduces them into UI state.</p>
+    <table>
+      <tr><th>Category</th><th>Event types</th><th>Purpose</th></tr>
+      <tr><td><strong>Lifecycle</strong></td><td><code>RUN_STARTED</code>, <code>RUN_FINISHED</code>, <code>RUN_ERROR</code>, <code>STEP_STARTED</code>, <code>STEP_FINISHED</code></td><td>Bracket a run and its internal steps so the UI knows when to show/hide loading state</td></tr>
+      <tr><td><strong>Text</strong></td><td><code>TEXT_MESSAGE_START</code>, <code>TEXT_MESSAGE_CONTENT</code>, <code>TEXT_MESSAGE_END</code></td><td>Stream an agent's natural-language message token-by-token, keyed by <code>messageId</code></td></tr>
+      <tr><td><strong>Tool Calls</strong></td><td><code>TOOL_CALL_START</code>, <code>TOOL_CALL_ARGS</code>, <code>TOOL_CALL_END</code>, <code>TOOL_CALL_RESULT</code></td><td>Stream a tool invocation's name/args as they're generated, then its result once executed</td></tr>
+      <tr><td><strong>State</strong></td><td><code>STATE_SNAPSHOT</code>, <code>STATE_DELTA</code></td><td>Sync shared application state (e.g. incident severity, current remediation step) between agent and UI using JSON Patch deltas</td></tr>
+      <tr><td><strong>Special</strong></td><td><code>CUSTOM</code>, <code>RAW</code></td><td>Escape hatch for app-specific events — this is where we carry the HITL interrupt signal</td></tr>
+    </table>
+    <div class="callout"><strong>Key insight:</strong> AG-UI does not define a first-class "human-in-the-loop" event. You model it with <code>CUSTOM</code> (e.g. <code>{"type":"CUSTOM","name":"hitl_interrupt","value":{...}}</code>) or a <code>STATE_DELTA</code> that flips an <code>awaiting_approval</code> field to <code>true</code>. Pick one convention and use it consistently on both ends.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 1 — Wire the LangGraph backend to emit AG-UI events</h2>
+    <p style="margin-bottom:.6rem">Wrap the compiled LangGraph app so each internal event is translated into an AG-UI <code>Event</code> and yielded as SSE.</p>
+    <pre><code># backend/agui_server.py
+import json, uuid
+from fastapi import FastAPI, Request
+from sse_starlette.sse import EventSourceResponse
+from langgraph.checkpoint.memory import MemorySaver
+from incident_graph import build_incident_graph  # your Phase 2B LangGraph app
+
+app = FastAPI()
+checkpointer = MemorySaver()
+graph = build_incident_graph(checkpointer=checkpointer)
+
+def agui_event(event_type: str, **fields) -> str:
+    """Serialize one AG-UI event as an SSE data line."""
+    payload = {"type": event_type, **fields}
+    return json.dumps(payload)
+
+async def run_incident_stream(thread_id: str, user_message: str, resume: dict | None = None):
+    run_id = str(uuid.uuid4())
+    yield agui_event("RUN_STARTED", runId=run_id, threadId=thread_id)
+
+    config = {"configurable": {"thread_id": thread_id}}
+    input_state = {"messages": [{"role": "user", "content": user_message}]} if not resume else None
+    stream_input = resume if resume else input_state
+
+    try:
+        async for chunk in graph.astream(stream_input, config=config, stream_mode="updates"):
+            for node_name, node_output in chunk.items():
+                yield agui_event("STEP_STARTED", stepName=node_name)
+
+                # Agent text output -> TEXT_MESSAGE_* triplet
+                if text := node_output.get("agent_message"):
+                    msg_id = str(uuid.uuid4())
+                    yield agui_event("TEXT_MESSAGE_START", messageId=msg_id, role="assistant")
+                    yield agui_event("TEXT_MESSAGE_CONTENT", messageId=msg_id, delta=text)
+                    yield agui_event("TEXT_MESSAGE_END", messageId=msg_id)
+
+                # Tool call -> TOOL_CALL_* events
+                if tool_call := node_output.get("tool_call"):
+                    tc_id = str(uuid.uuid4())
+                    yield agui_event("TOOL_CALL_START", toolCallId=tc_id, toolCallName=tool_call["name"])
+                    yield agui_event("TOOL_CALL_ARGS", toolCallId=tc_id, delta=json.dumps(tool_call["args"]))
+                    yield agui_event("TOOL_CALL_END", toolCallId=tc_id)
+                    yield agui_event("TOOL_CALL_RESULT", toolCallId=tc_id, content=json.dumps(tool_call["result"]))
+
+                yield agui_event("STEP_FINISHED", stepName=node_name)
+
+        # Check whether the graph paused on an interrupt() before restart_service
+        snapshot = graph.get_state(config)
+        if snapshot.next:  # non-empty => graph is paused waiting for human input
+            yield agui_event(
+                "CUSTOM",
+                name="hitl_interrupt",
+                value={"action": "restart_service", "threadId": thread_id,
+                       "details": snapshot.tasks[0].interrupts[0].value},
+            )
+        else:
+            yield agui_event("RUN_FINISHED", runId=run_id, threadId=thread_id)
+
+    except Exception as exc:
+        yield agui_event("RUN_ERROR", runId=run_id, message=str(exc))
+
+@app.post("/run")
+async def run(request: Request):
+    body = await request.json()
+    thread_id = body.get("threadId") or str(uuid.uuid4())
+    return EventSourceResponse(run_incident_stream(thread_id, body["message"]))
+
+@app.post("/resume")
+async def resume(request: Request):
+    """Called when the user clicks Approve — resumes the paused graph."""
+    body = await request.json()
+    from langgraph.types import Command
+    decision = Command(resume={"approved": body["approved"]})
+    return EventSourceResponse(run_incident_stream(body["threadId"], user_message=None, resume=decision))</code></pre>
+    <div class="warn"><strong>Interrupt setup reminder:</strong> your Phase 2B Remediation Agent node must call <code>langgraph.types.interrupt({"action": "restart_service", "service": service_name})</code> before actually invoking the <code>restart_service</code> tool. That's what produces <code>snapshot.next</code> being non-empty above.</div>
+  </div>
+
+  <div class="section">
+    <h2>Step 2 — Deploy the AG-UI endpoint on Bedrock AgentCore Runtime</h2>
+    <pre><code># requirements.txt
+fastapi
+uvicorn
+sse-starlette
+langgraph>=1.0
+strands-agents
+bedrock-agentcore
+
+# Package and deploy with the AgentCore CLI
+agentcore configure --entrypoint backend/agui_server.py --name incident-agui-endpoint
+agentcore launch
+
+# AgentCore prints an invocation URL, e.g.:
+# https://<runtime-id>.agentcore.<region>.amazonaws.com/run</code></pre>
+    <ul>
+      <li>AgentCore Runtime terminates HTTPS and proxies to your FastAPI app — the SSE response streams through unmodified as long as you keep <code>Content-Type: text/event-stream</code> and avoid buffering middleware.</li>
+      <li>For local development, run <code>uvicorn backend.agui_server:app --reload --port 8000</code> and point the frontend at <code>http://localhost:8000</code> before you deploy.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 3 — Scaffold the React frontend</h2>
+    <pre><code>npm create vite@latest agui-incident-frontend -- --template react-ts
+cd agui-incident-frontend
+npm install @ag-ui/client @ag-ui/core
+# Alternative: if you prefer the higher-level SDK
+# npm install @copilotkit/react-core @copilotkit/react-ui</code></pre>
+    <p style="margin-bottom:.4rem">Project structure:</p>
+    <pre><code>src/
+  App.tsx
+  components/
+    EventTimeline.tsx    # renders TEXT_MESSAGE_* and TOOL_CALL_* as a scrolling list
+    ChatInput.tsx         # textbox + "Trigger Incident" button, POSTs /run
+    ApproveButton.tsx     # disabled until hitl_interrupt CUSTOM event arrives
+  hooks/
+    useAgUiStream.ts      # opens SSE connection, reduces events into state
+  types/
+    agui.ts               # TypeScript discriminated union for the 16 event types</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 4 — Type the AG-UI events</h2>
+    <pre><code>// src/types/agui.ts
+export type AgUiEvent =
+  | { type: "RUN_STARTED"; runId: string; threadId: string }
+  | { type: "RUN_FINISHED"; runId: string; threadId: string }
+  | { type: "RUN_ERROR"; runId: string; message: string }
+  | { type: "STEP_STARTED"; stepName: string }
+  | { type: "STEP_FINISHED"; stepName: string }
+  | { type: "TEXT_MESSAGE_START"; messageId: string; role: string }
+  | { type: "TEXT_MESSAGE_CONTENT"; messageId: string; delta: string }
+  | { type: "TEXT_MESSAGE_END"; messageId: string }
+  | { type: "TOOL_CALL_START"; toolCallId: string; toolCallName: string }
+  | { type: "TOOL_CALL_ARGS"; toolCallId: string; delta: string }
+  | { type: "TOOL_CALL_END"; toolCallId: string }
+  | { type: "TOOL_CALL_RESULT"; toolCallId: string; content: string }
+  | { type: "STATE_SNAPSHOT"; snapshot: Record<string, unknown> }
+  | { type: "STATE_DELTA"; delta: unknown[] }
+  | { type: "CUSTOM"; name: string; value: unknown }
+  | { type: "RAW"; payload: unknown };</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 5 — Consume the SSE stream in a hook</h2>
+    <pre><code>// src/hooks/useAgUiStream.ts
+import { useCallback, useRef, useState } from "react";
+import type { AgUiEvent } from "../types/agui";
+
+const AGUI_ENDPOINT = import.meta.env.VITE_AGUI_ENDPOINT ?? "http://localhost:8000";
+
+export function useAgUiStream() {
+  const [events, setEvents] = useState<AgUiEvent[]>([]);
+  const [pendingInterrupt, setPendingInterrupt] = useState<{ threadId: string; details: unknown } | null>(null);
+  const threadIdRef = useRef<string>(crypto.randomUUID());
+
+  const consumeStream = useCallback(async (response: Response) => {
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        const dataLine = line.split("\n").find((l) => l.startsWith("data:"));
+        if (!dataLine) continue;
+        const evt = JSON.parse(dataLine.slice(5).trim()) as AgUiEvent;
+        setEvents((prev) => [...prev, evt]);
+
+        if (evt.type === "CUSTOM" && evt.name === "hitl_interrupt") {
+          const v = evt.value as { threadId: string; details: unknown };
+          setPendingInterrupt({ threadId: v.threadId, details: v.details });
+        }
+      }
+    }
+  }, []);
+
+  const triggerIncident = useCallback(async (message: string) => {
+    setEvents([]);
+    const res = await fetch(`${AGUI_ENDPOINT}/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, threadId: threadIdRef.current }),
+    });
+    await consumeStream(res);
+  }, [consumeStream]);
+
+  const approveRemediation = useCallback(async (approved: boolean) => {
+    if (!pendingInterrupt) return;
+    setPendingInterrupt(null);
+    const res = await fetch(`${AGUI_ENDPOINT}/resume`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId: pendingInterrupt.threadId, approved }),
+    });
+    await consumeStream(res);
+  }, [pendingInterrupt, consumeStream]);
+
+  return { events, pendingInterrupt, triggerIncident, approveRemediation };
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 6 — Render the timeline, chat input, and Approve button</h2>
+    <pre><code>// src/components/EventTimeline.tsx
+import type { AgUiEvent } from "../types/agui";
+
+export function EventTimeline({ events }: { events: AgUiEvent[] }) {
+  const messages = new Map&lt;string, string&gt;();
+  const toolCalls = new Map&lt;string, { name: string; args: string; result?: string }&gt;();
+
+  for (const e of events) {
+    if (e.type === "TEXT_MESSAGE_CONTENT") {
+      messages.set(e.messageId, (messages.get(e.messageId) ?? "") + e.delta);
+    }
+    if (e.type === "TOOL_CALL_START") toolCalls.set(e.toolCallId, { name: e.toolCallName, args: "" });
+    if (e.type === "TOOL_CALL_ARGS") {
+      const tc = toolCalls.get(e.toolCallId);
+      if (tc) tc.args += e.delta;
+    }
+    if (e.type === "TOOL_CALL_RESULT") {
+      const tc = toolCalls.get(e.toolCallId);
+      if (tc) tc.result = e.content;
+    }
+  }
+
+  return (
+    &lt;div className="timeline"&gt;
+      {events.map((e, i) =&gt; {
+        if (e.type === "STEP_STARTED") return &lt;div key={i} className="step-marker"&gt;▶ {e.stepName}&lt;/div&gt;;
+        if (e.type === "TEXT_MESSAGE_END")
+          return &lt;div key={i} className="chat-bubble agent"&gt;{messages.get(e.messageId)}&lt;/div&gt;;
+        if (e.type === "TOOL_CALL_RESULT") {
+          const tc = toolCalls.get(e.toolCallId);
+          return (
+            &lt;div key={i} className="tool-card"&gt;
+              &lt;strong&gt;🔧 {tc?.name}&lt;/strong&gt;
+              &lt;pre&gt;{tc?.args}&lt;/pre&gt;
+              &lt;pre&gt;→ {tc?.result}&lt;/pre&gt;
+            &lt;/div&gt;
+          );
+        }
+        if (e.type === "RUN_ERROR") return &lt;div key={i} className="error-banner"&gt;{e.message}&lt;/div&gt;;
+        return null;
+      })}
+    &lt;/div&gt;
+  );
+}</code></pre>
+    <pre><code>// src/components/ApproveButton.tsx
+export function ApproveButton({
+  pendingInterrupt,
+  onDecision,
+}: {
+  pendingInterrupt: { threadId: string; details: unknown } | null;
+  onDecision: (approved: boolean) => void;
+}) {
+  return (
+    &lt;div className="approve-bar"&gt;
+      &lt;button disabled={!pendingInterrupt} onClick={() =&gt; onDecision(true)} className="approve"&gt;
+        ✅ Approve restart_service
+      &lt;/button&gt;
+      &lt;button disabled={!pendingInterrupt} onClick={() =&gt; onDecision(false)} className="reject"&gt;
+        ❌ Reject
+      &lt;/button&gt;
+      {pendingInterrupt &amp;&amp; (
+        &lt;pre className="interrupt-details"&gt;{JSON.stringify(pendingInterrupt.details, null, 2)}&lt;/pre&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+    <pre><code>// src/App.tsx
+import { useState } from "react";
+import { useAgUiStream } from "./hooks/useAgUiStream";
+import { EventTimeline } from "./components/EventTimeline";
+import { ApproveButton } from "./components/ApproveButton";
+
+export default function App() {
+  const [draft, setDraft] = useState("");
+  const { events, pendingInterrupt, triggerIncident, approveRemediation } = useAgUiStream();
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Incident Response — Live Feed&lt;/h1&gt;
+      &lt;EventTimeline events={events} /&gt;
+      &lt;ApproveButton pendingInterrupt={pendingInterrupt} onDecision={approveRemediation} /&gt;
+      &lt;div className="chat-input"&gt;
+        &lt;input value={draft} onChange={(e) =&gt; setDraft(e.target.value)}
+               placeholder="e.g. simulate a checkout-service outage" /&gt;
+        &lt;button onClick={() =&gt; { triggerIncident(draft); setDraft(""); }}&gt;Trigger Incident&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>Step 7 — Deploy the frontend</h2>
+    <pre><code># Vercel
+npm install -g vercel
+vercel --prod
+# set VITE_AGUI_ENDPOINT in Vercel project env vars to your AgentCore invocation URL
+
+# or Cloudflare Pages
+npm run build
+npx wrangler pages deploy dist --project-name agui-incident-frontend</code></pre>
+    <div class="warn"><strong>CORS:</strong> your FastAPI backend must send <code>Access-Control-Allow-Origin</code> for the deployed frontend's origin, and SSE responses must not be gzip-compressed by an intermediate proxy — both break streaming silently.</div>
+  </div>
+
+  <div class="section">
+    <h2>Verification</h2>
+    <ul>
+      <li>Run <code>curl -N -X POST http://localhost:8000/run -H "Content-Type: application/json" -d '{"message":"simulate an outage"}'</code> — you should see a stream of <code>data: {...}</code> lines print live, not all at once</li>
+      <li>Open the frontend, type an incident, click "Trigger Incident" — the timeline should populate step-by-step (not in one burst) as the Monitoring → Orchestrator → Remediation nodes execute</li>
+      <li>When the graph reaches the <code>interrupt()</code> before <code>restart_service</code>, the Approve/Reject buttons should flip from disabled to enabled without a page reload</li>
+      <li>Click Approve — a new SSE stream from <code>/resume</code> should complete the run and show <code>RUN_FINISHED</code> in the timeline (log it to the console for a quick check)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>Stream arrives all at once instead of incrementally:</strong> a proxy (nginx, AWS ALB, or even <code>uvicorn --workers</code> with certain buffering configs) is buffering the response. Set <code>X-Accel-Buffering: no</code> and confirm <code>EventSourceResponse</code> isn't wrapped by gzip middleware.</li>
+      <li><strong>Approve button never enables:</strong> check that your LangGraph node actually calls <code>interrupt()</code> (not just returns early) and that <code>graph.get_state(config).next</code> is non-empty after the stream ends — print it server-side to confirm before debugging the frontend.</li>
+      <li><strong>CORS errors in the browser console:</strong> add <code>from fastapi.middleware.cors import CORSMiddleware</code> and allow your Vercel/Pages origin explicitly; wildcard <code>*</code> does not work with credentialed SSE requests in some browsers.</li>
+      <li><strong>Events arrive out of order or duplicated:</strong> make sure you're using one persistent <code>thread_id</code> per incident and not creating a new LangGraph checkpoint thread on every keystroke or reconnect.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Portfolio Packaging</h2>
+    <ul>
+      <li>Commit <code>frontend/</code> and <code>backend/agui_server.py</code> to the same repo as your Phase 2B incident-response system, under a top-level <code>project-3a-agui/</code> folder</li>
+      <li>Add a README section with the architecture diagram from this guide, the deployed frontend URL, and a short GIF of the Approve flow in action</li>
+      <li>Link the live deployment (Vercel/Cloudflare Pages URL) directly from your portfolio site and GitHub profile README — a working, clickable agent UI demonstrates more than a code sample</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
