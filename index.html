@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#0D0D0F;--surface:#141417;--surface2:#1C1C21;--border:#2A2A32;
-    --accent:#7B6EF6;--accent2:#4FD1A5;--accent3:#F4A14A;--accent4:#E05C7A;
-    --text:#E8E8F0;--muted:#7A7A8C;--muted2:#4A4A5C;
+    --bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;
+    --accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;
+    --text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;line-height:1.65;min-height:100vh}
   .container{max-width:880px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
-  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(123,110,246,0.3);transition:border-color 0.15s}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(38,84,124,0.25);transition:border-color 0.15s}
   a:hover{border-bottom-color:var(--accent)}
 
   /* HEADER */
@@ -25,7 +25,7 @@
   .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 
   /* NORTH STAR */
-  .north-star{background:linear-gradient(135deg,#1a1730 0%,#111520 100%);border:1px solid #3a3265;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
+  .north-star{background:linear-gradient(135deg,#EAF2FB 0%,#F4F9FE 100%);border:1px solid #B8D0E8;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
   .north-star::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
   .ns-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
   .ns-text{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4}
@@ -42,7 +42,7 @@
   .pname{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;margin-bottom:3px}
   .protocol-card.mcp .pname{color:var(--accent)}
   .protocol-card.a2a .pname{color:var(--accent2)}
-  .protocol-card.agui .pname{color:var(--accent3)}
+  .protocol-card.agui .pname{color:#C27E00}
   .protocol-card.acp .pname{color:var(--accent4)}
   .player{font-size:10px;color:var(--muted);margin-bottom:4px}
   .pdesc{font-size:11px;color:var(--muted);line-height:1.5}
@@ -50,14 +50,14 @@
   /* MODE LEGEND */
   .mode-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:1.8rem}
   .res-type{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
-  .type-watch{background:#211e0a;color:#d4b840;border:1px solid #3d380f}
-  .type-read {background:#0a1822;color:#40a8c8;border:1px solid #0f2d3d}
-  .type-follow{background:#1e0a18;color:#c840a8;border:1px solid #380f2d}
-  .type-course{background:#0e1e0a;color:#7ec840;border:1px solid #1c380f}
+  .type-watch{background:#FFF8E1;color:#8A6800;border:1px solid #FFE57F}
+  .type-read {background:#E3F2F8;color:#1A6080;border:1px solid #90CAE0}
+  .type-follow{background:#FCE8F3;color:#8A147A;border:1px solid #F0A0D5}
+  .type-course{background:#E8F8E8;color:#227020;border:1px solid #90D090}
   .mode-note{font-size:11px;color:var(--muted)}
 
   /* MOBILE NOTE */
-  .mobile-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.8rem}
+  .mobile-block{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.8rem}
   .mobile-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:.4rem}
   .mobile-text{font-size:11px;color:var(--muted);line-height:1.6}
 
@@ -72,7 +72,7 @@
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   @media(max-width:600px){.two-col{grid-template-columns:1fr}}
 
-  .block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem}
+  .block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;box-shadow:0 1px 4px rgba(38,84,124,0.07)}
   .block-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
   .bldot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
@@ -86,11 +86,11 @@
   .res-desc{font-size:11px;color:var(--muted);line-height:1.55}
   .res-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
   .res-tag{font-size:10px;padding:1px 7px;border-radius:10px}
-  .tag-free{background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30}
-  .tag-paid{background:#1a1e2e;color:#6ea4d1;border:1px solid #2a3050}
-  .tag-aws {background:#2e221a;color:#d18c4f;border:1px solid #503830}
-  .tag-anth{background:#1e1a30;color:#a097f6;border:1px solid #35306a}
-  .tag-mins{background:#1c1c1c;color:#777;border:1px solid #333}
+  .tag-free{background:#E0FAF4;color:#027E5A;border:1px solid #9AE8D0}
+  .tag-paid{background:#E3EFF8;color:#1A507C;border:1px solid #90C0E0}
+  .tag-aws {background:#FFF0E0;color:#7A4000;border:1px solid #FFD0A0}
+  .tag-anth{background:#EEF2FA;color:#26547C;border:1px solid #B0C5E8}
+  .tag-mins{background:#F0F0F0;color:#6A6A6A;border:1px solid #D0D0D0}
 
   /* BUILD */
   .build-item{margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
@@ -99,11 +99,11 @@
   .build-desc{font-size:11px;color:var(--muted);line-height:1.55}
 
   /* CALLOUT BLOCKS */
-  .arch-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .arch-block{background:#EAF2FB;border:1px solid #B8D0E8;border-left:3px solid var(--accent);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
   .arch-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
   .arch-text{font-size:11px;color:var(--muted);line-height:1.6}
-  .signal-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
-  .signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent3);margin-bottom:.4rem}
+  .signal-block{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8A6800;margin-bottom:.4rem}
   .signal-text{font-size:11px;color:var(--muted);line-height:1.6}
   .milestone-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
   .milestone-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:.35rem;font-size:11px;color:var(--muted);line-height:1.5}
@@ -112,12 +112,12 @@
   .divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
 
   /* CAPSTONE */
-  .capstone{background:linear-gradient(135deg,#16130a 0%,#0f1218 100%);border:1px solid #4a3820;border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+  .capstone{background:linear-gradient(135deg,#FFFBF0 0%,#FFF8E1 100%);border:1px solid #FFD166;border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
   .capstone::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent3),var(--accent2),transparent)}
-  .cap-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent3);margin-bottom:.6rem}
+  .cap-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8A6800;margin-bottom:.6rem}
   .cap-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
   .cap-row{display:flex;gap:10px;margin-bottom:5px;font-size:11px;line-height:1.5}
-  .cap-key{color:var(--accent3);flex-shrink:0;min-width:95px}
+  .cap-key{color:#8A6800;flex-shrink:0;min-width:95px}
   .cap-val{color:var(--muted)}
 
   /* CERTS */
@@ -247,7 +247,7 @@
   <div class="phase-header">
     <div class="phase-number">01</div>
     <div class="phase-info">
-      <span class="phase-badge" style="background:#1e1a30;color:#a097f6;border:1px solid #352a50;">Months 1–3 · MCP layer</span>
+      <span class="phase-badge" style="background:#E8F0F7;color:#26547C;border:1px solid #B8D0E8;">Months 1–3 · MCP layer</span>
       <div class="phase-title">Tool integration & typed agents</div>
       <div class="phase-sub">Architectural question: how do agents consume tools, validate outputs, and manage context at the code level?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p1" style="width:0%;background:var(--accent)"></div></div><span class="phase-progress-count" id="prog-p1">0/11</span></div>
     </div>
@@ -255,7 +255,7 @@
 
   <div class="two-col">
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#a097f6"></span>Watch · Read · Follow</div>
+      <div class="block-label"><span class="bldot" style="background:#26547C"></span>Watch · Read · Follow</div>
 
       <div class="res-item" data-id="p1-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
         <div class="res-type type-watch">▶ Watch</div>
@@ -323,7 +323,7 @@
     </div>
 
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="block-label"><span class="bldot" style="background:#06D6A0"></span>Build mode (desk)</div>
       <div class="build-item" data-id="p1-9" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
         <div class="build-title">Project 1A — Typed research agent</div>
         <div class="build-desc">PydanticAI v2.0 + Claude API directly. 3 tools: web search, file read, structured summariser. Enforced Pydantic output schema with harness-first design. No AWS yet — understand primitives raw first.<br><br><span style="color:var(--muted)">Guide:</span> <a href="https://realpython.com/pydantic-ai/" target="_blank" onclick="event.stopPropagation()">Real Python — Type-Safe LLM Agents with PydanticAI</a> — comprehensive walkthrough covering tools, DI, structured output, multi-provider support.<br><span style="color:var(--muted)">Portfolio:</span> Clean GitHub repo with a typed output schema exported as a JSON sample and a CI step that runs a single LLM call as a smoke test. Hiring managers in 2026 expect type safety — not agent prompts in plain strings.</div>
@@ -345,7 +345,7 @@
   </div>
 
   <div class="milestone-block">
-    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#a097f6"></span>Phase 1 exits when you can...</div>
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#26547C"></span>Phase 1 exits when you can...</div>
     <div class="milestone-item"><span>◻</span>Explain PydanticAI's dependency injection vs passing kwargs — architecturally, not just syntactically</div>
     <div class="milestone-item"><span>◻</span>Connect a Strands agent to an MCP server and trace the JSON-RPC messages it sends in real-time</div>
     <div class="milestone-item"><span>◻</span>Articulate when you'd use PydanticAI vs Strands with clear tradeoffs, and describe the harness-first architectural shift in PydanticAI v2.0</div>
@@ -359,7 +359,7 @@
   <div class="phase-header">
     <div class="phase-number">02</div>
     <div class="phase-info">
-      <span class="phase-badge" style="background:#1a2e1f;color:#4fd17a;border:1px solid #2a4a30;">Months 4–6 · A2A layer</span>
+      <span class="phase-badge" style="background:#E0FAF3;color:#038F6D;border:1px solid #9AEBDA;">Months 4–6 · A2A layer</span>
       <div class="phase-title">Cross-framework agent coordination</div>
       <div class="phase-sub">Architectural question: how do agents from different frameworks communicate, discover each other, and delegate tasks at the protocol level?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p2" style="width:0%;background:var(--accent2)"></div></div><span class="phase-progress-count" id="prog-p2">0/10</span></div>
     </div>
@@ -367,7 +367,7 @@
 
   <div class="two-col">
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Watch · Read · Follow · Course</div>
+      <div class="block-label"><span class="bldot" style="background:#06D6A0"></span>Watch · Read · Follow · Course</div>
 
       <div class="res-item" data-id="p2-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
         <div class="res-type type-course">◈ Course</div>
@@ -443,7 +443,7 @@
     </div>
 
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#4fd1a5"></span>Build mode (desk)</div>
+      <div class="block-label"><span class="bldot" style="background:#06D6A0"></span>Build mode (desk)</div>
       <div class="build-item" data-id="p2-9" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
         <div class="build-title">Project 2A — Two-agent A2A handoff</div>
         <div class="build-desc">Agent 1 (Strands + Claude on Bedrock) discovers and delegates to Agent 2 (LangGraph + any model) via A2A. Both on AgentCore Runtime at port 9000. Understand Agent Cards and JSON-RPC handoff end to end before adding complexity.<br><br><span style="color:var(--muted)">Guide:</span> <a href="https://www.freecodecamp.org/news/how-to-build-a-multi-agent-ai-system-with-langgraph-mcp-and-a2a-full-book/" target="_blank" onclick="event.stopPropagation()">FreeCodeCamp — Build Multi-Agent AI with LangGraph, MCP &amp; A2A (full book)</a> — end-to-end from LangGraph setup through A2A agent cards, supervisor, and SQLite checkpointing. Free and extremely detailed.<br><span style="color:var(--muted)">Portfolio:</span> Publish to GitHub. Document the Agent Card schema and JSON-RPC trace in the README — cross-framework A2A on managed infra is rare on GitHub and a direct signal for senior AI Engineer roles.</div>
@@ -461,7 +461,7 @@
   </div>
 
   <div class="milestone-block">
-    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#4fd1a5"></span>Phase 2 exits when you can...</div>
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#06D6A0"></span>Phase 2 exits when you can...</div>
     <div class="milestone-item"><span>◻</span>Deploy two agents from different frameworks that communicate via A2A on Bedrock AgentCore</div>
     <div class="milestone-item"><span>◻</span>Explain the Agent Card structure and how capability discovery works in a distributed agent system</div>
     <div class="milestone-item"><span>◻</span>Choose between LangGraph (graph), Strands (model-driven), and OpenAI Agents SDK (handoff) for an orchestration problem and defend the decision with tradeoffs</div>
@@ -475,7 +475,7 @@
   <div class="phase-header">
     <div class="phase-number">03</div>
     <div class="phase-info">
-      <span class="phase-badge" style="background:#2e221a;color:#d18c4f;border:1px solid #503830;">Months 7–9 · AG-UI + production ops</span>
+      <span class="phase-badge" style="background:#FFF8E6;color:#8A6800;border:1px solid #FFE59A;">Months 7–9 · AG-UI + production ops</span>
       <div class="phase-title">User-facing agents & production ops</div>
       <div class="phase-sub">Architectural question: how do you expose a multi-agent system to real users in real-time — and keep it observable, safe, and evaluable in production?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p3" style="width:0%;background:var(--accent3)"></div></div><span class="phase-progress-count" id="prog-p3">0/9</span></div>
     </div>
@@ -483,7 +483,7 @@
 
   <div class="two-col">
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Watch · Read · Follow</div>
+      <div class="block-label"><span class="bldot" style="background:#E8A000"></span>Watch · Read · Follow</div>
 
       <div class="res-item" data-id="p3-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
         <div class="res-type type-read">◉ Read</div>
@@ -551,7 +551,7 @@
     </div>
 
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#f4a14a"></span>Build mode (desk)</div>
+      <div class="block-label"><span class="bldot" style="background:#E8A000"></span>Build mode (desk)</div>
       <div class="build-item" data-id="p3-8" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
         <div class="build-title">Project 3A — AG-UI streaming interface</div>
         <div class="build-desc">Add AG-UI to your Phase 2 multi-agent system. Stream reasoning steps, tool calls, and agent state to a frontend in real-time via Bedrock AgentCore. Wire TEXT_MESSAGE_* and TOOL_CALL_* events to a React component.<br><br><span style="color:var(--muted)">Guide:</span> <a href="https://www.copilotkit.ai/blog/build-a-frontend-for-your-adk-agents-with-ag-ui" target="_blank" onclick="event.stopPropagation()">CopilotKit — Build a Frontend for Your Agents with AG-UI</a> — full tutorial: agent backend + React frontend via AG-UI bridge. Swap the ADK backend for your Strands/LangGraph setup.<br><span style="color:var(--muted)">Portfolio:</span> A working agent UI that streams tool calls in real-time demos better than any README paragraph. Deploy to Vercel or Cloudflare Pages and link from your GitHub profile.</div>
@@ -569,7 +569,7 @@
   </div>
 
   <div class="milestone-block">
-    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#f4a14a"></span>Phase 3 exits when you can...</div>
+    <div class="block-label" style="margin-bottom:.5rem"><span class="bldot" style="background:#E8A000"></span>Phase 3 exits when you can...</div>
     <div class="milestone-item"><span>◻</span>Stream agent reasoning state to a UI in real-time via AG-UI on Bedrock AgentCore</div>
     <div class="milestone-item"><span>◻</span>Explain the tradeoff between Guardrails in NOTIFY vs ENFORCE mode and when to use each</div>
     <div class="milestone-item"><span>◻</span>Read an OpenTelemetry trace for a multi-agent workflow and identify where latency is introduced</div>
@@ -584,7 +584,7 @@
   <div class="phase-header">
     <div class="phase-number">04</div>
     <div class="phase-info">
-      <span class="phase-badge" style="background:#2e1a1f;color:#d16e7e;border:1px solid #50283a;">Months 10–12 · Capstone + cert</span>
+      <span class="phase-badge" style="background:#FDECEF;color:#B52040;border:1px solid #F5B3C0;">Months 10–12 · Capstone + cert</span>
       <div class="phase-title">Flagship project & credential</div>
       <div class="phase-sub">Architectural question: can you design, justify, and deploy a production agentic system spanning all three protocol layers from scratch?</div><div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p4" style="width:0%;background:var(--accent4)"></div></div><span class="phase-progress-count" id="prog-p4">0/7</span></div>
     </div>
@@ -592,7 +592,7 @@
 
   <div class="two-col">
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Watch · Read · Follow</div>
+      <div class="block-label"><span class="bldot" style="background:#EF476F"></span>Watch · Read · Follow</div>
 
       <div class="res-item" data-id="p4-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
         <div class="res-type type-follow">⬡ Follow</div>
@@ -636,7 +636,7 @@
     </div>
 
     <div class="block">
-      <div class="block-label"><span class="bldot" style="background:#e05c7a"></span>Build mode (desk)</div>
+      <div class="block-label"><span class="bldot" style="background:#EF476F"></span>Build mode (desk)</div>
       <div class="build-item" data-id="p4-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
         <div class="build-title">Capstone — Autonomous DS Pipeline Agent</div>
         <div class="build-desc">Full system: planner decomposes task → specialists run experiments with typed outputs → critic evaluates with LangGraph checkpointing + human-in-the-loop approval → reporter streams live results via AG-UI. Spans MCP + A2A + AG-UI. Deployed on AgentCore with Identity, Observability, Guardrails, and batch Evaluations. Use Pydantic Evals or AgentCore A/B testing to score critic output quality before any model change. This is your portfolio anchor.<br><br><span style="color:var(--muted)">Portfolio:</span> Public GitHub repo with: architecture diagram in README, OTel trace screenshot, eval score log (baseline vs after a model/prompt change), and a 2-min demo video. These four artifacts together make you rare — most candidates have the code; almost none have the eval log and the architecture reasoning.</div>
@@ -742,8 +742,8 @@ applyState(loadState());
 <div class="block" style="margin-bottom:2rem">
   <div class="dec-row"><span class="dec-key" style="color:var(--accent)">PydanticAI</span><span style="color:var(--muted);font-size:11px">Single agents or small typed graphs. Validated outputs critical. Multi-LLM provider setup. Code quality over ecosystem. Default choice for structured agent logic with Claude. <a href="https://ai.pydantic.dev/" target="_blank">Docs</a> · <a href="https://github.com/pydantic/pydantic-ai" target="_blank">GitHub</a></span></div>
   <div class="dec-row"><span class="dec-key" style="color:var(--accent2)">Strands</span><span style="color:var(--muted);font-size:11px">AWS-native deployment. Model-driven, no hardcoded workflows. Native A2A + MCP + multi-agent patterns. 14M+ downloads; used in Amazon Q Developer internally. Primary choice for Bedrock production. <a href="https://strandsagents.com/" target="_blank">Docs</a> · <a href="https://github.com/strands-agents/sdk-python" target="_blank">GitHub</a></span></div>
-  <div class="dec-row"><span class="dec-key" style="color:var(--accent3)">LangGraph</span><span style="color:var(--muted);font-size:11px">Complex conditional branching. Stateful workflows with checkpointing. Human-in-the-loop at specific nodes (first-class since v1.0, Oct 2025). Long-term maintainable systems. Complements Strands. <a href="https://langchain-ai.github.io/langgraph/" target="_blank">Docs</a></span></div>
-  <div class="dec-row"><span class="dec-key" style="color:#5bb9f5">OpenAI SDK</span><span style="color:var(--muted);font-size:11px">Handoff-based multi-agent: explicit task delegation between agents via handoffs, output validated through guardrails, code runs in sandboxes (E2B, Modal, Cloudflare, Vercel). Works with 100+ LLMs — not OpenAI-only. Good when you want clear delegation without graph complexity. Updated April 2026. <a href="https://openai.github.io/openai-agents-python/" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:#C27E00">LangGraph</span><span style="color:var(--muted);font-size:11px">Complex conditional branching. Stateful workflows with checkpointing. Human-in-the-loop at specific nodes (first-class since v1.0, Oct 2025). Long-term maintainable systems. Complements Strands. <a href="https://langchain-ai.github.io/langgraph/" target="_blank">Docs</a></span></div>
+  <div class="dec-row"><span class="dec-key" style="color:#1A7AB5">OpenAI SDK</span><span style="color:var(--muted);font-size:11px">Handoff-based multi-agent: explicit task delegation between agents via handoffs, output validated through guardrails, code runs in sandboxes (E2B, Modal, Cloudflare, Vercel). Works with 100+ LLMs — not OpenAI-only. Good when you want clear delegation without graph complexity. Updated April 2026. <a href="https://openai.github.io/openai-agents-python/" target="_blank">Docs</a></span></div>
   <div class="dec-row"><span class="dec-key" style="color:var(--accent4)">CrewAI</span><span style="color:var(--muted);font-size:11px">Rapid prototyping. Role-based agent teams. Speed to demo over control. Good for POCs — not for production systems requiring long-term security compliance. <a href="https://docs.crewai.com" target="_blank">Docs</a></span></div>
   <div class="dec-row"><span class="dec-key" style="color:var(--muted)">AutoGen/AG2</span><span style="color:var(--muted);font-size:11px">Research and experimentation only. Near-zero security mechanisms. Any 2024 article recommending it for enterprise production predates the AG2 split — treat with caution. <a href="https://docs.ag2.ai" target="_blank">Docs</a></span></div>
 </div>
