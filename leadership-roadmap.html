@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Leadership Roadmap — 5-Year Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#FCFCFC;--surface:#FFFFFF;--surface2:#EEF4F9;--border:#CFE0ED;
+    --accent:#26547C;--accent2:#06D6A0;--accent3:#FFD166;--accent4:#EF476F;
+    --text:#1A2F44;--muted:#5A7A94;--muted2:#93B4CC;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;font-size:14px;line-height:1.65;min-height:100vh}
+  .container{max-width:880px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(38,84,124,0.25);transition:border-color 0.15s}
+  a:hover{border-bottom-color:var(--accent)}
+
+  /* HEADER */
+  .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+  h1{font-family:'Roboto',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:900;line-height:1.1;color:var(--text);margin-bottom:.75rem}
+  h1 span{color:var(--accent)}
+  .header-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;margin-bottom:1.2rem}
+  .meta-tag{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .back-link{display:inline-block;font-size:11px;margin-bottom:1rem}
+
+  /* NORTH STAR */
+  .north-star{background:linear-gradient(135deg,#EAF2FB 0%,#F4F9FE 100%);border:1px solid #B8D0E8;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:2rem;position:relative;overflow:hidden}
+  .north-star::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+  .ns-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+  .ns-text{font-family:'Roboto',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4}
+
+  .section-title{font-family:'Roboto',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+
+  /* OPERATING PRINCIPLES */
+  .block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;box-shadow:0 1px 4px rgba(38,84,124,0.07)}
+  .principles-list{list-style:none;counter-reset:p}
+  .principles-list li{counter-increment:p;font-size:11.5px;color:var(--muted);line-height:1.6;padding-left:1.6rem;position:relative;margin-bottom:.6rem}
+  .principles-list li:last-child{margin-bottom:0}
+  .principles-list li::before{content:counter(p);position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .principles-list strong{color:var(--text)}
+
+  .mobile-block{background:#E8FAF6;border:1px solid #9AEBDA;border-left:3px solid var(--accent2);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.8rem}
+  .mobile-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:.4rem}
+  .mobile-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+  /* PHASE */
+  .phase{margin-bottom:2.5rem}
+  .phase-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem}
+  .phase-number{font-family:'Roboto',sans-serif;font-size:2rem;font-weight:900;line-height:1;color:var(--muted2);flex-shrink:0;margin-top:-4px}
+  .phase-badge{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:4px}
+  .phase-title{font-family:'Roboto',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:3px}
+  .phase-sub{font-size:11px;color:var(--muted);font-style:italic}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
+  .block-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+  .bldot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+  .skills-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+  /* RESOURCE / BUILD ITEMS (checkable) */
+  .res-item,.build-item{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+  .res-item:last-child,.build-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .res-item-body,.build-item-body{flex:1;min-width:0}
+  .res-title,.build-title{font-family:'Roboto',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.35}
+  .res-source{font-size:10px;color:var(--accent);margin-bottom:3px}
+  .res-desc,.build-desc{font-size:11px;color:var(--muted);line-height:1.55}
+  .check-box{width:16px;height:16px;border:1.5px solid var(--muted2);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+  .res-item.done .check-box,.build-item.done .check-box,.check-item.done .check-box{background:var(--accent2);border-color:var(--accent2)}
+  .check-tick{display:none;width:9px;height:9px}
+  .res-item.done .check-tick,.build-item.done .check-tick,.check-item.done .check-tick{display:block}
+  .res-item.done .res-item-body,.build-item.done .build-item-body{opacity:.45}
+  .res-item.done .res-title,.build-item.done .build-title{text-decoration:line-through;text-decoration-color:var(--muted2)}
+
+  /* CALLOUT BLOCKS */
+  .arch-block{background:#EAF2FB;border:1px solid #B8D0E8;border-left:3px solid var(--accent);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .arch-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+  .arch-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .signal-block{background:#FFF8E6;border:1px solid #FFE59A;border-left:3px solid #E8A000;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8A6800;margin-bottom:.4rem}
+  .signal-text{font-size:11px;color:var(--muted);line-height:1.6}
+  .milestone-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:10px}
+  .milestone-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+  .milestone-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+  /* FIVE-YEAR TABLE */
+  .cert-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem}
+  .cert-table th{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);font-weight:400}
+  .cert-table td{font-size:11px;color:var(--muted);padding:.5rem .75rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+  .cert-table td:first-child{color:var(--text);font-family:'Roboto',sans-serif;font-size:.78rem;font-weight:600}
+  .cert-table tr:last-child td{border-bottom:none}
+
+  .footer-note{font-size:10px;color:var(--muted2);line-height:1.7;border-top:1px solid var(--border);padding-top:1.5rem;margin-top:2rem}
+
+  /* CHECKLIST SUMMARY */
+  .checklist-summary{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .summary-stat{text-align:center}
+  .summary-num{font-family:'Roboto',sans-serif;font-size:1.4rem;font-weight:700;color:var(--text)}
+  .summary-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .reset-btn{margin-left:auto;font-size:10px;padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Roboto',sans-serif;transition:border-color .15s,color .15s}
+  .reset-btn:hover{border-color:var(--muted);color:var(--text)}
+
+  /* PER-PHASE PROGRESS */
+  .phase-progress-row{display:flex;align-items:center;gap:10px;margin-top:.6rem}
+  .progress-bar-wrap{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+  .progress-bar-fill{height:100%;border-radius:2px;transition:width .3s ease}
+  .phase-progress-count{font-size:10px;color:var(--muted2);white-space:nowrap;flex-shrink:0}
+
+  /* STANDALONE CHECK ITEMS (Immediate Next Actions) */
+  .checklist-items{display:grid;gap:5px}
+  .check-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;cursor:pointer;transition:border-color .15s,background .15s}
+  .check-item:hover{border-color:var(--muted2)}
+  .check-item.done{background:var(--surface2);border-color:var(--muted2)}
+  .check-item.done .check-label{color:var(--muted2);text-decoration:line-through;text-decoration-color:var(--muted2)}
+  .check-label{font-size:11px;color:var(--muted);line-height:1.5;transition:color .15s}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← 12-month Agentic AI plan</a>
+
+<!-- HEADER -->
+<div class="eyebrow">Systems · Strategy · Influence · Visibility — Senior DS → Architect</div>
+<h1>Technical Leadership<br><span>Roadmap</span></h1>
+<div class="header-meta">
+  <span class="meta-tag">5 years</span>
+  <span class="meta-tag">Maintenance ~1–2 hrs/wk · Sprint ~5–8 hrs/wk</span>
+  <span class="meta-tag">One pillar sprint at a time</span>
+  <span class="meta-tag">Wraps the 12-month Agentic AI plan</span>
+</div>
+
+<!-- NORTH STAR -->
+<div class="north-star">
+  <div class="ns-label">Purpose</div>
+  <div class="ns-text">A 5-year, domain-agnostic learning path from Senior Data Scientist toward architect-level technical leadership — technical strategy for a domain, hands-on, influence without pure management.</div>
+</div>
+
+<div class="section-title">Operating principles</div>
+<div class="block" style="margin-bottom:1.8rem">
+  <ol class="principles-list">
+    <li><strong>Build &gt; consume.</strong> Every book/course must terminate in an artifact: a design doc, a working system, a written decision record.</li>
+    <li><strong>Leverage existing edge.</strong> DS rigor + MLOps + LLM/RAG experience is the differentiator — deepen the intersection, don't restart.</li>
+    <li><strong>Visibility compounds.</strong> Half the architect role is being <em>known</em> for good judgment. Write and present what you learn.</li>
+    <li><strong>The AI engineer role (if landed) is Pillar 5 on the job</strong> — reallocate personal time to Pillars 1 and 3.</li>
+    <li><strong>One execution plan at a time.</strong> The <a href="index.html">12-month Agentic AI plan</a> is the Year-1 execution vehicle for Pillars 2 &amp; 5 — this roadmap doesn't compete with it, it wraps it with the architecture (P1), strategy (P3), and visibility (P6) layers that turn an AI engineer into an architect. Don't double-schedule the same hours.</li>
+    <li><strong>Extract the pattern from the product.</strong> The agentic plan is AWS/AgentCore-native — fine as a depth bet, but the Belgian enterprise and freelance market skews Azure/Microsoft. For every AgentCore-specific feature used, write one paragraph on the vendor-neutral pattern behind it and how you'd replicate it elsewhere (Langfuse, LiteLLM, plain OTel). That paragraph is the architect skill; the deployment is just the exercise.</li>
+  </ol>
+</div>
+
+<div class="section-title">Your progress</div>
+<div class="checklist-summary">
+  <div class="summary-stat"><div class="summary-num" id="done-count">0</div><div class="summary-label">Done</div></div>
+  <div class="summary-stat"><div class="summary-num" id="total-count">0</div><div class="summary-label">Total</div></div>
+  <div class="summary-stat"><div class="summary-num" id="pct-count">0%</div><div class="summary-label">Complete</div></div>
+  <button class="reset-btn" onclick="resetAll()">Reset all</button>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ PILLAR 1 ═══ -->
+<div class="phase" data-phase="p1">
+  <div class="phase-header">
+    <div class="phase-number">01</div>
+    <div>
+      <span class="phase-badge" style="background:#EEF2FA;color:var(--accent)">Pillar 1 · Y1–Y2</span>
+      <div class="phase-title">Systems Thinking &amp; Architecture</div>
+      <div class="phase-sub">The core identity shift: from "builds models" to "designs systems and makes trade-offs explicit."</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p1" style="width:0%;background:var(--accent)"></div></div><span class="phase-progress-count" id="prog-p1">0/7</span></div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:var(--accent)"></span>Skills</div>
+    <div class="skills-text">Distributed systems fundamentals, architecture patterns (event-driven, microservices vs. modular monolith), API/contract design, trade-off analysis, architecture decision records (ADRs), diagramming (C4 model).</div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent)"></span>Anchor resources</div>
+      <div class="res-item" data-id="p1-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Designing Data-Intensive Applications — Kleppmann</div>
+        <div class="res-desc">The canonical text; read slowly, one chapter → one note.</div>
+      </div></div>
+      <div class="res-item" data-id="p1-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Fundamentals of Software Architecture — Richards &amp; Ford</div>
+      </div></div>
+      <div class="res-item" data-id="p1-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">The Software Architect Elevator — Hohpe</div>
+        <div class="res-desc">Architect ↔ strategy bridging.</div>
+      </div></div>
+      <div class="res-item" data-id="p1-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">ByteByteGo / system design primers</div>
+        <div class="res-desc">Pattern drilling.</div>
+      </div></div>
+    </div>
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent2)"></span>Artifacts</div>
+      <div class="build-item" data-id="p1-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Write ADRs for real decisions at work</div>
+      </div></div>
+      <div class="build-item" data-id="p1-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">C4 diagram + design doc for one existing system you own</div>
+      </div></div>
+      <div class="build-item" data-id="p1-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Redesign your homelab (jarvis) as a production platform, documented</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (Y1–Y2)</div>
+    <div class="milestone-text">You can run an architecture review meeting and defend trade-offs in writing.</div>
+  </div>
+</div>
+
+<!-- ═══ PILLAR 2 ═══ -->
+<div class="phase" data-phase="p2">
+  <div class="phase-header">
+    <div class="phase-number">02</div>
+    <div>
+      <span class="phase-badge" style="background:#E0FAF4;color:#027E5A">Pillar 2 · Y1–Y3</span>
+      <div class="phase-title">Production ML &amp; AI Platform Depth</div>
+      <div class="phase-sub">From "can deploy a model" to "can design the platform others deploy on."</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p2" style="width:0%;background:var(--accent2)"></div></div><span class="phase-progress-count" id="prog-p2">0/7</span></div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:var(--accent2)"></span>Skills</div>
+    <div class="skills-text">ML system design, system design for LLM-heavy systems (context management, retrieval architecture, caching, fallback chains, multi-model routing), feature/training-serving skew, model serving &amp; scaling, evals as an engineering discipline (offline evals, LLM-as-judge, regression suites, eval-driven development), observability for AI systems (tracing, token/cost telemetry, drift &amp; quality monitoring — Langfuse/OTel GenAI conventions), harness engineering (tool interfaces, context assembly, retries, guardrails, sandboxing), agent security (lethal trifecta, OWASP Agentic Top 10, prompt-injection red-teaming), protocol-layer fluency (MCP / A2A / AG-UI — the architectural question each layer answers), cost/latency engineering, agentic system architecture.</div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">Keep the DS edge alive (differentiator, not nostalgia)</div>
+    <div class="arch-text">The 12-month plan drops classical ML almost entirely until the capstone. Don't. Once per quarter, apply one piece of your DS rigor to an agentic system: uncertainty/calibration on agent outputs, SHAP-style attribution for tool-choice decisions, statistically sound A/B evaluation of agent variants, drift detection on production traces. The intersection of validator-grade ML rigor and agent engineering is the rarest profile in the market — and each of these is a blog post.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent2)"></span>Anchor resources</div>
+      <div class="res-item" data-id="p2-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Designing Machine Learning Systems + AI Engineering — Chip Huyen</div>
+      </div></div>
+      <div class="res-item" data-id="p2-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Machine Learning System Design Interview — Aminian &amp; Xu</div>
+        <div class="res-desc">Pattern fluency.</div>
+      </div></div>
+      <div class="res-item" data-id="p2-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Papers/blogs: Eugene Yan, Hamel Husain, Anthropic/OpenAI engineering posts</div>
+      </div></div>
+    </div>
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent)"></span>Artifacts</div>
+      <div class="build-item" data-id="p2-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">End-to-end reference architecture doc for an LLM/RAG platform</div>
+        <div class="build-desc">Retrieval, evals, guardrails, monitoring.</div>
+      </div></div>
+      <div class="build-item" data-id="p2-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">One open or internal eval harness with regression tests wired into CI</div>
+      </div></div>
+      <div class="build-item" data-id="p2-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Full observability setup for one AI system</div>
+        <div class="build-desc">Traces, cost, quality metrics on a dashboard.</div>
+      </div></div>
+      <div class="build-item" data-id="p2-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Written cost model for an AI workload</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (Y1–Y3)</div>
+    <div class="milestone-text">You're the person consulted when anyone designs an ML/AI system, not just when they build one.</div>
+  </div>
+</div>
+
+<!-- ═══ PILLAR 3 ═══ -->
+<div class="phase" data-phase="p3">
+  <div class="phase-header">
+    <div class="phase-number">03</div>
+    <div>
+      <span class="phase-badge" style="background:#FFF8E1;color:#8A6800">Pillar 3 · Y2–Y4</span>
+      <div class="phase-title">Business &amp; Technical Strategy</div>
+      <div class="phase-sub">What separates architect from senior engineer: connecting systems to money and direction.</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p3" style="width:0%;background:var(--accent3)"></div></div><span class="phase-progress-count" id="prog-p3">0/8</span></div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:#C27E00"></span>Skills</div>
+    <div class="skills-text">Translating business goals → technical roadmaps, build-vs-buy analysis, TCO reasoning, risk framing (generalize your regulated-domain head start), writing strategy memos, stakeholder mapping.</div>
+  </div>
+
+  <div class="signal-block">
+    <div class="signal-label">AI governance &amp; the EU AI Act as a strategic asset</div>
+    <div class="signal-text">You already know how to make models validator-defensible in a bank — map that experience onto AI Act obligations (risk classification, GPAI provisions, logging/traceability, human oversight requirements) for agentic systems. Nobody in the agentic engineering scene has this; every EU enterprise deploying agents needs it. It converts your "regulatory burden" frustration into your most billable consulting angle.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#C27E00"></span>Anchor resources</div>
+      <div class="res-item" data-id="p3-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Good Strategy / Bad Strategy — Rumelt</div>
+      </div></div>
+      <div class="res-item" data-id="p3-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">The Staff Engineer's Path — Reilly</div>
+        <div class="res-desc">The single best map of this whole career direction.</div>
+      </div></div>
+      <div class="res-item" data-id="p3-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Staff Engineer — Larson</div>
+      </div></div>
+      <div class="res-item" data-id="p3-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Escaping the Build Trap — Perri</div>
+        <div class="res-desc">Product thinking.</div>
+      </div></div>
+    </div>
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent4)"></span>Artifacts</div>
+      <div class="build-item" data-id="p3-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">One 2-page technical strategy memo per quarter on a real topic at work</div>
+        <div class="build-desc">Even unsolicited.</div>
+      </div></div>
+      <div class="build-item" data-id="p3-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">A build-vs-buy analysis for a tool your team uses</div>
+      </div></div>
+      <div class="build-item" data-id="p3-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Governance artifact: one written piece per year</div>
+        <div class="build-desc">e.g. "What model risk management taught me about deploying AI agents under the AI Act", or an agent-system compliance checklist mapping OWASP ASI items to AI Act articles. Doubles as a Pillar 6 visibility magnet.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (Y2–Y4)</div>
+    <div class="milestone-text">Your memos change decisions. You're invited into planning before work starts, not after.</div>
+  </div>
+</div>
+
+<!-- ═══ PILLAR 4 ═══ -->
+<div class="phase" data-phase="p4">
+  <div class="phase-header">
+    <div class="phase-number">04</div>
+    <div>
+      <span class="phase-badge" style="background:#FDECEF;color:#B52040">Pillar 4 · Ongoing</span>
+      <div class="phase-title">Influence, Communication &amp; Technical Mentoring</div>
+      <div class="phase-sub">You already have the raw people skills — professionalize them without becoming a manager.</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p4" style="width:0%;background:var(--accent4)"></div></div><span class="phase-progress-count" id="prog-p4">0/6</span></div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:var(--accent4)"></span>Skills</div>
+    <div class="skills-text">Mentoring through design review (not 1:1 management), technical writing, presenting to non-technical leadership, facilitation of architecture/RFC processes, saying no with alternatives.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent4)"></span>Anchor resources</div>
+      <div class="res-item" data-id="p4-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">The Staff Engineer's Path (again)</div>
+        <div class="res-desc">Chapters on influence.</div>
+      </div></div>
+      <div class="res-item" data-id="p4-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Crucial Conversations — Patterson et al.</div>
+      </div></div>
+    </div>
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent)"></span>Artifacts</div>
+      <div class="build-item" data-id="p4-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Propose/run an RFC or design-review process on your team</div>
+      </div></div>
+      <div class="build-item" data-id="p4-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">A mentoring framework doc</div>
+        <div class="build-desc">What you do with your 3 mentees, systematized.</div>
+      </div></div>
+      <div class="build-item" data-id="p4-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">One public or company-wide talk per year</div>
+        <div class="build-desc">Meetups, internal brown-bags count.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (ongoing)</div>
+    <div class="milestone-text">Mentees and peers cite your reviews/docs as how they learned to design.</div>
+  </div>
+</div>
+
+<!-- ═══ PILLAR 5 ═══ -->
+<div class="phase" data-phase="p5">
+  <div class="phase-header">
+    <div class="phase-number">05</div>
+    <div>
+      <span class="phase-badge" style="background:#EEF2FA;color:var(--accent)">Pillar 5 · Ongoing</span>
+      <div class="phase-title">Hands-On AI Engineering Credibility</div>
+      <div class="phase-sub">Execution vehicle: the 12-month Agentic AI plan (MCP → A2A → AG-UI, AgentCore deployment, Autonomous DS Pipeline capstone).</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p5" style="width:0%;background:var(--accent)"></div></div><span class="phase-progress-count" id="prog-p5">0/3</span></div>
+    </div>
+  </div>
+
+  <div class="north-star" style="margin-bottom:10px">
+    <div class="ns-label">Execution vehicle</div>
+    <div class="ns-text" style="font-size:.85rem">The <a href="index.html">12-month Agentic AI plan</a> already covers agentic development, harness engineering, evals-in-CI, security red-teaming, and cost control — follow it as written, at its ★ Core dose when time is tight. This roadmap adds a thin wrapper per project (≈1 hr each).</div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:var(--accent)"></span>Wrapper — apply per project</div>
+    <div class="build-item" data-id="p5-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+      <div class="build-title">One ADR</div>
+      <div class="build-desc">The architectural decision and its trade-offs, vendor-neutral (Pillar 1 muscle).</div>
+    </div></div>
+    <div class="build-item" data-id="p5-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+      <div class="build-title">One blog post</div>
+      <div class="build-desc">Comparison table, red-team before/after, cost model, or eval log (Pillar 6 fuel) — the 12-month plan produces artifacts but never distributes them; this closes the loop.</div>
+    </div></div>
+    <div class="build-item" data-id="p5-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+      <div class="build-title">One portability note</div>
+      <div class="build-desc">How the AgentCore-specific piece maps to Azure AI Foundry / self-hosted equivalents.</div>
+    </div></div>
+  </div>
+
+  <div class="arch-block">
+    <div class="arch-label">Watch-outs on the plan itself</div>
+    <div class="arch-text">Protocol specifics churn fast (MCP's stateless revision, A2UI vs AG-UI) — anchor on each phase's architectural question, re-verify version details before each build phase rather than trusting the plan's snapshot. Its Phase-3 exit criterion "start applying for AI Engineer roles now" is correct — interview prep doubles as study.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (ongoing)</div>
+    <div class="milestone-text">You can prototype any new AI pattern within a weekend; every shipped project exists in three forms — running code, an ADR, and a published post.</div>
+  </div>
+</div>
+
+<!-- ═══ PILLAR 6 ═══ -->
+<div class="phase" data-phase="p6">
+  <div class="phase-header">
+    <div class="phase-number">06</div>
+    <div>
+      <span class="phase-badge" style="background:#E0FAF4;color:#027E5A">Pillar 6 · Y2–Y3</span>
+      <div class="phase-title">Online Visibility &amp; Public Work</div>
+      <div class="phase-sub">Reputation is the asset that makes the architect title, the freelance rates, and the inbound opportunities possible. Treat it as an engineering project: consistent output &gt; viral output.</div>
+      <div class="phase-progress-row"><div class="progress-bar-wrap" style="flex:1;margin-bottom:0"><div class="progress-bar-fill" id="bar-p6" style="width:0%;background:var(--accent2)"></div></div><span class="phase-progress-count" id="prog-p6">0/6</span></div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-bottom:10px">
+    <div class="block-label"><span class="bldot" style="background:var(--accent2)"></span>Skills</div>
+    <div class="skills-text">Technical writing for an external audience, distilling work into shareable insights (without leaking employer specifics), building in public, basic personal-site/SEO hygiene, LinkedIn as a distribution channel (dominant in the Belgian/EU market).</div>
+  </div>
+
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:var(--accent2)"></span>Channel strategy</div>
+      <div class="res-item" data-id="p6-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Spine: a personal blog you own</div>
+        <div class="res-desc">Static site in this repo → Cloudflare Pages, reusing your Civics deployment experience. Every substantial artifact from Pillars 1–5 becomes a post.</div>
+      </div></div>
+      <div class="res-item" data-id="p6-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Distribution: LinkedIn</div>
+        <div class="res-desc">Short posts summarizing each article — where Belgian recruiters, clients, and peers actually are.</div>
+      </div></div>
+      <div class="res-item" data-id="p6-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="res-item-body">
+        <div class="res-title">Credibility amplifiers</div>
+        <div class="res-desc">One conference/meetup talk per year (dataroots, Brussels/Leuven AI meetups, PyData); occasional open-source contributions tied to your posts (an eval tool, an MCP server).</div>
+      </div></div>
+    </div>
+    <div class="block">
+      <div class="block-label"><span class="bldot" style="background:#C27E00"></span>Artifacts</div>
+      <div class="build-item" data-id="p6-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">Live blog by end of Q1</div>
+      </div></div>
+      <div class="build-item" data-id="p6-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">10 published posts in year one</div>
+      </div></div>
+      <div class="build-item" data-id="p6-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="build-item-body">
+        <div class="build-title">A "hire me / about" page</div>
+        <div class="build-desc">Positioning you at the DS × AI-engineering × architecture intersection (dormant until freelance becomes live).</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="mobile-block" style="margin-bottom:10px">
+    <div class="mobile-label">Cadence (flexible)</div>
+    <div class="mobile-text">Maintenance = 1 post/month + weekly LinkedIn note; sprint = weekly posts during a topic deep-dive. Batch-write with Claude Code from your Obsidian notes to fit the time budget.</div>
+  </div>
+
+  <div class="milestone-block">
+    <div class="milestone-label">Milestone (Y2–Y3)</div>
+    <div class="milestone-text">Inbound contact — recruiters, speaking invites, or client interest — arrives because of your writing, not your applications.</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="section-title">Five-year shape (adjust freely)</div>
+<table class="cert-table">
+  <thead><tr><th>Phase</th><th>Focus</th><th>Identity checkpoint</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Y1</td>
+      <td>Execute the 12-month agentic plan (Pillar 2+5 sprint) with the ADR + blog wrapper; Pillar 1 foundations via <em>Staff Engineer's Path</em> + DDIA slow-burn; launch blog; land or shadow the AI engineer role</td>
+      <td>"Strong senior who ships agent systems and writes about them publicly"</td>
+    </tr>
+    <tr>
+      <td>Y2</td>
+      <td>Pillar 1 sprint + Pillar 3 start; own an architecture end-to-end; first external talk</td>
+      <td>"De facto tech lead of a system"</td>
+    </tr>
+    <tr>
+      <td>Y3</td>
+      <td>Pillar 3 sprint; strategy memos, cross-team influence; consider title change (staff/architect) internally or externally</td>
+      <td>"Technical leader of a domain"</td>
+    </tr>
+    <tr>
+      <td>Y4</td>
+      <td>Consolidate; Pillar 6 sprint (talks, series of deep-dive posts); optional: freelance groundwork leveraging architect positioning + audience</td>
+      <td>"Known expert, portable reputation"</td>
+    </tr>
+    <tr>
+      <td>Y5</td>
+      <td>Architect-level role secured (employed or independent); mentor pipeline running</td>
+      <td>"Technical strategy for a domain"</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="arch-block">
+  <div class="arch-label">Quarterly review prompt (for Claude Code)</div>
+  <div class="arch-text">"Review technical-leadership-roadmap.md and my progress notes. Given [hours available], [what changed at work], and [what's shifted in the AI market], re-prioritize next quarter: which pillar to sprint, which artifact to produce, and one thing to drop."</div>
+</div>
+
+<div class="section-title" style="margin-top:1.5rem">Immediate next actions (first 30 days)</div>
+<div class="checklist-items" style="margin-bottom:2rem" data-phase="next">
+  <div class="check-item" data-id="next-1" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Split this file into per-pillar notes with Claude Code; add personal context to each</div></div>
+  <div class="check-item" data-id="next-2" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Resume/continue the 12-month plan's Phase 1 — but retrofit the wrapper: write the ADR + portability note for whatever you've already built, and turn Project 1A/1B's framework comparison into blog post #1</div></div>
+  <div class="check-item" data-id="next-3" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Order/queue: <em>The Staff Engineer's Path</em> (read first), <em>Designing Data-Intensive Applications</em> (slow burn)</div></div>
+  <div class="check-item" data-id="next-4" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Write one ADR or design doc for something you're already building at work</div></div>
+  <div class="check-item" data-id="next-5" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Apply for the AI engineer role; treat the interview prep itself as Pillar 2 study</div></div>
+  <div class="check-item" data-id="next-6" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Blog infrastructure: reuse staycurious.me + the GitHub Pages/Cloudflare setup from ai.staycurious.me — decide whether posts live on the main domain or a subdomain, publish post #1</div></div>
+  <div class="check-item" data-id="next-7" onclick="toggle(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label">Draft the outline of your first governance piece (model risk management × AI agents × EU AI Act) — even 10 bullet points; it will sharpen what you notice while building</div></div>
+</div>
+
+<div class="footer-note">
+  <strong style="color:var(--muted)">Source</strong> — expanded from <code style="font-size:10px">plans/technical-leadership-roadmap.md</code>. Pairs with the <a href="index.html">12-month Agentic AI plan</a> (Pillars 2 &amp; 5 execution vehicle). Re-run the quarterly review prompt each quarter to re-prioritize.
+</div>
+
+</div><!-- /container -->
+
+<script>
+const STORAGE_KEY = 'leadership-roadmap-checks';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function toggle(el) {
+  const state = loadState();
+  const id = el.dataset.id;
+  state[id] = !state[id];
+  saveState(state);
+  applyState(state);
+}
+
+function resetAll() {
+  saveState({});
+  applyState({});
+}
+
+function applyState(state) {
+  document.querySelectorAll('[data-id]').forEach(el => {
+    el.classList.toggle('done', !!state[el.dataset.id]);
+  });
+  updateProgress(state);
+}
+
+function updateProgress(state) {
+  const phases = ['p1','p2','p3','p4','p5','p6'];
+  let totalDone = 0, totalAll = 0;
+
+  phases.forEach(phase => {
+    const items = document.querySelectorAll(`[data-phase="${phase}"] [data-id]`);
+    const done = Array.from(items).filter(el => !!state[el.dataset.id]).length;
+    const total = items.length;
+    totalDone += done; totalAll += total;
+    const progEl = document.getElementById(`prog-${phase}`);
+    if (progEl) progEl.textContent = `${done}/${total}`;
+    const bar = document.getElementById(`bar-${phase}`);
+    if (bar) bar.style.width = total > 0 ? `${Math.round(done/total*100)}%` : '0%';
+  });
+
+  const nextItems = document.querySelectorAll('[data-phase="next"] [data-id]');
+  totalDone += Array.from(nextItems).filter(el => !!state[el.dataset.id]).length;
+  totalAll += nextItems.length;
+
+  document.getElementById('done-count').textContent = totalDone;
+  document.getElementById('total-count').textContent = totalAll;
+  document.getElementById('pct-count').textContent = totalAll > 0 ? `${Math.round(totalDone/totalAll*100)}%` : '0%';
+}
+
+applyState(loadState());
+</script>
+
+</body>
+</html>
