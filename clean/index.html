@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrucciones de Limpieza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#26547C; --navy-dark:#1A3C59;
+    --teal:#06D6A0; --teal-dark:#027E5A; --teal-tint:#9AEBDA;
+    --amber:#FFD166; --amber-dark:#8A6800; --amber-mid:#E8A000; --amber-tint:#FFE59A;
+    --pink:#EF476F; --pink-tint:#FDECEF; --pink-mid:#F5B3C0;
+    --bg:#EEF4F9; --card:#FFFFFF; --cream:#FFF8E6;
+    --ink:#1F2D3D; --ink-soft:#5A6B7C;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Roboto',sans-serif; line-height:1.5;
+    padding-bottom:4rem;
+  }
+  header{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%);
+    color:#fff; padding:3rem 1.5rem 2.5rem; text-align:center; position:relative;
+  }
+  .lang-switch{
+    position:absolute; top:1rem; right:1rem; display:flex; gap:.35rem;
+    background:rgba(255,255,255,.1); padding:.3rem; border-radius:999px;
+  }
+  .lang-switch button{
+    border:none; background:transparent; color:#C9DCEE; font-weight:700; font-size:.8rem;
+    padding:.35rem .7rem; border-radius:999px; cursor:pointer; font-family:'Roboto',sans-serif;
+  }
+  .lang-switch button.active{background:var(--teal); color:var(--navy-dark);}
+  header h1{margin:0 0 .4rem; font-size:1.9rem; font-weight:900; letter-spacing:-.01em;}
+  header .subtitle{color:var(--teal-tint); font-weight:500; font-size:1.05rem;}
+  header .tagline{margin-top:1rem; font-size:.85rem; color:#C9DCEE; max-width:38rem; margin-inline:auto;}
+
+  main{max-width:840px; margin:0 auto; padding:0 1.25rem;}
+
+  nav.toc{
+    display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center;
+    margin:-1.6rem auto 2.5rem; position:relative; z-index:2;
+  }
+  nav.toc a{
+    background:var(--card); color:var(--navy); text-decoration:none;
+    font-weight:700; font-size:.85rem; padding:.6rem 1rem; border-radius:999px;
+    box-shadow:0 4px 14px rgba(26,60,89,.15); display:flex; align-items:center; gap:.4rem;
+    border:1px solid rgba(38,84,124,.08);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  nav.toc a:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(26,60,89,.22);}
+  nav.toc svg{width:16px; height:16px; flex:none;}
+
+  section.room{
+    background:var(--card); border-radius:var(--radius); margin-bottom:1.75rem;
+    box-shadow:0 2px 10px rgba(26,60,89,.08); overflow:hidden;
+    scroll-margin-top:1rem;
+  }
+  .room-head{
+    display:flex; align-items:center; gap:.9rem; padding:1.25rem 1.5rem;
+    background:var(--cream); border-bottom:3px solid var(--amber);
+  }
+  .room-head .icon{
+    width:44px; height:44px; flex:none; border-radius:12px; background:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .room-head .icon svg{width:24px; height:24px; stroke:#fff;}
+  .room-head h2{margin:0; font-size:1.3rem; color:var(--navy-dark); font-weight:900;}
+
+  .room-body{padding:1.25rem 1.5rem 1.75rem;}
+
+  h3.sub{
+    font-size:1rem; color:var(--teal-dark); font-weight:700; margin:1.4rem 0 .3rem;
+    display:flex; align-items:center; gap:.5rem;
+  }
+  h3.sub:first-child{margin-top:0;}
+  h3.sub::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--teal); flex:none;}
+
+  ol{margin:.4rem 0 0; padding-left:1.3rem;}
+  ol li{margin-bottom:.5rem; padding-left:.2rem;}
+  ol li::marker{font-weight:700; color:var(--navy);}
+  strong{color:var(--navy-dark);}
+
+  .warn{
+    display:flex; gap:.8rem; align-items:flex-start; margin-top:1rem;
+    background:var(--pink-tint); border:1px solid var(--pink-mid);
+    border-radius:10px; padding:.9rem 1.1rem; font-size:.92rem;
+  }
+  .warn svg{width:20px; height:20px; flex:none; stroke:var(--pink); margin-top:.15rem;}
+  .warn strong{color:var(--pink);}
+
+  .divider{height:1px; background:linear-gradient(90deg,transparent,rgba(38,84,124,.15),transparent); margin:.2rem 0 1.2rem;}
+
+  /* product photo cards */
+  .product-row{display:flex; flex-wrap:wrap; gap:1rem; margin:.9rem 0 1.2rem;}
+  .product-card{
+    flex:1 1 160px; max-width:200px; background:var(--bg); border-radius:12px;
+    padding:.7rem; text-align:center; border:1px solid rgba(38,84,124,.08);
+  }
+  .product-card img{
+    width:100%; height:120px; object-fit:contain; border-radius:8px; background:#fff;
+    display:block; margin-bottom:.5rem;
+  }
+  .product-card figcaption{font-size:.75rem; color:var(--ink-soft); line-height:1.35;}
+
+  /* order of importance */
+  .priority{
+    background:linear-gradient(135deg,var(--navy-dark),var(--navy));
+    border-radius:var(--radius); color:#fff; padding:2rem 1.5rem; margin-top:2.5rem;
+    text-align:center;
+  }
+  .priority h2{margin:0 0 1.4rem; font-size:1.2rem; font-weight:900;}
+  .priority-chain{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.5rem;
+  }
+  .priority-chain .chip{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25);
+    padding:.6rem 1.1rem; border-radius:999px; font-weight:700; font-size:.95rem;
+  }
+  .priority-chain .chip.p1{background:var(--pink); border-color:var(--pink);}
+  .priority-chain .arrow{color:var(--amber); font-size:1.3rem; font-weight:900;}
+
+  footer{max-width:840px; margin:2.5rem auto 0; padding:0 1.25rem; text-align:center; color:var(--ink-soft); font-size:.8rem;}
+
+  @media (max-width:520px){
+    header h1{font-size:1.5rem;}
+    .lang-switch{position:static; justify-content:center; margin-bottom:1rem; display:inline-flex;}
+    .room-head{padding:1rem 1.1rem;}
+    .room-body{padding:1rem 1.1rem 1.4rem;}
+    .priority-chain{gap:.35rem;}
+    .priority-chain .arrow{display:none;}
+    .product-card{max-width:none; flex:1 1 45%;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="lang-switch">
+    <button data-lang="es" class="active">ES</button>
+    <button data-lang="en">EN</button>
+    <button data-lang="nl">NL</button>
+  </div>
+  <h1 id="t-header-title"></h1>
+  <div class="subtitle" id="t-header-subtitle"></div>
+  <p class="tagline" id="t-header-tagline"></p>
+</header>
+
+<nav class="toc">
+  <a href="#bathroom"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6M6 12V6a2 2 0 012-2h1M9 6v0"/></svg><span id="t-nav-bathroom"></span></a>
+  <a href="#kitchen"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M4 3v8a4 4 0 004 4h0M8 3v8M12 3v18M18 3a3 3 0 013 3v3a3 3 0 01-3 3v9"/></svg><span id="t-nav-kitchen"></span></a>
+  <a href="#toilets"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M7 3h6l1 5H6l1-5zM5 8h10l1 5a6 6 0 01-6 6h0a6 6 0 01-6-6l1-5z"/></svg><span id="t-nav-toilets"></span></a>
+  <a href="#windows"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/></svg><span id="t-nav-windows"></span></a>
+</nav>
+
+<main>
+
+  <section class="room" id="bathroom">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6M6 12V6a2 2 0 012-2h1"/></svg></div>
+      <div><h2 id="t-bathroom-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <h3 class="sub" id="t-bath-sub"></h3>
+      <ol id="t-bath-steps"></ol>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-surroundings-sub"></h3>
+      <ol id="t-surroundings-steps"></ol>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-mirrors-sub"></h3>
+      <ol id="t-mirrors-steps"></ol>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-shower-sub"></h3>
+      <ol id="t-shower-steps"></ol>
+    </div>
+  </section>
+
+  <section class="room" id="kitchen">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v8a4 4 0 004 4M8 3v8M12 3v18M18 3a3 3 0 013 3v3a3 3 0 01-3 3v9"/></svg></div>
+      <div><h2 id="t-kitchen-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <h3 class="sub" id="t-sink-sub"></h3>
+      <ol id="t-sink-steps"></ol>
+      <div class="warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.7 3.86a2 2 0 00-3.4 0z"/></svg>
+        <div id="t-warning"></div>
+      </div>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-countertop-sub"></h3>
+      <div class="product-row">
+        <figure class="product-card">
+          <img src="images/stonetop.jpg" alt="Stonetop" loading="lazy">
+          <figcaption id="t-caption-stonetop"></figcaption>
+        </figure>
+      </div>
+      <ol id="t-countertop-steps"></ol>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-furniture-sub"></h3>
+      <ol id="t-furniture-steps"></ol>
+    </div>
+  </section>
+
+  <section class="room" id="toilets">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h6l1 5H6l1-5zM5 8h10l1 5a6 6 0 01-6 6h0a6 6 0 01-6-6l1-5z"/></svg></div>
+      <div><h2 id="t-toilets-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <ol id="t-toilets-steps"></ol>
+    </div>
+  </section>
+
+  <section class="room" id="windows">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/></svg></div>
+      <div><h2 id="t-windows-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <h3 class="sub" id="t-general-sub"></h3>
+      <div class="product-row">
+        <figure class="product-card">
+          <img src="images/window-vacuum.jpg" alt="Window vacuum" loading="lazy">
+          <figcaption id="t-caption-vacuum"></figcaption>
+        </figure>
+        <figure class="product-card">
+          <img src="images/mop-pad.jpg" alt="Mop pad" loading="lazy">
+          <figcaption id="t-caption-mop"></figcaption>
+        </figure>
+      </div>
+      <ol id="t-general-steps"></ol>
+      <p id="t-applyto-intro" style="margin:.9rem 0 .3rem; font-size:.9rem; color:var(--ink-soft);"></p>
+      <ul id="t-applyto-list" style="margin:.2rem 0 0; padding-left:1.3rem;"></ul>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-livingroom-sub"></h3>
+      <ol id="t-livingroom-steps"></ol>
+    </div>
+  </section>
+
+  <div class="priority">
+    <h2 id="t-priority-title"></h2>
+    <div class="priority-chain" id="t-priority-chain"></div>
+  </div>
+
+</main>
+
+<footer>
+  <p>ai.staycurious.me / clean</p>
+</footer>
+
+<script>
+const T = {
+es: {
+  headerTitle: "Instrucciones de Limpieza",
+  headerSubtitle: "Guía de limpieza del hogar",
+  headerTagline: "Hoja de tareas del hogar — sigue el orden de importancia al final de esta hoja.",
+  navBathroom: "Baño", navKitchen: "Cocina", navToilets: "Aseos", navWindows: "Ventanas",
+  bathroomTitle: "1. Baño",
+  bathSub: "Bañera",
+  bathSteps: [
+    "Retira botellas o juguetes de la bañera.",
+    "Enjuaga la bañera con agua tibia.",
+    "Aplica limpiador de baño y frota con una esponja, trabajando desde el borde superior hacia el desagüe.",
+    "Enjuaga bien y seca con un paño para evitar la cal."
+  ],
+  surroundingsSub: "Alrededores de la bañera",
+  surroundingsSteps: [
+    "Limpia los azulejos y las juntas de silicona alrededor de la bañera.",
+    "Limpia estantes, repisas o el organizador de baño.",
+    "Friega el suelo justo alrededor de la bañera."
+  ],
+  mirrorsSub: "Espejos y lavabo",
+  mirrorsSteps: [
+    "Rocía limpiacristales en el espejo y sécalo con un paño de microfibra en movimientos verticales para evitar rayas.",
+    "Limpia el lavabo y el grifo con limpiador de baño.",
+    "Limpia los grifos hasta que brillen — revisa si hay cal en la base.",
+    "Limpia la encimera y cualquier objeto que haya sobre ella."
+  ],
+  showerSub: "Ducha y paredes",
+  showerSteps: [
+    "Rocía limpiador de ducha en las paredes, el cristal y la puerta de la ducha.",
+    "Déjalo actuar brevemente y luego frota los azulejos y las juntas.",
+    "Enjuaga bien y pasa la rasqueta por el cristal para evitar rayas y cal.",
+    "Limpia la rejilla del desagüe de pelos y suciedad."
+  ],
+  kitchenTitle: "2. Cocina",
+  sinkSub: "Fregadero",
+  sinkSteps: [
+    "Retira primero los platos del fregadero.",
+    "Prepara la solución de vinagre de limpieza y rocíala generosamente solo dentro del fregadero.",
+    "Déjala actuar <strong>15 minutos</strong> — no dejes que se seque; vuelve a rociar si es necesario.",
+    "Enjuaga bien con agua hasta que no quede olor a vinagre.",
+    "Seca el fregadero con un paño para evitar manchas de agua."
+  ],
+  warning: "<strong>Importante:</strong> No rocíes la mezcla de vinagre sobre la piedra que rodea el fregadero — el vinagre daña y desgasta la piedra natural. Ten un paño listo para limpiar cualquier salpicadura de inmediato.",
+  countertopSub: "Encimera",
+  captionStonetop: "Stonetop — botella azul, solo para encimeras de piedra",
+  countertopSteps: [
+    "Usa <strong>únicamente</strong> la mezcla Stonetop (botella azul) en la encimera.",
+    "Rocía directamente sobre la superficie de piedra.",
+    "Limpia con un paño limpio y luego seca con otro paño seco aparte."
+  ],
+  furnitureSub: "Muebles, puertas, armarios e isla de cocina",
+  furnitureSteps: [
+    "Usa <strong>únicamente</strong> el limpiador multiusos (botella verde) en esta sección — nada de vinagre ni otros productos.",
+    "Rocía una pequeña cantidad sobre un paño (no directamente sobre la madera) antes de limpiar.",
+    "Limpia todas las superficies de muebles en la cocina.",
+    "Limpia las puertas — ambos lados donde sea posible, incluyendo los tiradores.",
+    "Limpia todos los frentes de los armarios — las puertas y paneles de madera — siguiendo la dirección de la veta.",
+    "Limpia la isla de cocina: laterales de la encimera, puertas de armario y cualquier panel de madera, con la misma técnica del paño húmedo.",
+    "Seca todas las superficies limpiadas con un paño limpio y seco para evitar marcas de humedad en la madera."
+  ],
+  toiletsTitle: "3. Aseos",
+  toiletsSteps: [
+    "Aplica limpiador de inodoro bajo el borde de la taza.",
+    "Déjalo actuar mientras limpias el asiento y las áreas circundantes.",
+    "Frota el interior de la taza con la escobilla y tira de la cadena.",
+    "Limpia el asiento, la tapa y las bisagras con spray desinfectante y un paño.",
+    "Limpia el botón de descarga y el depósito exterior.",
+    "Limpia el lavabo, el grifo y el espejo del aseo.",
+    "Limpia el suelo alrededor de la base del inodoro."
+  ],
+  windowsTitle: "4. Ventanas",
+  generalSub: "Método general para todas las ventanas",
+  captionVacuum: "Aspirador de ventanas (rasqueta) — seca el cristal sin rayas",
+  captionMop: "Almohadilla de fregado — para lavar el cristal antes de secar",
+  generalSteps: [
+    "Rocía la solución limpiadora de manera uniforme sobre el cristal.",
+    "Lava el cristal con la almohadilla del aspirador de ventanas, con movimientos superpuestos.",
+    "Seca con el aspirador de ventanas, deslizando de arriba abajo en un movimiento suave, limpiando la boquilla con un paño entre pasadas.",
+    "Seca el marco y el alféizar con un paño aparte."
+  ],
+  applytoIntro: "Aplica el método general anterior a:",
+  applytoList: ["Dormitorio", "Pasillo de la 1ª planta", "Cerca de la entrada"],
+  livingroomSub: "Ventanas del salón — Interior",
+  livingroomSteps: [
+    "Quita primero el polvo del marco y el alféizar con un paño seco antes de aplicar cualquier líquido.",
+    "Rocía limpiacristales únicamente en el lado interior del cristal.",
+    "Limpia con el aspirador de ventanas o un paño de microfibra, en un patrón de arriba abajo o en forma de S para evitar rayas.",
+    "Seca los bordes y esquinas con un paño seco, ya que ahí se acumula la humedad.",
+    "Da un paso atrás y revisa el cristal a contraluz en busca de rayas antes de pasar a la siguiente ventana."
+  ],
+  priorityTitle: "Orden de importancia",
+  priorityChain: ["Baño", "Aseos", "Cocina", "Ventanas"]
+},
+en: {
+  headerTitle: "Cleaning Instructions",
+  headerSubtitle: "Household Cleaning Guide",
+  headerTagline: "Household task sheet — follow the order of importance at the bottom of this sheet.",
+  navBathroom: "Bathroom", navKitchen: "Kitchen", navToilets: "Toilets", navWindows: "Windows",
+  bathroomTitle: "1. Bathroom",
+  bathSub: "Bath",
+  bathSteps: [
+    "Remove any bottles or toys from the tub.",
+    "Rinse the tub with warm water.",
+    "Apply bathroom cleaner and scrub with a sponge, working from the top rim down to the drain.",
+    "Rinse thoroughly and dry with a cloth to prevent limescale."
+  ],
+  surroundingsSub: "Surroundings of the Bath",
+  surroundingsSteps: [
+    "Wipe down tiles and silicone joints around the bath.",
+    "Clean any shelves, ledges, or bath caddy.",
+    "Mop the floor directly around the bath."
+  ],
+  mirrorsSub: "Mirrors & Sink",
+  mirrorsSteps: [
+    "Spray glass cleaner on the mirror and wipe with a dry microfiber cloth in vertical strokes to avoid streaks.",
+    "Clean the sink basin and tap with bathroom cleaner.",
+    "Clean the taps until they shine — check for limescale around the base.",
+    "Wipe down the countertop and any items left on it."
+  ],
+  showerSub: "Shower & Walls",
+  showerSteps: [
+    "Spray shower cleaner on walls, glass, and shower door.",
+    "Let it sit briefly, then scrub tiles and grout lines.",
+    "Rinse well, then squeegee the glass to prevent streaks and limescale.",
+    "Clean the drain cover of hair and debris."
+  ],
+  kitchenTitle: "2. Kitchen",
+  sinkSub: "Sink",
+  sinkSteps: [
+    "Clear the sink of dishes first.",
+    "Mix the cleaning vinegar solution and spray it generously into the sink basin only.",
+    "Let it sit for <strong>15 minutes</strong> — do not let it dry out; re-spray if needed.",
+    "Rinse thoroughly with water until no vinegar smell remains.",
+    "Dry the sink with a cloth to avoid water spots."
+  ],
+  warning: "<strong>Important:</strong> Do not spray the vinegar mixture on the stone surrounding the sink — vinegar etches and damages natural stone. Keep a cloth ready to catch any overspray immediately.",
+  countertopSub: "Countertop",
+  captionStonetop: "Stonetop — blue bottle, for stone countertops only",
+  countertopSteps: [
+    "Use <strong>only</strong> the Stonetop mixture (blue bottle) on the countertop.",
+    "Spray directly onto the stone surface.",
+    "Wipe with a clean cloth, then dry with a separate dry cloth."
+  ],
+  furnitureSub: "Furniture, Doors, Cabinets & Kitchen Island",
+  furnitureSteps: [
+    "Use <strong>only</strong> the all-purpose cleaner (green bottle) for this section — no vinegar, no other products.",
+    "Spray a small amount onto a cloth (not directly onto the wood) before wiping.",
+    "Wipe down all furniture surfaces in the kitchen.",
+    "Wipe the doors — both sides where accessible, including handles.",
+    "Wipe down all cabinet fronts — the wood doors and panels — following the direction of the wood grain.",
+    "Clean the kitchen island: countertop sides, cabinet doors, and any wood panelling, using the same damp-cloth technique.",
+    "Dry all wiped surfaces with a clean, dry cloth to avoid moisture marks on the wood."
+  ],
+  toiletsTitle: "3. Toilets",
+  toiletsSteps: [
+    "Apply toilet cleaner under the rim of the bowl.",
+    "Let it sit while you clean the seat and surrounding areas.",
+    "Scrub the inside of the bowl with the toilet brush and flush.",
+    "Clean the seat, lid, and hinges with disinfectant spray and a cloth.",
+    "Wipe the flush button and outer tank.",
+    "Clean the sink, tap, and mirror in the toilet room.",
+    "Wipe the floor around the base of the toilet."
+  ],
+  windowsTitle: "4. Windows",
+  generalSub: "General Method for All Windows",
+  captionVacuum: "Window vacuum (squeegee) — dries glass streak-free",
+  captionMop: "Mop pad attachment — for washing the glass before drying",
+  generalSteps: [
+    "Spray the cleaning solution evenly across the glass.",
+    "Wash the glass using the attached mop pad on the window vacuum, working in overlapping strokes.",
+    "Squeegee dry with the window vacuum, pulling top to bottom in one smooth motion, wiping the blade with a cloth between passes.",
+    "Wipe the frame and windowsill dry with a separate cloth."
+  ],
+  applytoIntro: "Apply the general method above to:",
+  applytoList: ["Bedroom", "1st Floor Hall", "Near Entrance"],
+  livingroomSub: "Living Room Windows — Inside",
+  livingroomSteps: [
+    "Dust the frame and windowsill first with a dry cloth before applying any liquid.",
+    "Spray glass cleaner directly on the interior side of the glass only.",
+    "Wipe with the window vacuum or a microfiber cloth, working in a top-to-bottom or S-shaped pattern to avoid streaks.",
+    "Dry the edges and corners with a dry cloth, since moisture collects there.",
+    "Step back and check the glass against the light for streaks before moving to the next window."
+  ],
+  priorityTitle: "Order of Importance",
+  priorityChain: ["Bathroom", "Toilets", "Kitchen", "Windows"]
+},
+nl: {
+  headerTitle: "Schoonmaakinstructies",
+  headerSubtitle: "Huishoudelijke schoonmaakgids",
+  headerTagline: "Huishoudelijke takenlijst — volg de volgorde van belangrijkheid onderaan deze lijst.",
+  navBathroom: "Badkamer", navKitchen: "Keuken", navToilets: "Toiletten", navWindows: "Ramen",
+  bathroomTitle: "1. Badkamer",
+  bathSub: "Bad",
+  bathSteps: [
+    "Verwijder flesjes/speelgoed uit het bad.",
+    "Spoel het bad met warm water.",
+    "Breng badkamerreiniger aan en schrob met een spons, van de bovenrand naar de afvoer.",
+    "Spoel goed af en droog met een doek om kalkaanslag te voorkomen."
+  ],
+  surroundingsSub: "Omgeving van het bad",
+  surroundingsSteps: [
+    "Neem tegels en siliconevoegen rond het bad af.",
+    "Maak eventuele plankjes, randen of badrek schoon.",
+    "Dweil de vloer direct rond het bad."
+  ],
+  mirrorsSub: "Spiegels & Wastafel",
+  mirrorsSteps: [
+    "Spuit glasreiniger op de spiegel en droog met een droge microvezeldoek in verticale bewegingen om vegen te voorkomen.",
+    "Maak de wastafelkom en kraan schoon met badkamerreiniger.",
+    "Maak de kranen schoon tot ze glimmen — controleer op kalkaanslag bij de voet.",
+    "Neem het aanrecht en eventuele spullen erop af."
+  ],
+  showerSub: "Douche & Muren",
+  showerSteps: [
+    "Spuit douchereiniger op muren, glas en douchedeur.",
+    "Laat het kort inwerken en schrob dan de tegels en voegen.",
+    "Spoel goed af en trek het glas droog met de douchewisser om vegen en kalkaanslag te voorkomen.",
+    "Maak het afvoerputje vrij van haar en vuil."
+  ],
+  kitchenTitle: "2. Keuken",
+  sinkSub: "Gootsteen",
+  sinkSteps: [
+    "Maak de gootsteen eerst leeg van vaat.",
+    "Meng de schoonmaakazijn-oplossing en spuit deze ruim in de gootsteenkom.",
+    "Laat <strong>15 minuten</strong> inwerken — laat het niet opdrogen; spuit indien nodig opnieuw.",
+    "Spoel grondig af met water tot er geen azijngeur meer is.",
+    "Droog de gootsteen met een doek om waterspatten te voorkomen."
+  ],
+  warning: "<strong>Belangrijk:</strong> Spuit het azijnmengsel niet op het natuursteen rond de gootsteen — azijn tast natuursteen aan en beschadigt het. Houd een doek bij de hand om overspray direct op te vangen.",
+  countertopSub: "Aanrecht",
+  captionStonetop: "Stonetop — blauwe fles, alleen voor natuurstenen aanrecht",
+  countertopSteps: [
+    "Gebruik <strong>alleen</strong> het Stonetop-mengsel (blauwe fles) op het aanrecht.",
+    "Spuit rechtstreeks op het natuurstenen oppervlak.",
+    "Neem af met een schone doek en droog daarna met een aparte droge doek."
+  ],
+  furnitureSub: "Meubels, Deuren, Kasten & Kookeiland",
+  furnitureSteps: [
+    "Gebruik voor dit onderdeel <strong>alleen</strong> de allesreiniger (groene fles) — geen azijn, geen andere producten.",
+    "Spuit een kleine hoeveelheid op een doek (niet rechtstreeks op het hout) voordat je afneemt.",
+    "Neem alle meubeloppervlakken in de keuken af.",
+    "Neem de deuren af — beide zijden waar bereikbaar, inclusief handgrepen.",
+    "Neem alle kastfronten af — de houten deuren en panelen — in de richting van de houtnerf.",
+    "Maak het kookeiland schoon: zijkanten van het werkblad, kastdeuren en eventuele houten panelen, met dezelfde vochtige-doektechniek.",
+    "Droog alle afgenomen oppervlakken met een schone, droge doek om vochtplekken op het hout te voorkomen."
+  ],
+  toiletsTitle: "3. Toiletten",
+  toiletsSteps: [
+    "Breng toiletreiniger aan onder de rand van de pot.",
+    "Laat inwerken terwijl je de bril en omgeving schoonmaakt.",
+    "Schrob de binnenkant van de pot met de wc-borstel en spoel door.",
+    "Maak de bril, deksel en scharnieren schoon met desinfecterende spray en een doek.",
+    "Neem de spoelknop en buitenkant van het reservoir af.",
+    "Maak de wastafel, kraan en spiegel in het toilet schoon.",
+    "Neem de vloer rond de voet van het toilet af."
+  ],
+  windowsTitle: "4. Ramen",
+  generalSub: "Algemene methode voor alle ramen",
+  captionVacuum: "Raamzuiger — droogt glas streeploos",
+  captionMop: "Mopkop — voor het wassen van het glas voor het drogen",
+  generalSteps: [
+    "Spuit de reinigingsoplossing gelijkmatig over het glas.",
+    "Was het glas met de mopkop op de raamzuiger, in overlappende bewegingen.",
+    "Trek droog met de raamzuiger, van boven naar beneden in één vloeiende beweging, en veeg het rubber tussendoor schoon met een doek.",
+    "Droog het kozijn en de vensterbank met een aparte doek."
+  ],
+  applytoIntro: "Pas de bovenstaande algemene methode toe op:",
+  applytoList: ["Slaapkamer", "Hal — 1ste verdieping", "Bij de inkomhal"],
+  livingroomSub: "Woonkamer ramen — Binnenkant",
+  livingroomSteps: [
+    "Stof eerst het kozijn en de vensterbank af met een droge doek voordat je vloeistof gebruikt.",
+    "Spuit glasreiniger alleen aan de binnenkant van het glas.",
+    "Neem af met de raamzuiger of een microvezeldoek, in een op-en-neer of S-vormig patroon om vegen te voorkomen.",
+    "Droog de randen en hoeken met een droge doek, want daar verzamelt zich vocht.",
+    "Doe een stap terug en controleer het glas tegen het licht op vegen voordat je naar het volgende raam gaat."
+  ],
+  priorityTitle: "Volgorde van Belangrijkheid",
+  priorityChain: ["Badkamer", "Toiletten", "Keuken", "Ramen"]
+}
+};
+
+function li(items){ return items.map(s => `<li>${s}</li>`).join(""); }
+
+function render(lang){
+  const t = T[lang];
+  document.title = t.headerTitle;
+  document.documentElement.lang = lang;
+  document.getElementById("t-header-title").textContent = t.headerTitle;
+  document.getElementById("t-header-subtitle").textContent = t.headerSubtitle;
+  document.getElementById("t-header-tagline").textContent = t.headerTagline;
+  document.getElementById("t-nav-bathroom").textContent = t.navBathroom;
+  document.getElementById("t-nav-kitchen").textContent = t.navKitchen;
+  document.getElementById("t-nav-toilets").textContent = t.navToilets;
+  document.getElementById("t-nav-windows").textContent = t.navWindows;
+
+  document.getElementById("t-bathroom-title").textContent = t.bathroomTitle;
+  document.getElementById("t-bath-sub").textContent = t.bathSub;
+  document.getElementById("t-bath-steps").innerHTML = li(t.bathSteps);
+  document.getElementById("t-surroundings-sub").textContent = t.surroundingsSub;
+  document.getElementById("t-surroundings-steps").innerHTML = li(t.surroundingsSteps);
+  document.getElementById("t-mirrors-sub").textContent = t.mirrorsSub;
+  document.getElementById("t-mirrors-steps").innerHTML = li(t.mirrorsSteps);
+  document.getElementById("t-shower-sub").textContent = t.showerSub;
+  document.getElementById("t-shower-steps").innerHTML = li(t.showerSteps);
+
+  document.getElementById("t-kitchen-title").textContent = t.kitchenTitle;
+  document.getElementById("t-sink-sub").textContent = t.sinkSub;
+  document.getElementById("t-sink-steps").innerHTML = li(t.sinkSteps);
+  document.getElementById("t-warning").innerHTML = t.warning;
+  document.getElementById("t-countertop-sub").textContent = t.countertopSub;
+  document.getElementById("t-caption-stonetop").textContent = t.captionStonetop;
+  document.getElementById("t-countertop-steps").innerHTML = li(t.countertopSteps);
+  document.getElementById("t-furniture-sub").textContent = t.furnitureSub;
+  document.getElementById("t-furniture-steps").innerHTML = li(t.furnitureSteps);
+
+  document.getElementById("t-toilets-title").textContent = t.toiletsTitle;
+  document.getElementById("t-toilets-steps").innerHTML = li(t.toiletsSteps);
+
+  document.getElementById("t-windows-title").textContent = t.windowsTitle;
+  document.getElementById("t-general-sub").textContent = t.generalSub;
+  document.getElementById("t-caption-vacuum").textContent = t.captionVacuum;
+  document.getElementById("t-caption-mop").textContent = t.captionMop;
+  document.getElementById("t-general-steps").innerHTML = li(t.generalSteps);
+  document.getElementById("t-applyto-intro").textContent = t.applytoIntro;
+  document.getElementById("t-applyto-list").innerHTML = li(t.applytoList);
+  document.getElementById("t-livingroom-sub").textContent = t.livingroomSub;
+  document.getElementById("t-livingroom-steps").innerHTML = li(t.livingroomSteps);
+
+  document.getElementById("t-priority-title").textContent = t.priorityTitle;
+  document.getElementById("t-priority-chain").innerHTML = t.priorityChain.map((c,i) =>
+    (i>0 ? `<span class="arrow">→</span>` : "") + `<span class="chip${i===0?" p1":""}">${c}</span>`
+  ).join("");
+
+  document.querySelectorAll(".lang-switch button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+  localStorage.setItem("clean-lang", lang);
+}
+
+document.querySelectorAll(".lang-switch button").forEach(b => b.addEventListener("click", () => render(b.dataset.lang)));
+render(localStorage.getItem("clean-lang") || "es");
+</script>
+
+</body>
+</html>
