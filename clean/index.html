@@ -39,6 +39,10 @@
   header h1{margin:0 0 .4rem; font-size:1.9rem; font-weight:900; letter-spacing:-.01em;}
   header .subtitle{color:var(--teal-tint); font-weight:500; font-size:1.05rem;}
   header .tagline{margin-top:1rem; font-size:.85rem; color:#C9DCEE; max-width:38rem; margin-inline:auto;}
+  header .disclaimer{
+    margin-top:.9rem; font-size:.8rem; color:var(--navy-dark); background:var(--amber-tint);
+    border-radius:10px; padding:.6rem 1rem; max-width:34rem; margin-inline:auto; font-weight:500;
+  }
 
   main{max-width:840px; margin:0 auto; padding:0 1.25rem;}
 
@@ -114,7 +118,8 @@
     border-radius:var(--radius); color:#fff; padding:2rem 1.5rem; margin-top:2.5rem;
     text-align:center;
   }
-  .priority h2{margin:0 0 1.4rem; font-size:1.2rem; font-weight:900;}
+  .priority h2{margin:0 0 .4rem; font-size:1.2rem; font-weight:900;}
+  .priority-note{margin:0 0 1.4rem; font-size:.85rem; color:#C9DCEE;}
   .priority-chain{
     display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.5rem;
   }
@@ -126,6 +131,7 @@
   .priority-chain .arrow{color:var(--amber); font-size:1.3rem; font-weight:900;}
 
   footer{max-width:840px; margin:2.5rem auto 0; padding:0 1.25rem; text-align:center; color:var(--ink-soft); font-size:.8rem;}
+  footer #t-contact{font-size:.9rem; color:var(--navy); font-weight:500; margin-bottom:.6rem;}
 
   @media (max-width:520px){
     header h1{font-size:1.5rem;}
@@ -149,13 +155,14 @@
   <h1 id="t-header-title"></h1>
   <div class="subtitle" id="t-header-subtitle"></div>
   <p class="tagline" id="t-header-tagline"></p>
+  <p class="disclaimer" id="t-disclaimer"></p>
 </header>
 
 <nav class="toc">
   <a href="#bathroom"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6M6 12V6a2 2 0 012-2h1M9 6v0"/></svg><span id="t-nav-bathroom"></span></a>
-  <a href="#kitchen"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M4 3v8a4 4 0 004 4h0M8 3v8M12 3v18M18 3a3 3 0 013 3v3a3 3 0 01-3 3v9"/></svg><span id="t-nav-kitchen"></span></a>
   <a href="#toilets"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M7 3h6l1 5H6l1-5zM5 8h10l1 5a6 6 0 01-6 6h0a6 6 0 01-6-6l1-5z"/></svg><span id="t-nav-toilets"></span></a>
   <a href="#windows"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/></svg><span id="t-nav-windows"></span></a>
+  <a href="#kitchen"><svg viewBox="0 0 24 24" fill="none" stroke="#26547C" stroke-width="2" stroke-linecap="round"><path d="M4 3v8a4 4 0 004 4h0M8 3v8M12 3v18M18 3a3 3 0 013 3v3a3 3 0 01-3 3v9"/></svg><span id="t-nav-kitchen"></span></a>
 </nav>
 
 <main>
@@ -180,6 +187,47 @@
       <div class="divider"></div>
       <h3 class="sub" id="t-shower-sub"></h3>
       <ol id="t-shower-steps"></ol>
+    </div>
+  </section>
+
+  <section class="room" id="toilets">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h6l1 5H6l1-5zM5 8h10l1 5a6 6 0 01-6 6h0a6 6 0 01-6-6l1-5z"/></svg></div>
+      <div><h2 id="t-toilets-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <ol id="t-toilets-steps"></ol>
+    </div>
+  </section>
+
+  <section class="room" id="windows">
+    <div class="room-head">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/></svg></div>
+      <div><h2 id="t-windows-title"></h2></div>
+    </div>
+    <div class="room-body">
+      <div class="warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.7 3.86a2 2 0 00-3.4 0z"/></svg>
+        <div id="t-windows-note"></div>
+      </div>
+      <h3 class="sub" id="t-general-sub"></h3>
+      <div class="product-row">
+        <figure class="product-card">
+          <img src="images/window-vacuum.jpg" alt="Window vacuum" loading="lazy">
+          <figcaption id="t-caption-vacuum"></figcaption>
+        </figure>
+        <figure class="product-card">
+          <img src="images/mop-pad.jpg" alt="Mop pad" loading="lazy">
+          <figcaption id="t-caption-mop"></figcaption>
+        </figure>
+      </div>
+      <ol id="t-general-steps"></ol>
+      <p id="t-applyto-intro" style="margin:.9rem 0 .3rem; font-size:.9rem; color:var(--ink-soft);"></p>
+      <ul id="t-applyto-list" style="margin:.2rem 0 0; padding-left:1.3rem;"></ul>
+
+      <div class="divider"></div>
+      <h3 class="sub" id="t-livingroom-sub"></h3>
+      <ol id="t-livingroom-steps"></ol>
     </div>
   </section>
 
@@ -212,51 +260,16 @@
     </div>
   </section>
 
-  <section class="room" id="toilets">
-    <div class="room-head">
-      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h6l1 5H6l1-5zM5 8h10l1 5a6 6 0 01-6 6h0a6 6 0 01-6-6l1-5z"/></svg></div>
-      <div><h2 id="t-toilets-title"></h2></div>
-    </div>
-    <div class="room-body">
-      <ol id="t-toilets-steps"></ol>
-    </div>
-  </section>
-
-  <section class="room" id="windows">
-    <div class="room-head">
-      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/></svg></div>
-      <div><h2 id="t-windows-title"></h2></div>
-    </div>
-    <div class="room-body">
-      <h3 class="sub" id="t-general-sub"></h3>
-      <div class="product-row">
-        <figure class="product-card">
-          <img src="images/window-vacuum.jpg" alt="Window vacuum" loading="lazy">
-          <figcaption id="t-caption-vacuum"></figcaption>
-        </figure>
-        <figure class="product-card">
-          <img src="images/mop-pad.jpg" alt="Mop pad" loading="lazy">
-          <figcaption id="t-caption-mop"></figcaption>
-        </figure>
-      </div>
-      <ol id="t-general-steps"></ol>
-      <p id="t-applyto-intro" style="margin:.9rem 0 .3rem; font-size:.9rem; color:var(--ink-soft);"></p>
-      <ul id="t-applyto-list" style="margin:.2rem 0 0; padding-left:1.3rem;"></ul>
-
-      <div class="divider"></div>
-      <h3 class="sub" id="t-livingroom-sub"></h3>
-      <ol id="t-livingroom-steps"></ol>
-    </div>
-  </section>
-
   <div class="priority">
     <h2 id="t-priority-title"></h2>
+    <p class="priority-note" id="t-priority-note"></p>
     <div class="priority-chain" id="t-priority-chain"></div>
   </div>
 
 </main>
 
 <footer>
+  <p id="t-contact"></p>
   <p>ai.staycurious.me / clean</p>
 </footer>
 
@@ -266,6 +279,7 @@ es: {
   headerTitle: "Instrucciones de Limpieza",
   headerSubtitle: "Guía de limpieza del hogar",
   headerTagline: "Hoja de tareas del hogar — sigue el orden de importancia al final de esta hoja.",
+  disclaimer: "Eres libre de usar tu propio criterio y experiencia al limpiar — estas instrucciones son solo una guía de apoyo, no un procedimiento estricto.",
   navBathroom: "Baño", navKitchen: "Cocina", navToilets: "Aseos", navWindows: "Ventanas",
   bathroomTitle: "1. Baño",
   bathSub: "Bañera",
@@ -295,7 +309,7 @@ es: {
     "Enjuaga bien y pasa la rasqueta por el cristal para evitar rayas y cal.",
     "Limpia la rejilla del desagüe de pelos y suciedad."
   ],
-  kitchenTitle: "2. Cocina",
+  kitchenTitle: "4. Cocina",
   sinkSub: "Fregadero",
   sinkSteps: [
     "Retira primero los platos del fregadero.",
@@ -322,7 +336,7 @@ es: {
     "Limpia la isla de cocina: laterales de la encimera, puertas de armario y cualquier panel de madera, con la misma técnica del paño húmedo.",
     "Seca todas las superficies limpiadas con un paño limpio y seco para evitar marcas de humedad en la madera."
   ],
-  toiletsTitle: "3. Aseos",
+  toiletsTitle: "2. Aseos",
   toiletsSteps: [
     "Aplica limpiador de inodoro bajo el borde de la taza.",
     "Déjalo actuar mientras limpias el asiento y las áreas circundantes.",
@@ -332,7 +346,8 @@ es: {
     "Limpia el lavabo, el grifo y el espejo del aseo.",
     "Limpia el suelo alrededor de la base del inodoro."
   ],
-  windowsTitle: "4. Ventanas",
+  windowsTitle: "3. Ventanas",
+  windowsNote: "<strong>Prioridad: las ventanas van antes que la cocina.</strong> Es importante limpiarlas al menos una vez al mes.",
   generalSub: "Método general para todas las ventanas",
   captionVacuum: "Aspirador de ventanas (rasqueta) — seca el cristal sin rayas",
   captionMop: "Almohadilla de fregado — para lavar el cristal antes de secar",
@@ -343,7 +358,7 @@ es: {
     "Seca el marco y el alféizar con un paño aparte."
   ],
   applytoIntro: "Aplica el método general anterior a:",
-  applytoList: ["Dormitorio", "Pasillo de la 1ª planta", "Cerca de la entrada"],
+  applytoList: ["Dormitorio", "Pasillo de la 1ª planta", "Cerca de la entrada", "<strong>Planta baja, incluida la puerta-ventana grande</strong>"],
   livingroomSub: "Ventanas del salón — Interior",
   livingroomSteps: [
     "Quita primero el polvo del marco y el alféizar con un paño seco antes de aplicar cualquier líquido.",
@@ -353,12 +368,15 @@ es: {
     "Da un paso atrás y revisa el cristal a contraluz en busca de rayas antes de pasar a la siguiente ventana."
   ],
   priorityTitle: "Orden de importancia",
-  priorityChain: ["Baño", "Aseos", "Cocina", "Ventanas"]
+  priorityNote: "Este es el mismo orden que ya sigue esta guía, de arriba abajo.",
+  priorityChain: ["Baño", "Aseos", "Ventanas", "Cocina"],
+  contact: "¿Alguna duda? Pregunta sin problema a Alex o Kamran, quien esté en casa."
 },
 en: {
   headerTitle: "Cleaning Instructions",
   headerSubtitle: "Household Cleaning Guide",
   headerTagline: "Household task sheet — follow the order of importance at the bottom of this sheet.",
+  disclaimer: "You're free to use your own judgment and experience while cleaning — these instructions are a supporting guide, not a strict procedure.",
   navBathroom: "Bathroom", navKitchen: "Kitchen", navToilets: "Toilets", navWindows: "Windows",
   bathroomTitle: "1. Bathroom",
   bathSub: "Bath",
@@ -388,7 +406,7 @@ en: {
     "Rinse well, then squeegee the glass to prevent streaks and limescale.",
     "Clean the drain cover of hair and debris."
   ],
-  kitchenTitle: "2. Kitchen",
+  kitchenTitle: "4. Kitchen",
   sinkSub: "Sink",
   sinkSteps: [
     "Clear the sink of dishes first.",
@@ -415,7 +433,7 @@ en: {
     "Clean the kitchen island: countertop sides, cabinet doors, and any wood panelling, using the same damp-cloth technique.",
     "Dry all wiped surfaces with a clean, dry cloth to avoid moisture marks on the wood."
   ],
-  toiletsTitle: "3. Toilets",
+  toiletsTitle: "2. Toilets",
   toiletsSteps: [
     "Apply toilet cleaner under the rim of the bowl.",
     "Let it sit while you clean the seat and surrounding areas.",
@@ -425,7 +443,8 @@ en: {
     "Clean the sink, tap, and mirror in the toilet room.",
     "Wipe the floor around the base of the toilet."
   ],
-  windowsTitle: "4. Windows",
+  windowsTitle: "3. Windows",
+  windowsNote: "<strong>Priority: windows come before the kitchen.</strong> It is important to clean them at least once a month.",
   generalSub: "General Method for All Windows",
   captionVacuum: "Window vacuum (squeegee) — dries glass streak-free",
   captionMop: "Mop pad attachment — for washing the glass before drying",
@@ -436,7 +455,7 @@ en: {
     "Wipe the frame and windowsill dry with a separate cloth."
   ],
   applytoIntro: "Apply the general method above to:",
-  applytoList: ["Bedroom", "1st Floor Hall", "Near Entrance"],
+  applytoList: ["Bedroom", "1st Floor Hall", "Near Entrance", "<strong>Ground floor, including the large door window</strong>"],
   livingroomSub: "Living Room Windows — Inside",
   livingroomSteps: [
     "Dust the frame and windowsill first with a dry cloth before applying any liquid.",
@@ -446,12 +465,15 @@ en: {
     "Step back and check the glass against the light for streaks before moving to the next window."
   ],
   priorityTitle: "Order of Importance",
-  priorityChain: ["Bathroom", "Toilets", "Kitchen", "Windows"]
+  priorityNote: "This is the same order this guide already follows, from top to bottom.",
+  priorityChain: ["Bathroom", "Toilets", "Windows", "Kitchen"],
+  contact: "Any questions? Feel free to ask Alex or Kamran, whoever's home."
 },
 nl: {
   headerTitle: "Schoonmaakinstructies",
   headerSubtitle: "Huishoudelijke schoonmaakgids",
   headerTagline: "Huishoudelijke takenlijst — volg de volgorde van belangrijkheid onderaan deze lijst.",
+  disclaimer: "Je bent vrij om je eigen inzicht en ervaring te gebruiken tijdens het schoonmaken — deze instructies zijn een ondersteunende gids, geen strikte procedure.",
   navBathroom: "Badkamer", navKitchen: "Keuken", navToilets: "Toiletten", navWindows: "Ramen",
   bathroomTitle: "1. Badkamer",
   bathSub: "Bad",
@@ -481,7 +503,7 @@ nl: {
     "Spoel goed af en trek het glas droog met de douchewisser om vegen en kalkaanslag te voorkomen.",
     "Maak het afvoerputje vrij van haar en vuil."
   ],
-  kitchenTitle: "2. Keuken",
+  kitchenTitle: "4. Keuken",
   sinkSub: "Gootsteen",
   sinkSteps: [
     "Maak de gootsteen eerst leeg van vaat.",
@@ -508,7 +530,7 @@ nl: {
     "Maak het kookeiland schoon: zijkanten van het werkblad, kastdeuren en eventuele houten panelen, met dezelfde vochtige-doektechniek.",
     "Droog alle afgenomen oppervlakken met een schone, droge doek om vochtplekken op het hout te voorkomen."
   ],
-  toiletsTitle: "3. Toiletten",
+  toiletsTitle: "2. Toiletten",
   toiletsSteps: [
     "Breng toiletreiniger aan onder de rand van de pot.",
     "Laat inwerken terwijl je de bril en omgeving schoonmaakt.",
@@ -518,7 +540,8 @@ nl: {
     "Maak de wastafel, kraan en spiegel in het toilet schoon.",
     "Neem de vloer rond de voet van het toilet af."
   ],
-  windowsTitle: "4. Ramen",
+  windowsTitle: "3. Ramen",
+  windowsNote: "<strong>Prioriteit: de ramen gaan vóór de keuken.</strong> Het is belangrijk om ze minstens één keer per maand te lappen.",
   generalSub: "Algemene methode voor alle ramen",
   captionVacuum: "Raamzuiger — droogt glas streeploos",
   captionMop: "Mopkop — voor het wassen van het glas voor het drogen",
@@ -529,7 +552,7 @@ nl: {
     "Droog het kozijn en de vensterbank met een aparte doek."
   ],
   applytoIntro: "Pas de bovenstaande algemene methode toe op:",
-  applytoList: ["Slaapkamer", "Hal — 1ste verdieping", "Bij de inkomhal"],
+  applytoList: ["Slaapkamer", "Hal — 1ste verdieping", "Bij de inkomhal", "<strong>Begane grond, inclusief de grote schuifpui/deurraam</strong>"],
   livingroomSub: "Woonkamer ramen — Binnenkant",
   livingroomSteps: [
     "Stof eerst het kozijn en de vensterbank af met een droge doek voordat je vloeistof gebruikt.",
@@ -539,7 +562,9 @@ nl: {
     "Doe een stap terug en controleer het glas tegen het licht op vegen voordat je naar het volgende raam gaat."
   ],
   priorityTitle: "Volgorde van Belangrijkheid",
-  priorityChain: ["Badkamer", "Toiletten", "Keuken", "Ramen"]
+  priorityNote: "Dit is dezelfde volgorde die deze gids al van boven naar beneden aanhoudt.",
+  priorityChain: ["Badkamer", "Toiletten", "Ramen", "Keuken"],
+  contact: "Nog vragen? Vraag gerust aan Alex of Kamran, wie er thuis is."
 }
 };
 
@@ -552,6 +577,7 @@ function render(lang){
   document.getElementById("t-header-title").textContent = t.headerTitle;
   document.getElementById("t-header-subtitle").textContent = t.headerSubtitle;
   document.getElementById("t-header-tagline").textContent = t.headerTagline;
+  document.getElementById("t-disclaimer").textContent = t.disclaimer;
   document.getElementById("t-nav-bathroom").textContent = t.navBathroom;
   document.getElementById("t-nav-kitchen").textContent = t.navKitchen;
   document.getElementById("t-nav-toilets").textContent = t.navToilets;
@@ -581,6 +607,7 @@ function render(lang){
   document.getElementById("t-toilets-steps").innerHTML = li(t.toiletsSteps);
 
   document.getElementById("t-windows-title").textContent = t.windowsTitle;
+  document.getElementById("t-windows-note").innerHTML = t.windowsNote;
   document.getElementById("t-general-sub").textContent = t.generalSub;
   document.getElementById("t-caption-vacuum").textContent = t.captionVacuum;
   document.getElementById("t-caption-mop").textContent = t.captionMop;
@@ -591,9 +618,12 @@ function render(lang){
   document.getElementById("t-livingroom-steps").innerHTML = li(t.livingroomSteps);
 
   document.getElementById("t-priority-title").textContent = t.priorityTitle;
+  document.getElementById("t-priority-note").textContent = t.priorityNote;
   document.getElementById("t-priority-chain").innerHTML = t.priorityChain.map((c,i) =>
     (i>0 ? `<span class="arrow">→</span>` : "") + `<span class="chip${i===0?" p1":""}">${c}</span>`
   ).join("");
+
+  document.getElementById("t-contact").textContent = t.contact;
 
   document.querySelectorAll(".lang-switch button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
   localStorage.setItem("clean-lang", lang);
